@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Gallery | Converse Flying Eagles RC Club</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            height: 200px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+        .gallery-item .overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            color: white;
+            padding: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .gallery-item:hover .overlay {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="Flying Eagles Logo" class="logo-img">
+                Flying Eagles
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="gallery.html" class="active">Gallery</a></li>
+                    <li><a href="weather_final.html">Weather</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="field-status" id="field-status-header">
+                <span class="status-indicator status-open"></span> Field: OPEN
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section>
+            <h2 class="section-title">Photo Gallery</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="images/Converse_Title_Picture.jpg" alt="RC Aircraft in Flight">
+                    <div class="overlay">Scale Warbird in Flight</div>
+                </div>
+                <!-- More items would be added here dynamically from /images/ -->
+                <div class="gallery-item" style="background-color: var(--sky-blue); display: flex; align-items: center; justify-content: center; color: var(--navy-blue);">
+                    <span>[Field Photo Placeholder]</span>
+                </div>
+                <div class="gallery-item" style="background-color: var(--navy-blue); display: flex; align-items: center; justify-content: center; color: var(--gold);">
+                    <span>[Event Photo Placeholder]</span>
+                </div>
+                <div class="gallery-item" style="background-color: var(--gold); display: flex; align-items: center; justify-content: center; color: var(--navy-blue);">
+                    <span>[Workshop Photo Placeholder]</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer style="background-color: var(--navy-blue); color: var(--white); padding: 3rem 0 1rem 0; margin-top: 4rem;">
+        <div class="container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
+            <div>
+                <h4 style="color: var(--gold); margin-bottom: 1.5rem;">Converse Flying Eagles</h4>
+                <p style="font-size: 0.9rem; line-height: 1.6;">Dedicated to the hobby of radio-controlled flight in Converse, Indiana and surrounding areas.</p>
+            </div>
+            <div>
+                <h4 style="color: var(--gold); margin-bottom: 1.5rem;">Quick Links</h4>
+                <ul id="footer-links" style="list-style: none; padding: 0; font-size: 0.9rem;"></ul>
+            </div>
+            <div>
+                <h4 style="color: var(--gold); margin-bottom: 1.5rem;">Contact Us</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;" id="footer-email">Email:</p>
+                <p style="font-size: 0.9rem;" id="footer-phone">Phone:</p>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem;">
+            &copy; 2026 Converse Flying Eagles RC Club. | <a href="admin/login.html" style="color: var(--gold);">Admin Login</a>
+        </div>
+    </footer>
+    <script src="js/status_final.js?cb=987654321"></script>
+    <script src="js/data-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const settings = DataManager.getSettings();
+            document.getElementById('footer-email').innerText = `Email: ${settings.email}`;
+            document.getElementById('footer-phone').innerText = `Phone: ${settings.phone}`;
+            document.getElementById('footer-links').innerHTML = DataManager.getLinks().map(l => `
+                <li style="margin-bottom: 0.5rem;"><a href="${l.url}" style="color: var(--white); text-decoration: none;">${l.title}</a></li>
+            `).join('');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather | Converse Flying Eagles RC Club</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .weather-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .weather-card:hover {
+            transform: translateY(-5px);
+        }
+        .weather-stat-box {
+            background: #f8f9fa;
+            padding: 1.2rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--sky-blue);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .weather-main-stat {
+            font-size: 1.6rem;
+            color: var(--navy-blue);
+            font-weight: 800;
+            margin-top: 5px;
+        }
+        #metar-wind {
+            color: var(--navy-blue);
+            line-height: 1.2;
+        }
+        .sky-condition-box {
+            background: var(--navy-blue);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .sky-condition-box svg {
+            width: 50px;
+            height: 50px;
+            stroke: var(--gold);
+            stroke-width: 1.5;
+        }
+        #metar-sky-icon {
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px;
+        }
+        .weather-stat-label {
+            text-transform: uppercase;
+            color: #999;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 0.8px;
+            margin-bottom: 4px;
+        }
+        .weather-main-stat {
+            font-size: 1.5rem;
+            color: var(--navy-blue);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="Flying Eagles Logo" class="logo-img">
+                Flying Eagles
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="gallery.html">Gallery</a></li>
+                    <li><a href="weather_final.html" class="active">Weather</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="field-status" id="field-status-header">
+                <span class="status-indicator status-open"></span> Field: OPEN
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section>
+            <h2 class="section-title">Local Flying Weather</h2>
+            
+            <div class="weather-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+                <!-- Left: Weather Stats & Icons -->
+                <div class="weather-info">
+                    <div class="station-selector" style="margin-bottom: 1.5rem; background: var(--sky-blue); padding: 1rem; border-radius: 8px;">
+                        <label for="metar-selector" style="font-weight: bold; color: var(--navy-blue);">Reporting Station:</label>
+                        <select id="metar-selector" onchange="StatusManager.setStation(this.value)" style="padding: 5px; border-radius: 4px; border: 1px solid var(--navy-blue); margin-left: 10px;">
+                            <option value="KOKK">KOKK - Kokomo (8nm W)</option>
+                            <option value="KMZZ">KMZZ - Marion (11nm SE)</option>
+                            <option value="KGUS">KGUS - Grissom (13nm W)</option>
+                        </select>
+                        <button onclick="StatusManager.fetchWeather()" class="btn btn-gold" style="padding: 5px 15px; margin-left: 10px; font-size: 0.8rem;">Refresh Weather</button>
+                        <p style="font-size: 0.8rem; margin-top: 5px; color: var(--navy-blue); font-style: italic;">Note: 1I8 does not have its own reporting station. Using nearest METAR.</p>
+                    </div>
+
+                    <div class="weather-card" style="margin-bottom: 2rem; text-align: left;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; border-bottom: 2px solid var(--sky-blue); padding-bottom: 12px; margin-bottom: 20px;">
+                            <div>
+                                <h3 id="active-station-id" style="margin: 0; color: var(--navy-blue); font-size: 1.8rem; letter-spacing: 1px;">KOKK</h3>
+                                <small id="active-station-dist" style="color: #666; font-weight: bold;">8 nm W</small>
+                            </div>
+                            <div style="text-align: right;">
+                                <div id="metar-airport-name" style="font-weight: 800; color: var(--navy-blue); font-size: 1.1rem;">--</div>
+                                <div style="font-size: 0.75rem; color: #888; text-transform: uppercase; margin-top: 2px;">Primary METAR Source</div>
+                                <div id="sunset-time" style="font-size: 0.9rem; color: rgba(0,0,0,0.6); margin-top: 2px;">Sunset: --</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                            <!-- Top Row -->
+                            <div class="weather-card" id="card-temp">
+                                <div class="weather-card-tab tab-neutral"></div>
+                                <div class="weather-stat-content">
+                                    <span class="weather-stat-label">Temperature</span>
+                                    <strong id="metar-temp" class="weather-main-stat">--</strong>
+                                </div>
+                            </div>
+                            <div class="weather-card" id="card-wind">
+                                <div class="weather-card-tab" id="tab-wind"></div>
+                                <div class="weather-stat-content">
+                                    <span class="weather-stat-label">Wind Conditions</span>
+                                    <div id="metar-wind-value" class="weather-main-stat">-- kt</div>
+                                    <div id="metar-wind-dir" class="weather-sub-stat">--</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Second Row -->
+                            <div class="weather-card" id="card-vis">
+                                <div class="weather-card-tab" id="tab-vis"></div>
+                                <div class="weather-stat-content">
+                                    <span class="weather-stat-label">Visibility</span>
+                                    <strong id="metar-vis" class="weather-main-stat">-- SM</strong>
+                                </div>
+                            </div>
+                            <div class="weather-card" id="card-alt">
+                                <div class="weather-card-tab tab-neutral"></div>
+                                <div class="weather-stat-content">
+                                    <span class="weather-stat-label">Altimeter</span>
+                                    <strong id="metar-alt" class="weather-main-stat">-- "Hg</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sky-condition-box">
+                            <div id="metar-sky-icon">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2"/><path d="M12 21v2"/><path d="M4.2 4.2l1.4 1.4"/><path d="M18.4 18.4l1.4 1.4"/><path d="M1 12h2"/><path d="M21 12h2"/><path d="M4.2 19.8l1.4-1.4"/><path d="M18.4 5.6l1.4-1.4"/></svg>
+                            </div>
+                            <div style="flex-grow: 1;">
+                                <span class="weather-stat-label" style="color: rgba(255,255,255,0.7);">Sky Conditions</span>
+                                <div id="metar-sky" style="font-size: 1rem; font-weight: 400; margin-top: 4px; line-height: 1.5; text-align: left;">--</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 1.5rem; font-size: 0.75rem; color: #888; display: flex; justify-content: space-between; padding-top: 10px; border-top: 1px solid #eee;">
+                            <span id="metar-obs-time">Observed: --</span>
+                            <span id="metar-sync-time">Last Refreshed: --</span>
+                        </div>
+                    </div>
+
+                    <div class="admin-card" style="background: var(--light-grey); color: var(--navy-blue); border-left: 5px solid var(--gold);">
+                        <h4 style="margin-top: 0;">Pilot Safety Report</h4>
+                        <p id="weather-status-label" style="font-weight: bold; margin: 10px 0; font-size: 1.2rem;">--</p>
+                        <p id="weather-status-reason" style="font-size: 0.9rem; line-height: 1.5;">--</p>
+                    </div>
+                </div>
+
+                <!-- Right: Radar Map -->
+                <div class="radar-map" style="height: 100%;">
+                    <div style="background: var(--navy-blue); color: var(--gold); padding: 10px; border-radius: 10px 10px 0 0; font-weight: bold; text-align: center;">
+                        Live Radar (50mi Radius)
+                    </div>
+                    <div style="height: 500px; border: 2px solid var(--navy-blue); border-radius: 0 0 10px 10px; overflow: hidden; position: relative;">
+                        <!-- Using Windy.com as a high-quality aviation radar provider -->
+                        <iframe 
+                            width="100%" 
+                            height="100%" 
+                            src="https://embed.windy.com/embed2.html?lat=40.575&lon=-85.843&detailLat=40.575&detailLon=-85.843&width=650&height=450&zoom=11&level=surface&overlay=radar&product=radar&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=true&metricWind=default&metricTemp=default&radarRange=-1" 
+                            frameborder="0">
+                        </iframe>
+                    </div>
+                    <p style="margin-top: 10px; font-size: 0.8rem; text-align: right; font-style: italic;">Data provided by Windy.com</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer style="background-color: var(--navy-blue); color: var(--white); padding: 3rem 0 1rem 0; margin-top: 4rem;">
+        <div class="container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
+            <div>
+                <h4 style="color: var(--gold); margin-bottom: 1.5rem;">Converse Flying Eagles</h4>
+                <p style="font-size: 0.9rem; line-height: 1.6;">Dedicated to the hobby of radio-controlled flight in Converse, Indiana and surrounding areas.</p>
+            </div>
+            <div>
+                <h4 style="color: var(--gold); margin-bottom: 1.5rem;">Quick Links</h4>
+                <ul id="footer-links" style="list-style: none; padding: 0; font-size: 0.9rem;"></ul>
+            </div>
+            <div>
+                <h4 style="color: var(--gold); margin-bottom: 1.5rem;">Contact Us</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;" id="footer-email">Email:</p>
+                <p style="font-size: 0.9rem;" id="footer-phone">Phone:</p>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem;">
+            &copy; 2026 Converse Flying Eagles RC Club. | <a href="admin/login.html" style="color: var(--gold);">Admin Login</a>
+        </div>
+    </footer>
+    <script src="js/status_final.js?cb=987654321"></script>
+    <script src="js/data-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const settings = DataManager.getSettings();
+            document.getElementById('footer-email').innerText = `Email: ${settings.email}`;
+            document.getElementById('footer-phone').innerText = `Phone: ${settings.phone}`;
+            document.getElementById('footer-links').innerHTML = DataManager.getLinks().map(l => `
+                <li style="margin-bottom: 0.5rem;"><a href="${l.url}" style="color: var(--white); text-decoration: none;">${l.title}</a></li>
+            `).join('');
+        });
+    </script>
+</body>
+</html>

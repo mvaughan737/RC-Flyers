@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Converse Flying Eagles RC Club</title>
+    <link rel="stylesheet" href="style.css?v=2">
+    <script>
+        // Splash Bypass Logic
+        if (sessionStorage.getItem('splashSeen')) {
+            document.documentElement.classList.add('no-splash');
+        } else {
+            sessionStorage.setItem('splashSeen', 'true');
+        }
+    </script>
+</head>
+<body>
+    <!-- 5-Second Professional Intro Splash -->
+    <div id="splash-screen">
+        <div class="splash-content">
+            <img src="images/logo.png" alt="Converse Flying Eagles Logo" class="splash-logo">
+            <h1 class="splash-text">Converse Flying Eagles</h1>
+        </div>
+    </div>
+
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="Flying Eagles Logo" class="logo-img">
+                Flying Eagles
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="gallery.html">Gallery</a></li>
+                    <li><a href="weather_final.html">Weather</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="field-status" id="field-status-header">
+                <span class="status-indicator status-open"></span> Field: OPEN
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero" id="hero-section">
+            <h1>Converse Flying Eagles</h1>
+            <p>Experience the thrill of flight with Northern Indiana's premier RC model aviation club. FAA FRIA Recognized identification area.</p>
+            <div class="hero-btns">
+                <a href="contact.html" class="btn btn-gold">Join the Club</a>
+                <a href="location.html" class="btn btn-gold" style="background: var(--sky-blue); color: var(--navy-blue); margin-left: 10px;">Find the Field</a>
+            </div>
+        </section>
+
+        <section id="welcome">
+            <h2 class="section-title">Welcome to the Skies</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-img" style="background-image: url('images/mission_card.jpg');"></div>
+                    <div class="card-content">
+                        <h3>Our Mission</h3>
+                        <p>Dedicated to promoting the building, flying, and safe enjoyment of radio-controlled aircraft. Converse Flying Eagles RC Club welcomes pilots of all skill levels and encourages fellowship, learning, and a shared passion for model aviation. Our goal is to provide a friendly, family-oriented environment where members and guests can enjoy the hobby, improve their skills, and participate in club events throughout the year.</p>
+                        <a href="about.html" class="btn btn-gold" style="padding: 0.5rem 1rem; font-size: 0.9rem; margin-top: 1.5rem; display: inline-block;">Learn More</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <h3>Latest News</h3>
+                        <ul id="latest-news-list" style="list-style: none; padding: 0;">
+                            <li>Loading news...</li>
+                        </ul>
+                        <a href="news.html" class="btn btn-gold" style="padding: 0.5rem 1rem; font-size: 0.9rem; margin-top: 15px; display: inline-block;">Read News</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <h3>Upcoming Events</h3>
+                        <ul id="upcoming-events-list" style="list-style: none; padding: 0;">
+                            <li>Loading events...</li>
+                        </ul>
+                        <a href="events.html" class="btn btn-gold" style="padding: 0.5rem 1rem; font-size: 0.9rem; margin-top: 15px; display: inline-block;">Full Calendar</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section style="background-color: var(--light-grey);">
+            <div class="grid" style="align-items: center;">
+                <div>
+                    <h2 style="color: var(--navy-blue); font-size: 2.22rem; margin-bottom: 1.5rem;">New to RC Aviation?</h2>
+                    <p style="margin-bottom: 2rem;">We offer instructor-led flight training and resources to help you take your first steps into the hobby. Join a community that loves to share its passion.</p>
+                    <a href="learn-to-fly.html" class="btn btn-gold">Learn to Fly</a>
+                </div>
+                <div class="card-img" style="border-radius: 10px; height: 300px; background-image: url('images/trainer.jpg'); background-size: cover; background-position: center;">
+                    <!-- Professional image of RC trainer plane -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Flying Eagles</h4>
+                <p>Converse Flying Eagles<br>PO Box 214<br>Converse, IN 46919</p>
+                <p style="margin-top: 0.5rem; font-size: 0.85rem;">Coordinates: 40.575675, -85.900127</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul style="list-style: none; padding: 0;">
+                    <li><a href="contact.html" style="color: var(--white); text-decoration: none;">Join the Club</a></li>
+                    <li><a href="weather_final.html" style="color: var(--white); text-decoration: none;">Weather Status</a></li>
+                    <li><a href="resources.html" style="color: var(--white); text-decoration: none;">Pilot Resources</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p id="footer-email">Email: geomarfar@gmail.com</p>
+                <p id="footer-phone">Phone: (555) 123-4567</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Converse Flying Eagles RC Club. All rights reserved. | <a href="admin/login.html" style="color: var(--gold);">Admin Login</a>
+        </div>
+    </footer>
+    <script src="js/status_final.js?cb=987654321"></script>
+    <script src="js/data-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Icons
+            const icons = {
+                time: `<svg class="meta-icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>`,
+                location: `<svg class="meta-icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`,
+                news: `<svg class="meta-icon" style="fill: var(--gold)" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>`
+            };
+
+            // Render News
+            const newsList = document.getElementById('latest-news-list');
+            const newsData = DataManager.getNews().slice(0, 2);
+            if (newsData.length > 0) {
+                newsList.innerHTML = newsData.map(n => `
+                    <div class="news-item">
+                        <div class="news-tag">${icons.news} Latest Update</div>
+                        <div class="news-title">${n.title}</div>
+                        <div style="font-size: 0.8rem; color: #888; margin-bottom: 8px;">
+                            ${new Date(n.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                        </div>
+                        <p style="font-size: 0.9rem; color: #444;">${n.content.substring(0, 80)}${n.content.length > 80 ? '...' : ''}</p>
+                    </div>
+                `).join('');
+            }
+
+            // Render Events
+            const eventList = document.getElementById('upcoming-events-list');
+            const eventData = DataManager.getEvents()
+                .filter(e => new Date(e.date) >= new Date().setHours(0,0,0,0))
+                .slice(0, 3);
+            
+            if (eventData.length > 0) {
+                eventList.innerHTML = eventData.map(e => {
+                    const d = new Date(e.date);
+                    const month = d.toLocaleString('en-US', { month: 'short' });
+                    const day = d.getDate();
+                    
+                    return `
+                        <div class="event-item" data-date="${e.date}" data-auto-hide="true">
+                            <div class="event-date-badge">
+                                <span class="event-month">${month}</span>
+                                <span class="event-day">${day}</span>
+                            </div>
+                            <div style="flex: 1;">
+                                <div class="event-title">${e.title}</div>
+                                <div class="meta-unit">
+                                    ${icons.time} ${e.time || 'TBD'}
+                                </div>
+                                <div class="meta-unit">
+                                    ${icons.location} ${e.location || 'Field'}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Footer / Settings / Hero
+            const settings = DataManager.getSettings();
+            
+            // Dynamic Hero Background
+            if (settings.heroImage) {
+                document.getElementById('hero-section').style.setProperty('--hero-url', `url('${settings.heroImage}')`);
+            }
+
+            document.getElementById('footer-email').innerText = `Email: ${settings.email}`;
+            document.getElementById('footer-phone').innerText = `Phone: ${settings.phone}`;
+            document.getElementById('footer-links').innerHTML = DataManager.getLinks().map(l => `
+                <li style="margin-bottom: 0.5rem;"><a href="${l.url}" style="color: var(--white); text-decoration: none;">${l.title}</a></li>
+            `).join('');
+        });
+    </script>
+    <script src="js/visibility.js"></script>
+</body>
+</html>

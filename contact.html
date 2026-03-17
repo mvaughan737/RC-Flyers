@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Converse Flying Eagles RC Club</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group textarea { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+        }
+        .error-message { color: #dc3545; font-size: 0.85rem; margin-top: 5px; display: none; }
+        .success-message { 
+            background-color: #d4edda; 
+            color: #155724; 
+            padding: 1rem; 
+            border-radius: 5px; 
+            margin-bottom: 2rem; 
+            display: none; 
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="Flying Eagles Logo" class="logo-img">
+                Flying Eagles
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="gallery.html">Gallery</a></li>
+                    <li><a href="weather_final.html">Weather</a></li>
+                    <li><a href="contact.html" class="active">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="field-status" id="field-status-header">
+                <span class="status-indicator status-open"></span> Field: OPEN
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section>
+            <h2 class="section-title">Contact Us</h2>
+            <div id="success-msg" class="success-message">Thank you for your message! We'll get back to you soon.</div>
+            
+            <div class="grid">
+                <div>
+                    <h3 style="color: var(--navy-blue); margin-bottom: 1.5rem;">Send a Message</h3>
+                    <p style="margin-bottom: 2rem;">Interested in joining or visiting the field? Have questions about our flying activities? Fill out the form below.</p>
+                    
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label for="user_name">Name *</label>
+                            <input type="text" id="user_name" name="user_name" required>
+                            <span id="name-error" class="error-message">Please enter your name.</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="user_email">Email *</label>
+                            <input type="email" id="user_email" name="user_email" required>
+                            <span id="email-error" class="error-message">Please enter a valid email address.</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="user_phone">Phone *</label>
+                            <input type="tel" id="user_phone" name="user_phone" required>
+                            <span id="phone-error" class="error-message">Please enter a valid phone number.</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" name="subject">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-gold">Send Message</button>
+                    </form>
+                </div>
+                <div>
+                    <h3 style="color: var(--navy-blue); margin-bottom: 1.5rem;">Quick Contact</h3>
+                    <div style="background: var(--white); padding: 1.5rem; border-radius: 10px; box-shadow: var(--shadow);">
+                    <p style="margin-bottom: 15px;"><strong>Club Location:</strong> Converse Airport (1I8), Converse, IN</p>
+                    <p style="margin-bottom: 15px;"><strong>Email:</strong> <span id="set-contact-email">geomarfar@gmail.com</span></p>
+                    <p><strong>Phone:</strong> <span id="set-contact-phone">(555) 123-4567</span></p>
+                </div>
+    <p style="margin-top: 2rem;"><strong>Visiting the Field:</strong> We are typically at the field every Saturday and Sunday morning (weather permitting). Visitors are always welcome to stop by and watch!</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        (function() {
+            // Replace with your actual EmailJS Public Key
+            emailjs.init("YOUR_PUBLIC_KEY");
+        })();
+
+        document.getElementById('contact-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            let isValid = true;
+            const name = document.getElementById('user_name');
+            const email = document.getElementById('user_email');
+            const phone = document.getElementById('user_phone');
+            
+            // Basic validation
+            if (!name.value.trim()) {
+                document.getElementById('name-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('name-error').style.display = 'none';
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email.value)) {
+                document.getElementById('email-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('email-error').style.display = 'none';
+            }
+            
+            const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+            if (!phone.value.trim() || !phoneRegex.test(phone.value)) {
+                document.getElementById('phone-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('phone-error').style.display = 'none';
+            }
+            
+            if (isValid) {
+                // EmailJS send call
+                // emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', this)
+                //     .then(function() {
+                //         document.getElementById('success-msg').style.display = 'block';
+                //         document.getElementById('contact-form').reset();
+                //     }, function(error) {
+                //         alert('Failed to send message. Please try again later.');
+                //     });
+
+                // For demonstration purposes:
+                console.log('Form validated and ready for EmailJS send.');
+                document.getElementById('success-msg').style.display = 'block';
+                document.getElementById('contact-form').reset();
+            }
+        });
+    </script>
+
+    <footer style="background-color: var(--navy-blue); color: var(--white); padding: 3rem 0 1rem 0; margin-top: 4rem;">
+        <div class="container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
+            <div>
+                <h4 style="color: var(--gold); margin-bottom: 1.5rem;">Converse Flying Eagles</h4>
+                <p style="font-size: 0.9rem; line-height: 1.6;">Dedicated to the hobby of radio-controlled flight in Converse, Indiana and surrounding areas.</p>
+            </div>
+            <div>
+                <h4 style="color: var(--gold); margin-bottom: 1.5rem;">Quick Links</h4>
+                <ul id="footer-links" style="list-style: none; padding: 0; font-size: 0.9rem;"></ul>
+            </div>
+            <div>
+                <h4 style="color: var(--gold); margin-bottom: 1.5rem;">Contact Us</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;" id="footer-email">Email:</p>
+                <p style="font-size: 0.9rem;" id="footer-phone">Phone:</p>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem;">
+            &copy; 2026 Converse Flying Eagles RC Club. | <a href="admin/login.html" style="color: var(--gold);">Admin Login</a>
+        </div>
+    </footer>
+    <script src="js/status_final.js?cb=987654321"></script>
+    <script src="js/data-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const settings = DataManager.getSettings();
+            document.getElementById('footer-email').innerText = `Email: ${settings.email}`;
+            document.getElementById('footer-phone').innerText = `Phone: ${settings.phone}`;
+            document.getElementById('set-contact-email').innerText = settings.email;
+            document.getElementById('set-contact-phone').innerText = settings.phone;
+            document.getElementById('footer-links').innerHTML = DataManager.getLinks().map(l => `
+                <li style="margin-bottom: 0.5rem;"><a href="${l.url}" style="color: var(--white); text-decoration: none;">${l.title}</a></li>
+            `).join('');
+        });
+    </script>
+</body>
+</html>

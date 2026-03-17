@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Converse Flying Eagles RC Club</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="Flying Eagles Logo" class="logo-img">
+                Flying Eagles
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html" class="active">About</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="gallery.html">Gallery</a></li>
+                    <li><a href="weather_final.html">Weather</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="field-status" id="field-status-header">
+                <span class="status-indicator status-open"></span> Field: OPEN
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section>
+            <h2 class="section-title">About the Converse Flying Eagles</h2>
+            <div style="max-width: 800px; margin: 0 auto;">
+                <p style="margin-bottom: 1.5rem; font-size: 1.1rem;">The Converse Flying Eagles RC Club is a community of aviation enthusiasts dedicated to the hobby and sport of radio-controlled flight. Based at the Converse Airport in Converse, Indiana, we provide a safe and welcoming environment for pilots of all skill levels.</p>
+                
+                <h3 style="color: var(--navy-blue); margin: 2rem 0 1rem;">Our Philosophy</h3>
+                <p style="margin-bottom: 1.5rem;">We believe that the best way to build a strong club is through personal connection. Unlike many modern organizations, we prefer to meet prospective members in person at our field or during club meetings before formalizing membership. This ensures a great fit for both the individual and our community.</p>
+
+                <div style="background-color: var(--light-grey); padding: 2rem; border-left: 5px solid var(--gold); margin: 2rem 0;">
+                    <h4 style="color: var(--navy-blue); margin-bottom: 1rem;">Thinking of Joining?</h4>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 10px;">✅ Visit us at the flying field during weekends.</li>
+                        <li style="margin-bottom: 10px;">✅ Attend one of our monthly club meetings.</li>
+                        <li style="margin-bottom: 10px;">✅ Introduce yourself to our members and see our aircraft in action.</li>
+                    </ul>
+                </div>
+
+                <h3 style="color: var(--navy-blue); margin: 2rem 0 1rem;">FAA Recognized Identification Area (FRIA)</h3>
+                <p>Our flying field is an FAA Recognized Identification Area (FRIA). This means our members can fly their RC aircraft in compliance with federal regulations, ensuring a safe and legal environment for everyone involved.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer style="background-color: var(--navy-blue); color: var(--white); padding: 3rem 0 1rem 0; margin-top: 4rem;">
+        <div class="container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
+            <div>
+                <h4 style="color: var(--gold); margin-bottom: 1.5rem;">Converse Flying Eagles</h4>
+                <p style="font-size: 0.9rem; line-height: 1.6;">Dedicated to the hobby of radio-controlled flight in Converse, Indiana and surrounding areas.</p>
+            </div>
+            <div>
+                <h4 style="color: var(--gold); margin-bottom: 1.5rem;">Quick Links</h4>
+                <ul id="footer-links" style="list-style: none; padding: 0; font-size: 0.9rem;"></ul>
+            </div>
+            <div>
+                <h4 style="color: var(--gold); margin-bottom: 1.5rem;">Contact Us</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;" id="footer-email">Email:</p>
+                <p style="font-size: 0.9rem;" id="footer-phone">Phone:</p>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem;">
+            &copy; 2026 Converse Flying Eagles RC Club. | <a href="admin/login.html" style="color: var(--gold);">Admin Login</a>
+        </div>
+    </footer>
+    <script src="js/status_final.js?cb=987654321"></script>
+    <script src="js/data-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const settings = DataManager.getSettings();
+            document.getElementById('footer-email').innerText = `Email: ${settings.email}`;
+            document.getElementById('footer-phone').innerText = `Phone: ${settings.phone}`;
+            document.getElementById('footer-links').innerHTML = DataManager.getLinks().map(l => `
+                <li style="margin-bottom: 0.5rem;"><a href="${l.url}" style="color: var(--white); text-decoration: none;">${l.title}</a></li>
+            `).join('');
+        });
+    </script>
+</body>
+</html>

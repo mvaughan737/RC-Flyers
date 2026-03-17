@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flying Field Location | Converse Flying Eagles RC Club</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="Flying Eagles Logo" class="logo-img">
+                Flying Eagles
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="gallery.html">Gallery</a></li>
+                    <li><a href="weather_final.html">Weather</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="field-status" id="field-status-header">
+                <span class="status-indicator status-open"></span> Field: OPEN
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section>
+            <h2 class="section-title">Find the Field</h2>
+            <div style="max-width: 900px; margin: 0 auto; text-align: center;">
+                <p style="margin-bottom: 2rem; font-size: 1.1rem;">Our primary flying field is located at the Converse Airport in Converse, Indiana. It features a paved runway and expansive grass areas for all types of model aviation.</p>
+                
+                <div style="text-align: left; background: var(--white); padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem; border-left: 5px solid var(--gold);">
+                    <p style="font-size: 1.2rem; color: var(--navy-blue); font-weight: bold; margin-bottom: 0.5s;">Mailing Address:</p>
+                    <p>Converse Flying Eagles<br>PO Box 214<br>Converse, IN 46919</p>
+                    <p style="margin-top: 1rem;"><strong>Coordinates:</strong> 40.575675, -85.900127</p>
+                </div>
+
+                <div style="width: 100%; height: 450px; background-color: var(--sky-blue); border-radius: 10px; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: var(--shadow);">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3032.610575308643!2d-85.90231562343883!3d40.57567497141381!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDM0JzMyLjQiTiA4NcKwNTQnMDAuNSJX!5e0!3m2!1sen!2sus!4v1710520000000!5m2!1sen!2sus" 
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+
+                <div class="directions-form">
+                    <input type="text" id="start-address" placeholder="Enter your starting address (e.g., Kokomo, IN)">
+                    <button class="btn btn-gold" onclick="getDirections()">Get Directions</button>
+                </div>
+
+                <script>
+                    function getDirections() {
+                        const start = document.getElementById('start-address').value;
+                        if (!start) {
+                            alert('Please enter a starting address.');
+                            return;
+                        }
+                        const destination = "40.575675,-85.900127";
+                        const url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(start)}&destination=${destination}`;
+                        window.open(url, '_blank');
+                    }
+                </script>
+
+                <div style="text-align: left; background: var(--light-grey); padding: 2rem; border-radius: 10px; margin-top: 2rem;">
+                    <h3 style="color: var(--navy-blue); margin-bottom: 1rem;">Pilot Safety Note</h3>
+                    <p>Converse Airport (1I8) is a shared facility. Please be mindful of full-scale aircraft and follow all AMA and club safety guidelines. Look for the Flying Eagles sign near the field entrance.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer style="background-color: var(--navy-blue); color: var(--white); padding: 3rem 0 1rem 0; margin-top: 4rem;">
+        <div class="container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
+            <div>
+                <h4 style="color: var(--gold); margin-bottom: 1.5rem;">Converse Flying Eagles</h4>
+                <p style="font-size: 0.9rem; line-height: 1.6;">Dedicated to the hobby of radio-controlled flight in Converse, Indiana and surrounding areas.</p>
+            </div>
+            <div>
+                <h4 style="color: var(--gold); margin-bottom: 1.5rem;">Quick Links</h4>
+                <ul id="footer-links" style="list-style: none; padding: 0; font-size: 0.9rem;"></ul>
+            </div>
+            <div>
+                <h4 style="color: var(--gold); margin-bottom: 1.5rem;">Contact Us</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;" id="footer-email">Email:</p>
+                <p style="font-size: 0.9rem;" id="footer-phone">Phone:</p>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem;">
+            &copy; 2026 Converse Flying Eagles RC Club. | <a href="admin/login.html" style="color: var(--gold);">Admin Login</a>
+        </div>
+    </footer>
+    <script src="js/status_final.js?cb=987654321"></script>
+    <script src="js/data-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const settings = DataManager.getSettings();
+            document.getElementById('footer-email').innerText = `Email: ${settings.email}`;
+            document.getElementById('footer-phone').innerText = `Phone: ${settings.phone}`;
+            document.getElementById('footer-links').innerHTML = DataManager.getLinks().map(l => `
+                <li style="margin-bottom: 0.5rem;"><a href="${l.url}" style="color: var(--white); text-decoration: none;">${l.title}</a></li>
+            `).join('');
+        });
+    </script>
+</body>
+</html>

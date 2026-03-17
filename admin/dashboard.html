@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Converse Flying Eagles RC Club</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .admin-main {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+        .sidebar {
+            background-color: var(--navy-blue);
+            color: var(--white);
+            padding: 2rem 1rem;
+        }
+        .sidebar ul { list-style: none; padding: 0; }
+        .sidebar li { margin-bottom: 1rem; }
+        .sidebar a { color: var(--white); text-decoration: none; display: block; padding: 10px; border-radius: 5px; transition: background 0.3s; }
+        .sidebar a:hover, .sidebar a.active { background-color: var(--sky-blue); color: var(--navy-blue); }
+        .content { padding: 3rem; }
+        .admin-card { background: var(--white); padding: 2rem; border-radius: 10px; box-shadow: var(--shadow); margin-bottom: 2rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <script>
+        if (localStorage.getItem('admin_auth') !== 'true') {
+            window.location.href = 'login.html';
+        }
+    </script>
+
+    <div class="admin-main">
+        <aside class="sidebar">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <img src="../images/logo.png" alt="Club Logo" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--gold);">
+                <h3 style="color: var(--gold); margin-top: 10px;">Eagle Admin</h3>
+            </div>
+            <ul>
+                <li><a href="#" class="nav-link active" data-section="news">News Management</a></li>
+                <li><a href="#" class="nav-link" data-section="events">Events Calendar</a></li>
+                <li><a href="#" class="nav-link" data-section="gallery">Image Gallery</a></li>
+                <li><a href="#" class="nav-link" data-section="settings">Site Settings</a></li>
+                <li><a href="#" onclick="localStorage.removeItem('admin_auth'); window.location.href='login.html';" style="margin-top: 4rem; color: #ff6b6b;">Logout</a></li>
+            </ul>
+        </aside>
+        
+        <main class="content">
+            <h2 id="section-title">News Management</h2>
+
+            <!-- NEWS SECTION -->
+            <section id="news-section" class="admin-section">
+                <div class="admin-card">
+                    <div id="news-edit-indicator" style="display: none; background: #fffcf0; padding: 10px; border-left: 4px solid var(--gold); margin-bottom: 1rem; font-weight: bold;">
+                        Editing News Post...
+                    </div>
+                    <form id="news-form">
+                        <div class="form-group">
+                            <label>Post Title</label>
+                            <input type="text" id="news-title" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Content</label>
+                            <textarea id="news-content" rows="5" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Post Date</label>
+                            <input type="date" id="news-date" required>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="submit" id="news-submit-btn" class="btn btn-gold">Publish Post</button>
+                            <button type="button" id="news-cancel-btn" class="btn" style="display: none; background: #eee;" onclick="cancelEdit('news')">Cancel Edit</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="admin-card">
+                    <h3>Existing News</h3>
+                    <div id="news-list"></div>
+                </div>
+            </section>
+
+            <!-- EVENTS SECTION -->
+            <section id="events-section" class="admin-section" style="display: none;">
+                <div class="admin-card">
+                    <div id="event-edit-indicator" style="display: none; background: #fffcf0; padding: 10px; border-left: 4px solid var(--gold); margin-bottom: 1rem; font-weight: bold;">
+                        Editing Event...
+                    </div>
+                    <form id="event-form">
+                        <div class="form-group">
+                            <label>Event Title</label>
+                            <input type="text" id="event-title" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="event-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Time</label>
+                            <input type="text" id="event-time" placeholder="Defaults to TBD">
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" id="event-location" placeholder="Defaults to Club Field">
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="submit" id="event-submit-btn" class="btn btn-gold">Save Event</button>
+                            <button type="button" id="event-cancel-btn" class="btn" style="display: none; background: #eee;" onclick="cancelEdit('event')">Cancel Edit</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="admin-card">
+                    <h3>Scheduled Events</h3>
+                    <div id="events-list"></div>
+                </div>
+            </section>
+
+            <!-- GALLERY SECTION -->
+            <section id="gallery-section" class="admin-section" style="display: none;">
+                <div class="admin-card">
+                    <h3>Hero Image & Gallery Manager</h3>
+                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 1.5rem;">Manage images in the <code>/images/</code> folder. Select which image appears as the main homepage background.</p>
+                    
+                    <div id="gallery-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+                        <!-- Gallery items will be rendered here -->
+                    </div>
+
+                    <hr style="margin: 2rem 0;">
+                    
+                    <h4>Add Existing Image to Gallery</h4>
+                    <p style="font-size: 0.8rem; color: #888; margin-bottom: 1rem;">Note: This does not physically upload a file. It adds a reference to an existing file in your <code>/images/</code> folder.</p>
+                    <form id="add-gallery-form" style="display: flex; gap: 10px;">
+                        <input type="text" id="new-image-path" placeholder="e.g., images/new-plane.jpg" required style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 5px;">
+                        <button type="submit" class="btn btn-gold">Add to Gallery</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- SETTINGS SECTION -->
+            <section id="settings-section" class="admin-section" style="display: none;">
+                <div class="admin-card">
+                    <h3>Club Contact Info</h3>
+                    <div id="contact-status" style="display: none; color: green; margin-bottom: 10px; font-weight: bold;">✓ Contact info saved successfully!</div>
+                    <form id="contact-settings-form">
+                        <div class="form-group">
+                            <label>Contact Email</label>
+                            <input type="email" id="set-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Phone</label>
+                            <input type="text" id="set-phone" required>
+                        </div>
+                        <button type="submit" class="btn btn-gold">Update Contact Info</button>
+                    </form>
+                </div>
+
+                <div class="admin-card">
+                    <h3>Monthly Meeting Info</h3>
+                    <div id="meeting-status" style="display: none; color: green; margin-bottom: 10px; font-weight: bold;">✓ Meeting details saved successfully!</div>
+                    <form id="meeting-settings-form">
+                        <div class="form-group">
+                            <label>Meeting Schedule</label>
+                            <input type="text" id="set-meeting-schedule" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Meeting Location</label>
+                            <input type="text" id="set-meeting-place" required>
+                        </div>
+                        <button type="submit" class="btn btn-gold">Update Meeting Details</button>
+                    </form>
+                </div>
+
+                <div class="admin-card">
+                    <h3>Quick Links (Pilot Resources)</h3>
+                    <div id="links-list"></div>
+                    <hr style="margin: 1rem 0;">
+                    <div id="link-edit-indicator" style="display: none; background: #fffcf0; padding: 10px; border-left: 4px solid var(--gold); margin-bottom: 1rem; font-weight: bold;">
+                        Editing Quick Link...
+                    </div>
+                    <form id="add-link-form">
+                        <div class="form-group">
+                            <label>Link Title</label>
+                            <input type="text" id="link-title" required>
+                        </div>
+                        <div class="form-group">
+                            <label>URL</label>
+                            <input type="text" id="link-url" required>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="submit" id="link-submit-btn" class="btn btn-gold">Add Link</button>
+                            <button type="button" id="link-cancel-btn" class="btn" style="display: none; background: #eee;" onclick="cancelEdit('link')">Cancel Edit</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/status_final.js?cb=987654321"></script>
+    <script src="../js/data-manager.js"></script>
+    <script>
+        // Section Switching
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const section = link.getAttribute('data-section');
+                
+                // UI Updates
+                document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none');
+                document.getElementById(`${section}-section`).style.display = 'block';
+                document.getElementById('section-title').innerText = link.innerText;
+                
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+
+                renderAll();
+            });
+        });
+
+        function showSuccess(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.display = 'block';
+                setTimeout(() => { el.style.display = 'none'; }, 3000);
+            }
+        }
+
+        // Edit State Management
+        let editState = {
+            type: null, // 'news', 'event', 'link'
+            id: null
+        };
+
+        function setEditMode(type, item) {
+            editState = { type, id: item.id };
+            
+            // Show indicator and cancel button
+            document.getElementById(`${type}-edit-indicator`).style.display = 'block';
+            document.getElementById(`${type}-cancel-btn`).style.display = 'inline-block';
+            document.getElementById(`${type}-submit-btn`).innerText = 'Save Changes';
+
+            if (type === 'news') {
+                document.getElementById('news-title').value = item.title;
+                document.getElementById('news-content').value = item.content;
+                document.getElementById('news-date').value = item.date;
+            } else if (type === 'event') {
+                document.getElementById('event-title').value = item.title;
+                document.getElementById('event-date').value = item.date;
+                document.getElementById('event-time').value = item.time === 'TBD' ? '' : item.time;
+                document.getElementById('event-location').value = item.location === 'Club Field' ? '' : item.location;
+            } else if (type === 'link') {
+                document.getElementById('link-title').value = item.title;
+                document.getElementById('link-url').value = item.url;
+            }
+            
+            // Scroll to form
+            document.getElementById(`${type}-form` === 'link-form' ? 'add-link-form' : `${type}-form`).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelEdit(type) {
+            editState = { type: null, id: null };
+            document.getElementById(`${type}-edit-indicator`).style.display = 'none';
+            document.getElementById(`${type}-cancel-btn`).style.display = 'none';
+            
+            const btn = document.getElementById(`${type}-submit-btn`);
+            if (type === 'news') btn.innerText = 'Publish Post';
+            else if (type === 'event') btn.innerText = 'Save Event';
+            else if (type === 'link') btn.innerText = 'Add Link';
+
+            const formId = (type === 'link') ? 'add-link-form' : `${type}-form`;
+            document.getElementById(formId).reset();
+        }
+
+        // News Logic
+        document.getElementById('news-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newsData = {
+                title: document.getElementById('news-title').value,
+                content: document.getElementById('news-content').value,
+                date: document.getElementById('news-date').value
+            };
+
+            if (editState.type === 'news') {
+                DataManager.updateNews(editState.id, newsData);
+                cancelEdit('news');
+            } else {
+                DataManager.addNews(newsData);
+                e.target.reset();
+            }
+            renderAll();
+        });
+
+        // Event Logic
+        document.getElementById('event-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const eventData = {
+                title: document.getElementById('event-title').value,
+                date: document.getElementById('event-date').value,
+                time: document.getElementById('event-time').value || 'TBD',
+                location: document.getElementById('event-location').value || 'Club Field'
+            };
+
+            if (editState.type === 'event') {
+                DataManager.updateEvent(editState.id, eventData);
+                cancelEdit('event');
+            } else {
+                DataManager.addEvent(eventData);
+                e.target.reset();
+            }
+            renderAll();
+        });
+
+        // Settings Logic
+        document.getElementById('contact-settings-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            DataManager.updateSettings({
+                email: document.getElementById('set-email').value,
+                phone: document.getElementById('set-phone').value
+            });
+            showSuccess('contact-status');
+            renderAll();
+        });
+
+        document.getElementById('meeting-settings-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            DataManager.updateSettings({
+                meetingTime: document.getElementById('set-meeting-schedule').value,
+                meetingPlace: document.getElementById('set-meeting-place').value
+            });
+            showSuccess('meeting-status');
+            renderAll();
+        });
+
+        document.getElementById('add-link-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const linkData = {
+                title: document.getElementById('link-title').value,
+                url: document.getElementById('link-url').value
+            };
+
+            if (editState.type === 'link') {
+                DataManager.updateLink(editState.id, linkData);
+                cancelEdit('link');
+            } else {
+                DataManager.addLink(linkData);
+                e.target.reset();
+            }
+            renderAll();
+        });
+
+        document.getElementById('add-gallery-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const path = document.getElementById('new-image-path').value;
+            const settings = DataManager.getSettings();
+            const gallery = settings.galleryImages || [];
+            if (!gallery.includes(path)) {
+                gallery.push(path);
+                DataManager.updateSettings({ galleryImages: gallery });
+            }
+            e.target.reset();
+            renderAll();
+        });
+
+        function setHero(path) {
+            DataManager.updateSettings({ heroImage: path });
+            renderAll();
+        }
+
+        function deleteGalleryImage(path) {
+            const settings = DataManager.getSettings();
+            const gallery = (settings.galleryImages || []).filter(img => img !== path);
+            const update = { galleryImages: gallery };
+            // If we deleted the active hero, reset it to a fallback or null
+            if (settings.heroImage === path) {
+                update.heroImage = gallery[0] || 'images/converse_bg.jpg';
+            }
+            DataManager.updateSettings(update);
+            renderAll();
+        }
+
+        // Render Functions
+        function renderAll() {
+            // Render News List
+            const newsList = document.getElementById('news-list');
+            newsList.innerHTML = DataManager.getNews().map(n => `
+                <div style="padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="flex: 1;">
+                        <strong>${n.title}</strong> (${n.date})
+                        <div style="font-size: 0.8rem; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400px;">${n.content}</div>
+                    </div>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="btn btn-gold" style="padding: 5px 10px; background-color: var(--sky-blue); color: var(--navy-blue);" onclick="setEditMode('news', ${JSON.stringify(n).replace(/"/g, '&quot;')})">Edit</button>
+                        <button class="btn btn-gold" style="padding: 5px 10px; background-color: #ff6b6b; color: white; border-color: #ff6b6b;" onclick="DataManager.deleteNews(${n.id}); renderAll();">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Render Events List
+            document.getElementById('events-list').innerHTML = DataManager.getEvents().map(ev => `
+                <div style="padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="flex: 1;">
+                        <strong>${ev.title}</strong> - ${ev.date}
+                        <div style="font-size: 0.8rem; color: #666;">${ev.time || 'TBD'} @ ${ev.location || 'Club Field'}</div>
+                    </div>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="btn btn-gold" style="padding: 5px 10px; background-color: var(--sky-blue); color: var(--navy-blue);" onclick="setEditMode('event', ${JSON.stringify(ev).replace(/"/g, '&quot;')})">Edit</button>
+                        <button class="btn btn-gold" style="padding: 5px 10px; background-color: #ff6b6b; color: white; border-color: #ff6b6b;" onclick="DataManager.deleteEvent(${ev.id}); renderAll();">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Render Links
+            document.getElementById('links-list').innerHTML = DataManager.getLinks().map(l => `
+                <div style="padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="flex: 1;">
+                        <strong>${l.title}</strong>
+                        <div style="font-size: 0.8rem; color: #666;">${l.url}</div>
+                    </div>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="btn btn-gold" style="padding: 5px 10px; background-color: var(--sky-blue); color: var(--navy-blue);" onclick="setEditMode('link', ${JSON.stringify(l).replace(/"/g, '&quot;')})">Edit</button>
+                        <button class="btn btn-gold" style="padding: 5px 10px; background-color: #ff6b6b; color: white; border-color: #ff6b6b;" onclick="DataManager.deleteLink(${l.id}); renderAll();">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Render Gallery
+            const settings = DataManager.getSettings();
+            const galleryList = document.getElementById('gallery-list');
+            const currentHero = settings.heroImage;
+
+            if (galleryList) {
+                galleryList.innerHTML = (settings.galleryImages || []).map(img => {
+                    const isActive = img === currentHero;
+                    return `
+                        <div style="background: #fff; border: 1px solid ${isActive ? 'var(--gold)' : '#eee'}; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; position: relative; box-shadow: ${isActive ? '0 0 10px rgba(255,215,0,0.3)' : 'none'};">
+                            ${isActive ? '<div style="position: absolute; top: 5px; right: 5px; background: var(--gold); color: var(--navy-blue); font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; z-index: 10;">ACTIVE HERO</div>' : ''}
+                            <div style="height: 120px; background: url('../${img}') center/cover no-repeat; background-color: #f0f0f0;"></div>
+                            <div style="padding: 10px; flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                                <div style="font-size: 0.7rem; color: #888; word-break: break-all; height: 2.4em; overflow: hidden;">${img}</div>
+                                <div style="display: flex; gap: 5px; margin-top: auto;">
+                                    <button class="btn btn-gold" style="flex: 1; padding: 4px; font-size: 0.7rem; ${isActive ? 'opacity: 0.5; pointer-events: none;' : ''}" onclick="setHero('${img}')">${isActive ? 'Active' : 'Set Hero'}</button>
+                                    <button class="btn" style="padding: 4px; font-size: 0.7rem; background: #ff6b6b; color: #fff;" onclick="deleteGalleryImage('${img}')">×</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Fill settings inputs
+            const s = DataManager.getSettings();
+            document.getElementById('set-email').value = s.email;
+            document.getElementById('set-phone').value = s.phone;
+            document.getElementById('set-meeting-schedule').value = s.meetingTime;
+            document.getElementById('set-meeting-place').value = s.meetingPlace;
+        }
+
+        // Initial Load
+        window.addEventListener('load', () => {
+            renderAll();
+        });
+    </script>
+</body>
+</html>
