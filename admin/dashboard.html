@@ -120,21 +120,84 @@
 
             <!-- GALLERY SECTION -->
             <section id="gallery-section" class="admin-section" style="display: none;">
+                <!-- Gallery Event List -->
                 <div class="admin-card">
-                    <h3>Hero Image & Gallery Manager</h3>
-                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 1.5rem;">Manage images in the <code>/images/</code> folder. Select which image appears as the main homepage background.</p>
-                    
-                    <div id="gallery-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
-                        <!-- Gallery items will be rendered here -->
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>Gallery Events</h3>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn" style="background: #28a745; color: #fff; font-size: 0.8rem;" onclick="syncGalleryWithFile()">↻ Sync with gallery.json</button>
+                            <button class="btn btn-gold" style="font-size: 0.8rem;" onclick="exportGalleryJSON()">💾 Export JSON</button>
+                        </div>
                     </div>
-
-                    <hr style="margin: 2rem 0;">
+                    <div id="gallery-events-list" style="margin-top: 1rem;"></div>
+                    <button class="btn btn-gold" style="margin-top: 1rem;" onclick="showAddGalleryForm()">+ Create New Event</button>
                     
-                    <h4>Add Existing Image to Gallery</h4>
-                    <p style="font-size: 0.8rem; color: #888; margin-bottom: 1rem;">Note: This does not physically upload a file. It adds a reference to an existing file in your <code>/images/</code> folder.</p>
-                    <form id="add-gallery-form" style="display: flex; gap: 10px;">
-                        <input type="text" id="new-image-path" placeholder="e.g., images/new-plane.jpg" required style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 5px;">
-                        <button type="submit" class="btn btn-gold">Add to Gallery</button>
+                    <div id="sync-notice" style="display: none; background: #e7f3ff; padding: 10px; border-left: 4px solid #007bff; margin-top: 1rem; font-size: 0.85rem;">
+                        Data synced from <code>/data/gallery.json</code>! Existing local changes were overwritten.
+                    </div>
+                </div>
+
+                <!-- Export Modal/Section -->
+                <div id="export-container" class="admin-card" style="display: none; background: #f0f0f0; border: 2px solid var(--gold);">
+                    <h3>Export Gallery Data</h3>
+                    <p style="font-size: 0.85rem; color: #555; margin-bottom: 1rem;">Copy the JSON below and replace the content of <code>/data/gallery.json</code> in your project.</p>
+                    <textarea id="export-json-output" readonly rows="15" style="width: 100%; font-family: monospace; font-size: 0.8rem; padding: 10px; border-radius: 5px;"></textarea>
+                    <div style="display: flex; gap: 10px; margin-top: 1rem;">
+                        <button class="btn btn-gold" onclick="copyExportedJSON()">Copy to Clipboard</button>
+                        <button class="btn" style="background: #eee;" onclick="document.getElementById('export-container').style.display='none'">Close</button>
+                    </div>
+                </div>
+
+                <!-- Create/Edit Event Form -->
+                <div id="gallery-event-form-container" class="admin-card" style="display: none;">
+                    <h3 id="gallery-form-title">Create Gallery Event</h3>
+                    <form id="gallery-event-form">
+                        <div class="form-group">
+                            <label>Event Title</label>
+                            <input type="text" id="gallery-title" placeholder="e.g., Converse Fun Fly 2026" required oninput="generateSlug(this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>Slug (auto-generated)</label>
+                            <input type="text" id="gallery-slug" readonly style="background: #f9f9f9; color: #666;">
+                        </div>
+                        <div class="form-group">
+                            <label>Event Date</label>
+                            <input type="date" id="gallery-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Description (optional)</label>
+                            <textarea id="gallery-desc" rows="3"></textarea>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="submit" class="btn btn-gold">Save Event Details</button>
+                            <button type="button" class="btn" style="background: #eee;" onclick="hideGalleryForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Image Manager (Visible when editing an event) -->
+                <div id="gallery-images-manager" class="admin-card" style="display: none;">
+                    <h3>Manage Images for <span id="current-gallery-title"></span></h3>
+                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">Paths should be relative to root, e.g., <code>images/gallery/event-slug/photo1.jpg</code></p>
+                    
+                    <div id="gallery-images-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-bottom: 2rem;"></div>
+
+                    <h4>Add Images</h4>
+                    <form id="add-images-form" style="display: flex; gap: 10px;">
+                        <input type="text" id="new-images-paths" placeholder="e.g., path1.jpg, path2.jpg (comma separated)" required style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 5px;">
+                        <button type="submit" class="btn btn-gold">Add Images</button>
+                    </form>
+                </div>
+
+                <!-- Legacy Hero Image Logic (Moved) -->
+                <div class="admin-card">
+                    <h3>Hero Image (Homepage Background)</h3>
+                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 1.5rem;">Select an image from the <code>/images/</code> folder to serve as the homepage background.</p>
+                    <div id="legacy-gallery-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;"></div>
+                    <hr style="margin: 1.5rem 0;">
+                    <form id="add-legacy-image-form" style="display: flex; gap: 10px;">
+                        <input type="text" id="new-legacy-path" placeholder="e.g., images/new-plane.jpg" required style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 5px;">
+                        <button type="submit" class="btn btn-gold">Add Reference</button>
                     </form>
                 </div>
             </section>
@@ -351,9 +414,9 @@
             renderAll();
         });
 
-        document.getElementById('add-gallery-form').addEventListener('submit', (e) => {
+        document.getElementById('add-legacy-image-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            const path = document.getElementById('new-image-path').value;
+            const path = document.getElementById('new-legacy-path').value;
             const settings = DataManager.getSettings();
             const gallery = settings.galleryImages || [];
             if (!gallery.includes(path)) {
@@ -363,6 +426,145 @@
             e.target.reset();
             renderAll();
         });
+
+        // Gallery Event Logic
+        let activeGalleryId = null;
+
+        async function syncGalleryWithFile() {
+            if (!confirm('This will overwrite your local changes with the data from /data/gallery.json. Continue?')) return;
+            try {
+                const response = await fetch('../data/gallery.json');
+                if (!response.ok) throw new Error('File not found');
+                const data = await response.json();
+                if (data.galleries) {
+                    // Update DataManager
+                    DataManager.updateGalleries(data.galleries);
+                    renderAll();
+                    showSuccess('sync-notice');
+                }
+            } catch (err) {
+                alert('Could not sync: ' + err.message);
+            }
+        }
+
+        function exportGalleryJSON() {
+            const data = { galleries: DataManager.getGalleries() };
+            const json = JSON.stringify(data, null, 2);
+            document.getElementById('export-json-output').value = json;
+            document.getElementById('export-container').style.display = 'block';
+            document.getElementById('export-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function copyExportedJSON() {
+            const textarea = document.getElementById('export-json-output');
+            textarea.select();
+            document.execCommand('copy');
+            alert('JSON copied to clipboard! Now paste it into /data/gallery.json');
+        }
+
+        function generateSlug(title) {
+            const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            document.getElementById('gallery-slug').value = slug;
+        }
+
+        function showAddGalleryForm() {
+            activeGalleryId = null;
+            document.getElementById('gallery-form-title').innerText = 'Create Gallery Event';
+            document.getElementById('gallery-event-form').reset();
+            document.getElementById('gallery-event-form-container').style.display = 'block';
+            document.getElementById('gallery-images-manager').style.display = 'none';
+        }
+
+        function hideGalleryForm() {
+            document.getElementById('gallery-event-form-container').style.display = 'none';
+        }
+
+        document.getElementById('gallery-event-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const gData = {
+                title: document.getElementById('gallery-title').value,
+                slug: document.getElementById('gallery-slug').value,
+                date: document.getElementById('gallery-date').value,
+                description: document.getElementById('gallery-desc').value,
+                images: activeGalleryId ? DataManager.getGalleries().find(g => g.id === activeGalleryId).images : []
+            };
+
+            if (activeGalleryId) {
+                DataManager.updateGallery(activeGalleryId, gData);
+            } else {
+                DataManager.addGallery(gData);
+            }
+            
+            hideGalleryForm();
+            renderAll();
+        });
+
+        function editGallery(id) {
+            const g = DataManager.getGalleries().find(gal => gal.id === id);
+            if (!g) return;
+            
+            activeGalleryId = id;
+            document.getElementById('gallery-form-title').innerText = 'Edit Event Details';
+            document.getElementById('gallery-title').value = g.title;
+            document.getElementById('gallery-slug').value = g.slug;
+            document.getElementById('gallery-date').value = g.date;
+            document.getElementById('gallery-desc').value = g.description || '';
+            
+            document.getElementById('gallery-event-form-container').style.display = 'block';
+            
+            // Show image manager
+            document.getElementById('gallery-images-manager').style.display = 'block';
+            document.getElementById('current-gallery-title').innerText = g.title;
+            renderGalleryImages(g);
+            
+            document.getElementById('gallery-images-manager').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function renderGalleryImages(g) {
+            const list = document.getElementById('gallery-images-list');
+            list.innerHTML = (g.images || []).map((img, idx) => `
+                <div style="background: #f9f9f9; border-radius: 5px; overflow: hidden; position: relative;">
+                    <div style="height: 100px; background: url('../${img.src}') center/cover no-repeat; background-color: #eee;"></div>
+                    <div style="padding: 5px; font-size: 0.75rem; word-break: break-all;">${img.src.split('/').pop()}</div>
+                    <button onclick="removeImageFromGallery(${g.id}, ${idx})" style="position: absolute; top: 2px; right: 2px; background: #ff6b6b; color: #fff; border: none; border-radius: 3px; cursor: pointer; padding: 0 5px;">×</button>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('add-images-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const pathsStr = document.getElementById('new-images-paths').value;
+            const newPaths = pathsStr.split(',').map(p => p.trim()).filter(p => p);
+            
+            const g = DataManager.getGalleries().find(gal => gal.id === activeGalleryId);
+            if (!g) return;
+            
+            const updatedImages = [...(g.images || [])];
+            newPaths.forEach(p => {
+                // If it's just a filename, prepend the gallery path
+                let fullPath = p;
+                if (!p.includes('/')) {
+                    fullPath = `images/gallery/${g.slug}/${p}`;
+                }
+                if (!updatedImages.some(img => img.src === fullPath)) {
+                    updatedImages.push({ src: fullPath, alt: g.title });
+                }
+            });
+            
+            DataManager.updateGallery(activeGalleryId, { images: updatedImages });
+            renderGalleryImages({ ...g, images: updatedImages });
+            e.target.reset();
+            renderAll();
+        });
+
+        function removeImageFromGallery(galleryId, imgIdx) {
+            const g = DataManager.getGalleries().find(gal => gal.id === galleryId);
+            if (!g) return;
+            const updatedImages = g.images.filter((_, idx) => idx !== imgIdx);
+            DataManager.updateGallery(galleryId, { images: updatedImages });
+            renderGalleryImages({ ...g, images: updatedImages });
+            renderAll();
+        }
 
         function setHero(path) {
             DataManager.updateSettings({ heroImage: path });
@@ -426,28 +628,46 @@
                 </div>
             `).join('');
             
-            // Render Gallery
+            // Render Legacy Gallery (Hero select)
             const settings = DataManager.getSettings();
-            const galleryList = document.getElementById('gallery-list');
+            const legacyList = document.getElementById('legacy-gallery-list');
             const currentHero = settings.heroImage;
 
-            if (galleryList) {
-                galleryList.innerHTML = (settings.galleryImages || []).map(img => {
+            if (legacyList) {
+                legacyList.innerHTML = (settings.galleryImages || []).map(img => {
                     const isActive = img === currentHero;
                     return `
                         <div style="background: #fff; border: 1px solid ${isActive ? 'var(--gold)' : '#eee'}; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; position: relative; box-shadow: ${isActive ? '0 0 10px rgba(255,215,0,0.3)' : 'none'};">
-                            ${isActive ? '<div style="position: absolute; top: 5px; right: 5px; background: var(--gold); color: var(--navy-blue); font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; z-index: 10;">ACTIVE HERO</div>' : ''}
-                            <div style="height: 120px; background: url('../${img}') center/cover no-repeat; background-color: #f0f0f0;"></div>
-                            <div style="padding: 10px; flex: 1; display: flex; flex-direction: column; gap: 8px;">
-                                <div style="font-size: 0.7rem; color: #888; word-break: break-all; height: 2.4em; overflow: hidden;">${img}</div>
+                            ${isActive ? '<div style="position: absolute; top: 5px; right: 5px; background: var(--gold); color: var(--navy-blue); font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; z-index: 10;">ACTIVE</div>' : ''}
+                            <div style="height: 100px; background: url('../${img}') center/cover no-repeat; background-color: #f0f0f0;"></div>
+                            <div style="padding: 10px; flex: 1; display: flex; flex-direction: column; gap: 5px;">
+                                <div style="font-size: 0.65rem; color: #888; word-break: break-all; height: 1.2em; overflow: hidden;">${img.split('/').pop()}</div>
                                 <div style="display: flex; gap: 5px; margin-top: auto;">
-                                    <button class="btn btn-gold" style="flex: 1; padding: 4px; font-size: 0.7rem; ${isActive ? 'opacity: 0.5; pointer-events: none;' : ''}" onclick="setHero('${img}')">${isActive ? 'Active' : 'Set Hero'}</button>
+                                    <button class="btn btn-gold" style="flex: 1; padding: 4px; font-size: 0.7rem; ${isActive ? 'opacity: 0.5; pointer-events: none;' : ''}" onclick="setHero('${img}')">Select Hero</button>
                                     <button class="btn" style="padding: 4px; font-size: 0.7rem; background: #ff6b6b; color: #fff;" onclick="deleteGalleryImage('${img}')">×</button>
                                 </div>
                             </div>
                         </div>
                     `;
                 }).join('');
+            }
+
+            // Render Gallery Events List
+            const eventsList = document.getElementById('gallery-events-list');
+            if (eventsList) {
+                eventsList.innerHTML = DataManager.getGalleries().map(g => `
+                    <div style="padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fdfdfd; margin-bottom: 5px; border-radius: 5px;">
+                        <div>
+                            <strong style="color: var(--navy-blue);">${g.title}</strong>
+                            <div style="font-size: 0.8rem; color: #666;">${g.date} | ${g.images ? g.images.length : 0} Images</div>
+                            <div style="font-size: 0.7rem; color: #aaa;">Slug: ${g.slug}</div>
+                        </div>
+                        <div style="display: flex; gap: 5px;">
+                            <button class="btn btn-gold" style="padding: 5px 12px; font-size: 0.8rem;" onclick="editGallery(${g.id})">Manage</button>
+                            <button class="btn" style="padding: 5px 12px; font-size: 0.8rem; background: #ff6b6b; color: #fff;" onclick="if(confirm('Delete this gallery event?')) { DataManager.deleteGallery(${g.id}); renderAll(); }">Delete</button>
+                        </div>
+                    </div>
+                `).join('') || '<p style="color: #888; font-style: italic;">No gallery events created yet.</p>';
             }
 
             // Fill settings inputs

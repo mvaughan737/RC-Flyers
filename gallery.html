@@ -56,7 +56,10 @@
                     <li><a href="index.html">Home</a></li>
                     <li><a href="about.html">About</a></li>
                     <li><a href="events.html">Events</a></li>
-                    <li><a href="gallery.html" class="active">Gallery</a></li>
+                    <li class="gallery-dropdown">
+                        <a href="gallery.html" class="active">Gallery</a>
+                        <div class="gallery-dropdown-content"></div>
+                    </li>
                     <li><a href="weather_final.html">Weather</a></li>
                     <li><a href="contact.html">Contact</a></li>
                 </ul>
@@ -69,23 +72,25 @@
 
     <main>
         <section>
-            <h2 class="section-title">Photo Gallery</h2>
-            <div class="gallery-grid">
-                <div class="gallery-item">
-                    <img src="images/Converse_Title_Picture.jpg" alt="RC Aircraft in Flight">
-                    <div class="overlay">Scale Warbird in Flight</div>
-                </div>
-                <!-- More items would be added here dynamically from /images/ -->
-                <div class="gallery-item" style="background-color: var(--sky-blue); display: flex; align-items: center; justify-content: center; color: var(--navy-blue);">
-                    <span>[Field Photo Placeholder]</span>
-                </div>
-                <div class="gallery-item" style="background-color: var(--navy-blue); display: flex; align-items: center; justify-content: center; color: var(--gold);">
-                    <span>[Event Photo Placeholder]</span>
-                </div>
-                <div class="gallery-item" style="background-color: var(--gold); display: flex; align-items: center; justify-content: center; color: var(--navy-blue);">
-                    <span>[Workshop Photo Placeholder]</span>
+    <main>
+        <section>
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+                <h2 class="section-title" id="gallery-title" style="margin-bottom: 0; text-align: left;">Photo Gallery</h2>
+                <div class="gallery-selector" style="display: flex; gap: 10px; align-items: center;">
+                    <span style="font-weight: bold; color: var(--navy-blue);">Switch Event:</span>
+                    <ul id="gallery-nav-list" style="list-style: none; display: flex; gap: 15px; font-size: 0.9rem;">
+                        <!-- Dynamic event list -->
+                    </ul>
                 </div>
             </div>
+            
+            <div id="gallery-content">
+                <div class="gallery-grid" id="gallery-grid">
+                    <!-- Dynamic images -->
+                </div>
+            </div>
+        </section>
+    </main>
         </section>
     </main>
 
@@ -111,6 +116,7 @@
     </footer>
     <script src="js/status_final.js?cb=987654321"></script>
     <script src="js/data-manager.js"></script>
+    <script src="js/gallery-controller.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const settings = DataManager.getSettings();

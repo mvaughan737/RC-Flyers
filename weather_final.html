@@ -90,7 +90,10 @@
                     <li><a href="index.html">Home</a></li>
                     <li><a href="about.html">About</a></li>
                     <li><a href="events.html">Events</a></li>
-                    <li><a href="gallery.html">Gallery</a></li>
+                    <li class="gallery-dropdown">
+                        <a href="gallery.html">Gallery</a>
+                        <div class="gallery-dropdown-content"></div>
+                    </li>
                     <li><a href="weather_final.html" class="active">Weather</a></li>
                     <li><a href="contact.html">Contact</a></li>
                 </ul>
@@ -230,8 +233,9 @@
             &copy; 2026 Converse Flying Eagles RC Club. | <a href="admin/login.html" style="color: var(--gold);">Admin Login</a>
         </div>
     </footer>
-    <script src="js/status_final.js?cb=987654321"></script>
     <script src="js/data-manager.js"></script>
+    <script src="js/gallery-controller.js"></script>
+    <script src="js/status_final.js?cb=9876543210"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const settings = DataManager.getSettings();

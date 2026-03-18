@@ -1,0 +1,172 @@
+/**
+ * GalleryController
+ * Handles the display of gallery events and images.
+ */
+const GalleryController = (() => {
+    let currentGallery = null;
+    let currentIndex = 0;
+
+    const init = async () => {
+        const galleries = await loadGalleries();
+        
+        const params = new URLSearchParams(window.location.search);
+        const eventSlug = params.get('event');
+
+        if (eventSlug) {
+            currentGallery = galleries.find(g => g.slug === eventSlug);
+        }
+
+        renderGalleryList(galleries);
+        
+        if (currentGallery) {
+            renderGallery(currentGallery);
+        } else {
+            // Show latest event or default view
+            if (galleries.length > 0) {
+                renderGallery(galleries[0]);
+            } else {
+                const contentEl = document.getElementById('gallery-content');
+                if (contentEl) contentEl.innerHTML = '<p class="no-data">No gallery events found.</p>';
+            }
+        }
+
+        setupLightbox();
+        updateNavigationDropdown(galleries);
+    };
+
+    const loadGalleries = async () => {
+        try {
+            const response = await fetch('data/gallery.json');
+            if (!response.ok) throw new Error('File not found');
+            const data = await response.json();
+            return data.galleries || [];
+        } catch (error) {
+            console.warn('Gallery source file not found or invalid, falling back to local data.', error);
+            return DataManager.getGalleries();
+        }
+    };
+
+    const renderGalleryList = (galleries) => {
+        const listEl = document.getElementById('gallery-nav-list');
+        if (!listEl) return;
+
+        listEl.innerHTML = galleries.map(g => `
+            <li><a href="gallery.html?event=${g.slug}" class="${currentGallery && currentGallery.slug === g.slug ? 'active' : ''}">${g.title}</a></li>
+        `).join('');
+    };
+
+    const renderGallery = (gallery) => {
+        const titleEl = document.getElementById('gallery-title');
+        const gridEl = document.getElementById('gallery-grid');
+        
+        if (titleEl) titleEl.innerText = gallery.title;
+        
+        if (!gallery.images || gallery.images.length === 0) {
+            gridEl.innerHTML = '<p class="no-data">This gallery is empty.</p>';
+            return;
+        }
+
+        gridEl.innerHTML = gallery.images.map((img, index) => `
+            <div class="gallery-item" onclick="GalleryController.openLightbox(${index})">
+                <img src="${img.src}" alt="${img.alt || gallery.title}" loading="lazy">
+                <div class="overlay">${img.alt || ''}</div>
+            </div>
+        `).join('');
+    };
+
+    const updateNavigationDropdown = (galleries) => {
+        // This will be called on all pages to populate the dropdown
+        const dropdowns = document.querySelectorAll('.gallery-dropdown-content');
+        dropdowns.forEach(dropdown => {
+            dropdown.innerHTML = galleries.map(g => `
+                <a href="gallery.html?event=${g.slug}">${g.title}</a>
+            `).join('') + '<a href="gallery.html" style="border-top: 1px solid rgba(255,255,255,0.1); font-weight: bold;">View All Galleries</a>';
+        });
+    };
+
+    // Lightbox Logic
+    const openLightbox = (index) => {
+        currentIndex = index;
+        const lightbox = document.getElementById('lightbox');
+        const img = document.getElementById('lightbox-img');
+        const caption = document.getElementById('lightbox-caption');
+        
+        if (!lightbox || !img) return;
+
+        const currentImg = currentGallery.images[currentIndex];
+        img.src = currentImg.src;
+        caption.innerText = currentImg.alt || '';
+        
+        lightbox.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevent scroll
+    };
+
+    const closeLightbox = () => {
+        document.getElementById('lightbox').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    };
+
+    const nextImage = () => {
+        currentIndex = (currentIndex + 1) % currentGallery.images.length;
+        updateLightboxImage();
+    };
+
+    const prevImage = () => {
+        currentIndex = (currentIndex - 1 + currentGallery.images.length) % currentGallery.images.length;
+        updateLightboxImage();
+    };
+
+    const updateLightboxImage = () => {
+        const img = document.getElementById('lightbox-img');
+        const caption = document.getElementById('lightbox-caption');
+        const currentImg = currentGallery.images[currentIndex];
+        img.src = currentImg.src;
+        caption.innerText = currentImg.alt || '';
+    };
+
+    const setupLightbox = () => {
+        // Create lightbox elements if they don't exist
+        if (document.getElementById('lightbox')) return;
+
+        const lightbox = document.createElement('div');
+        lightbox.id = 'lightbox';
+        lightbox.className = 'lightbox';
+        lightbox.innerHTML = `
+            <span class="close-btn" onclick="GalleryController.closeLightbox()">&times;</span>
+            <div class="lightbox-content">
+                <img id="lightbox-img" src="" alt="">
+                <div id="lightbox-caption"></div>
+                <a class="prev" onclick="GalleryController.prevImage()">&#10094;</a>
+                <a class="next" onclick="GalleryController.nextImage()">&#10095;</a>
+            </div>
+        `;
+        document.body.appendChild(lightbox);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (lightbox.style.display === 'flex') {
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowRight') nextImage();
+                if (e.key === 'ArrowLeft') prevImage();
+            }
+        });
+    };
+
+    return {
+        init,
+        openLightbox,
+        closeLightbox,
+        nextImage,
+        prevImage
+    };
+})();
+
+// Auto-init on gallery page
+if (window.location.pathname.includes('gallery.html')) {
+    document.addEventListener('DOMContentLoaded', GalleryController.init);
+} else {
+    // Just update dropdowns on other pages
+    document.addEventListener('DOMContentLoaded', () => {
+        GalleryController.init(); // Init handles both cases
+    });
+}

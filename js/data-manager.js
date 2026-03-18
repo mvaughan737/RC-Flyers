@@ -38,6 +38,17 @@ const DataManager = (() => {
             { id: 1, title: 'Indoor Fly', date: '2026-03-21', time: '9am', location: 'Amboy Friends Church' },
             { id: 2, title: 'Combat', date: '2026-05-16', time: 'TBD', location: 'Main Field' },
             { id: 3, title: 'Egg Drop Competition', date: '2026-06-20', time: 'TBD', location: 'Main Field' }
+        ],
+        galleries: [
+            { 
+                id: 1, 
+                title: 'Converse Fun Fly 2026', 
+                slug: 'converse-fun-fly-2026', 
+                date: '2026-03-15',
+                images: [
+                    { src: 'images/Converse_Title_Picture.jpg', alt: 'Fun Fly 2026' }
+                ]
+            }
         ]
     };
 
@@ -120,6 +131,30 @@ const DataManager = (() => {
         },
         deleteLink: (id) => {
             data.links = data.links.filter(l => l.id !== id);
+            save();
+        },
+
+        // Galleries
+        getGalleries: () => data.galleries || [],
+        addGallery: (gallery) => {
+            gallery.id = Date.now();
+            if (!data.galleries) data.galleries = [];
+            data.galleries.push(gallery);
+            save();
+        },
+        updateGallery: (id, updated) => {
+            const index = data.galleries.findIndex(g => g.id === id);
+            if (index !== -1) {
+                data.galleries[index] = { ...data.galleries[index], ...updated };
+                save();
+            }
+        },
+        deleteGallery: (id) => {
+            data.galleries = data.galleries.filter(g => g.id !== id);
+            save();
+        },
+        updateGalleries: (newList) => {
+            data.galleries = newList;
             save();
         }
     };

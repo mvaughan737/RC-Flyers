@@ -1,0 +1,16 @@
+{
+  "galleries": [
+    {
+      "id": 1,
+      "title": "Converse Fun Fly 2026",
+      "slug": "converse-fun-fly-2026",
+      "date": "2026-03-15",
+      "description": "Our first big event of the year! Great turn out and excellent flying weather.",
+      "images": [
+        { "src": "images/Converse_Title_Picture.jpg", "alt": "Scale Warbird" },
+        { "src": "images/converse_bg.jpg", "alt": "Flight Line Overview" },
+        { "src": "images/hero.jpg", "alt": "Ready for takeoff" }
+      ]
+    }
+  ]
+}
