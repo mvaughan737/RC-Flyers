@@ -828,19 +828,17 @@ footer {
 }
 
 /* Description box styling */
-/* Caption bar container */
+/* GLightbox Caption Bar - Blue footer with centered caption box and right counter */
 .glightbox-container .gdesc-inner,
 .glightbox-container .gslide-desc {
-    position: absolute !important;
+    position: fixed !important;
     bottom: 0 !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    max-width: 80vw !important;
-    width: auto !important;
-    min-width: 400px !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
     background: rgba(0, 0, 128, 0.95) !important;
     color: #FFD700 !important;
-    padding: 16px 120px 16px 30px !important;
+    padding: 16px 40px !important;
     border-radius: 0 !important;
     font-size: 1.1rem !important;
     font-weight: 600 !important;
@@ -849,32 +847,30 @@ footer {
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
-    white-space: nowrap !important;
+    position: relative !important;
 }
 
-/* Caption text (centered) */
+/* Caption text (in centered container) */
 .caption-text {
-    flex: 1 !important;
+    display: inline-block !important;
     text-align: center !important;
-    white-space: nowrap !important;
-    overflow: visible !important;
+    padding: 0 20px !important;
+    background: transparent !important;
 }
 
-/* Counter (right side) */
+/* Counter (right edge of blue bar) */
 .caption-counter {
     position: absolute !important;
-    right: 30px !important;
+    right: 40px !important;
     text-align: right !important;
     white-space: nowrap !important;
-    min-width: 70px !important;
 }
 
-/* Responsive - tablet */
+/* Responsive for tablet */
 @media (max-width: 768px) {
     .glightbox-container .gdesc-inner,
     .glightbox-container .gslide-desc {
-        max-width: 85vw !important;
-        padding: 8px 120px 8px 30px !important;
+        padding: 12px 20px !important;
         font-size: 1rem !important;
     }
     
@@ -883,31 +879,18 @@ footer {
     }
 }
 
-/* Responsive - phone */
+/* Responsive for phone */
 @media (max-width: 480px) {
     .glightbox-container .gdesc-inner,
     .glightbox-container .gslide-desc {
-        max-width: 90vw !important;
-        padding: 8px 16px !important;
+        padding: 10px 16px !important;
         font-size: 0.9rem !important;
         flex-direction: column !important;
-        align-items: center !important;
-        white-space: normal !important;
-    }
-    
-    .caption-text {
-        position: relative !important;
-        left: auto !important;
-        right: auto !important;
-        padding: 0 !important;
-        text-align: center !important;
-        margin-bottom: 4px !important;
-        white-space: normal !important;
+        gap: 4px !important;
     }
     
     .caption-counter {
         position: relative !important;
         right: auto !important;
-        text-align: center !important;
     }
 }
