@@ -1,18 +1,6 @@
 {
   "galleries": [
     {
-      "title": "CMS Powered Event",
-      "slug": "cms-event",
-      "published": true,
-      "eventFolder": "gallery",
-      "images": [
-        {
-          "image": "images/gallery/picture1.jpg",
-          "caption": "Testing CMS Integration"
-        }
-      ]
-    },
-    {
       "published": true,
       "eventFolder": "spring-fun-2024-test",
       "title": "Spring Fun 2024 TEST",
