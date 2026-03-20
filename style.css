@@ -785,19 +785,126 @@ footer {
     justify-content: center !important;
 }
 
+/* GLightbox Image Sizing - 80% viewport, proper aspect ratio */
 .glightbox-container .gslide-image img {
-    width: 90vw !important;
-    height: 90vh !important;
+    max-width: 80vw !important;
+    max-height: 80vh !important;
+    width: auto !important;
+    height: auto !important;
     object-fit: contain !important;
     object-position: center !important;
 }
 
+/* Prevent parent containers from forcing dimensions */
+.glightbox-container .gslide-inline .gslide-media,
+.glightbox-container .gslide-image .gslide-media {
+    width: auto !important;
+    height: auto !important;
+}
+
+.glightbox-container .ginner-container {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Responsive sizing for different devices */
+@media (max-width: 768px) {
+    /* Tablet */
+    .glightbox-container .gslide-image img {
+        max-width: 85vw !important;
+        max-height: 75vh !important;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Phone */
+    .glightbox-container .gslide-image img {
+        max-width: 90vw !important;
+        max-height: 70vh !important;
+    }
+}
+
 /* Description box styling */
-.gdesc-inner {
+/* GLightbox Caption Bar - Matches image width, centered text with right counter */
+.glightbox-container .gdesc-inner,
+.glightbox-container .gslide-desc {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    max-width: 80vw !important;
+    width: auto !important;
+    min-width: 300px !important;
     background: rgba(0, 0, 128, 0.95) !important;
     color: #FFD700 !important;
-    padding: 14px 28px !important;
-    border-radius: 8px !important;
+    padding: 16px 30px !important;
+    border-radius: 0 !important;
     font-size: 1.1rem !important;
     font-weight: 600 !important;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.3) !important;
+    margin: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    position: relative !important;
+}
+
+/* Caption text (centered) */
+.caption-text {
+    flex: 1 !important;
+    text-align: center !important;
+    padding-right: 80px !important;
+}
+
+/* Counter (right side, absolute positioned) */
+.caption-counter {
+    position: absolute !important;
+    right: 30px !important;
+    text-align: right !important;
+    white-space: nowrap !important;
+}
+
+/* Responsive caption for tablet */
+@media (max-width: 768px) {
+    .glightbox-container .gdesc-inner,
+    .glightbox-container .gslide-desc {
+        max-width: 85vw !important;
+        padding: 12px 20px !important;
+        font-size: 1rem !important;
+    }
+    
+    .caption-text {
+        padding-right: 70px !important;
+    }
+    
+    .caption-counter {
+        right: 20px !important;
+    }
+}
+
+/* Responsive caption for phone */
+@media (max-width: 480px) {
+    .glightbox-container .gdesc-inner,
+    .glightbox-container .gslide-desc {
+        max-width: 90vw !important;
+        padding: 10px 16px !important;
+        font-size: 0.9rem !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    
+    .caption-text {
+        padding-right: 0 !important;
+        text-align: center !important;
+        margin-bottom: 4px !important;
+    }
+    
+    .caption-counter {
+        position: relative !important;
+        right: auto !important;
+        text-align: center !important;
+    }
 }
