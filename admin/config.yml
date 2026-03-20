@@ -170,68 +170,16 @@ collections:
             name: "galleries"
             widget: "list"
             summary: "{{fields.title}}"
+            add_to_top: true
+            hint: "Add a new event gallery here. Each gallery contains a set of photos and a title."
             fields:
-              - label: "Event Title"
-                name: "title"
-                widget: "string"
-                required: true
-                hint: "Example: Converse Fun Fly 2026"
-
-              - label: "Event Slug"
-                name: "slug"
-                widget: "string"
-                required: true
-                pattern:
-                  [
-                    "^[a-z0-9]+(?:-[a-z0-9]+)*$",
-                    "Use lowercase letters, numbers, and hyphens only."
-                  ]
-                hint: "Example: converse-fun-fly-2026"
-
-              - label: "Published"
-                name: "published"
-                widget: "boolean"
-                default: true
-                required: false
-
-              - label: "Event Folder"
-                name: "eventFolder"
-                widget: "string"
-                required: true
-                default: "converse-fun-fly-2026"
-                hint: "Folder name under /images/gallery/. This should normally match the slug."
-
-              - label: "Cover Image"
-                name: "coverImage"
-                widget: "image"
-                media_folder: "/images/gallery"
-                public_folder: "/images/gallery"
-                required: false
-                hint: "Upload or choose a cover image for this event."
-
-              - label: "Event Images"
-                name: "images"
-                widget: "list"
-                required: true
-                summary: "{{fields.image}}"
-                hint: "Upload or choose all images for this event."
-                fields:
-                  - label: "Image"
-                    name: "image"
-                    widget: "image"
-                    media_folder: "/images/gallery"
-                    public_folder: "/images/gallery"
-                    required: true
-
-                  - label: "Thumbnail"
-                    name: "thumbnail"
-                    widget: "image"
-                    media_folder: "/images/gallery"
-                    public_folder: "/images/gallery"
-                    required: false
-                    hint: "Optional thumbnail for grid view."
-
-                  - label: "Caption"
-                    name: "caption"
-                    widget: "string"
-                    required: false
+              - {label: "Event Title", name: "title", widget: "string", required: true, hint: "Example: Spring Fun Fly 2025"}
+              - {label: "Event Slug", name: "slug", widget: "string", required: true, pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', 'Must be lowercase with dashes'], hint: "Auto-generated from title - you can edit if needed (e.g., spring-fun-fly-2025)"}
+              - {label: "Published", name: "published", widget: "boolean", default: true, hint: "Turn this ON to make the gallery visible on your website"}
+              - {label: "Event Folder", name: "eventFolder", widget: "string", required: true, hint: "Folder name where photos are stored. Should match the slug above."}
+              - {label: "Cover Image (Optional)", name: "coverImage", widget: "image", required: false, media_folder: "/images/gallery", public_folder: "/images/gallery", hint: "Optional thumbnail for this event shown in the gallery list."}
+              - label: "Event Photos", name: "images", widget: "list", required: true, summary: "{{fields.image}}", hint: "Click 'Add' then select multiple photos by holding Ctrl (Windows) or Cmd (Mac).", fields: [
+                  {label: "Image", name: "image", widget: "image", media_folder: "/images/gallery", public_folder: "/images/gallery", required: true},
+                  {label: "Thumbnail (Optional)", name: "thumbnail", widget: "hidden", default: "", required: false, hint: "Auto-handled by the system."},
+                  {label: "Caption (Optional)", name: "caption", widget: "string", required: false, hint: "Optional text describing this specific photo."}
+                ]}
