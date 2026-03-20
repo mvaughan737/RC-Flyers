@@ -852,11 +852,12 @@ footer {
     position: relative !important;
 }
 
-/* Caption text (centered) */
+/* Caption text (centered in the middle space) */
 .caption-text {
     flex: 1 !important;
     text-align: center !important;
-    padding-right: 80px !important;
+    padding-right: 0 !important;
+    margin-right: -80px !important;
 }
 
 /* Counter (right side, absolute positioned) */
@@ -865,6 +866,7 @@ footer {
     right: 30px !important;
     text-align: right !important;
     white-space: nowrap !important;
+    width: 80px !important;
 }
 
 /* Responsive caption for tablet */
