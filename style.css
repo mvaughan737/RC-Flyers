@@ -846,28 +846,22 @@ footer {
     font-weight: 600 !important;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.3) !important;
     margin: 0 !important;
-    display: flex !important;
-    justify-content: center !important;
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    gap: 40px !important;
     align-items: center !important;
-    position: relative !important;
 }
 
-/* Caption text (truly centered with space for counter) */
+/* Caption text (centered in its column) */
 .caption-text {
-    position: absolute !important;
-    left: 0 !important;
-    right: 100px !important;
     text-align: center !important;
-    padding: 0 20px !important;
+    justify-self: center !important;
 }
 
-/* Counter (right side) */
+/* Counter (right column) */
 .caption-counter {
-    position: absolute !important;
-    right: 30px !important;
     text-align: right !important;
     white-space: nowrap !important;
-    width: 80px !important;
 }
 
 /* Responsive caption for tablet */
@@ -877,39 +871,24 @@ footer {
         max-width: 85vw !important;
         padding: 12px 20px !important;
         font-size: 1rem !important;
-    }
-    
-    .caption-text {
-        padding-right: 70px !important;
-    }
-    
-    .caption-counter {
-        right: 20px !important;
+        gap: 30px !important;
     }
 }
 
-/* Responsive caption for phone */
+/* Responsive caption for phone - stack vertically */
 @media (max-width: 480px) {
     .glightbox-container .gdesc-inner,
     .glightbox-container .gslide-desc {
         max-width: 90vw !important;
         padding: 10px 16px !important;
         font-size: 0.9rem !important;
-        flex-direction: column !important;
-        align-items: center !important;
+        grid-template-columns: 1fr !important;
+        gap: 4px !important;
     }
     
-    .caption-text {
-        position: relative !important;
-        right: auto !important;
-        padding-right: 0 !important;
-        text-align: center !important;
-        margin-bottom: 4px !important;
-    }
-    
+    .caption-text,
     .caption-counter {
-        position: relative !important;
-        right: auto !important;
         text-align: center !important;
+        justify-self: center !important;
     }
 }
