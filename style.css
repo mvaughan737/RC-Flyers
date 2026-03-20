@@ -828,7 +828,7 @@ footer {
 }
 
 /* Description box styling */
-/* GLightbox Caption Bar - Matches image width, centered text with right counter */
+/* GLightbox Caption Container - Two Row Layout */
 .glightbox-container .gdesc-inner,
 .glightbox-container .gslide-desc {
     position: absolute !important;
@@ -838,57 +838,70 @@ footer {
     max-width: 80vw !important;
     width: auto !important;
     min-width: 300px !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+}
+
+/* Top Row - Caption Text (thicker bar) */
+.caption-main {
     background: rgba(0, 0, 128, 0.95) !important;
     color: #FFD700 !important;
-    padding: 16px 30px !important;
-    border-radius: 0 !important;
+    padding: 14px 30px !important;
     font-size: 1.1rem !important;
     font-weight: 600 !important;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.3) !important;
-    margin: 0 !important;
-    display: grid !important;
-    grid-template-columns: 1fr auto !important;
-    gap: 40px !important;
-    align-items: center !important;
-}
-
-/* Caption text (centered in its column) */
-.caption-text {
     text-align: center !important;
-    justify-self: center !important;
+    max-width: 100% !important;
+    word-wrap: break-word !important;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.3) !important;
 }
 
-/* Counter (right column) */
-.caption-counter {
+/* Bottom Row - Counter (thinner bar) */
+.caption-counter-row {
+    background: rgba(0, 0, 128, 0.85) !important;
+    color: #FFD700 !important;
+    padding: 8px 30px !important;
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
     text-align: right !important;
-    white-space: nowrap !important;
+    border-top: 1px solid rgba(255, 215, 0, 0.3) !important;
 }
 
-/* Responsive caption for tablet */
+/* Responsive - Tablet */
 @media (max-width: 768px) {
     .glightbox-container .gdesc-inner,
     .glightbox-container .gslide-desc {
         max-width: 85vw !important;
+    }
+    
+    .caption-main {
         padding: 12px 20px !important;
         font-size: 1rem !important;
-        gap: 30px !important;
+    }
+    
+    .caption-counter-row {
+        padding: 6px 20px !important;
+        font-size: 0.9rem !important;
     }
 }
 
-/* Responsive caption for phone - stack vertically */
+/* Responsive - Phone */
 @media (max-width: 480px) {
     .glightbox-container .gdesc-inner,
     .glightbox-container .gslide-desc {
         max-width: 90vw !important;
-        padding: 10px 16px !important;
-        font-size: 0.9rem !important;
-        grid-template-columns: 1fr !important;
-        gap: 4px !important;
     }
     
-    .caption-text,
-    .caption-counter {
-        text-align: center !important;
-        justify-self: center !important;
+    .caption-main {
+        padding: 10px 16px !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .caption-counter-row {
+        padding: 5px 16px !important;
+        font-size: 0.85rem !important;
     }
 }
