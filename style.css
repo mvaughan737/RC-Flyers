@@ -852,15 +852,16 @@ footer {
     position: relative !important;
 }
 
-/* Caption text (centered in the middle space) */
+/* Caption text (truly centered with space for counter) */
 .caption-text {
-    flex: 1 !important;
+    position: absolute !important;
+    left: 0 !important;
+    right: 100px !important;
     text-align: center !important;
-    padding-right: 0 !important;
-    margin-right: -80px !important;
+    padding: 0 20px !important;
 }
 
-/* Counter (right side, absolute positioned) */
+/* Counter (right side) */
 .caption-counter {
     position: absolute !important;
     right: 30px !important;
@@ -899,6 +900,8 @@ footer {
     }
     
     .caption-text {
+        position: relative !important;
+        right: auto !important;
         padding-right: 0 !important;
         text-align: center !important;
         margin-bottom: 4px !important;
