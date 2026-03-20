@@ -828,17 +828,19 @@ footer {
 }
 
 /* Description box styling */
-/* GLightbox Caption Bar - Blue footer with centered caption box and right counter */
+/* GLightbox Caption Bar - Slim height, no inner boxes visible */
 .glightbox-container .gdesc-inner,
 .glightbox-container .gslide-desc {
-    position: fixed !important;
+    position: absolute !important;
     bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    max-width: 80vw !important;
+    width: auto !important;
+    min-width: 300px !important;
     background: rgba(0, 0, 128, 0.95) !important;
     color: #FFD700 !important;
-    padding: 16px 40px !important;
+    padding: 10px 30px !important;
     border-radius: 0 !important;
     font-size: 1.1rem !important;
     font-weight: 600 !important;
@@ -848,29 +850,42 @@ footer {
     justify-content: center !important;
     align-items: center !important;
     position: relative !important;
+    border: none !important;
+    outline: none !important;
 }
 
-/* Caption text (in centered container) */
+/* Caption text (centered, no visible container) */
 .caption-text {
-    display: inline-block !important;
+    position: absolute !important;
+    left: 0 !important;
+    right: 100px !important;
     text-align: center !important;
     padding: 0 20px !important;
     background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
-/* Counter (right edge of blue bar) */
+/* Counter (right side, no visible container) */
 .caption-counter {
     position: absolute !important;
-    right: 40px !important;
+    right: 30px !important;
     text-align: right !important;
     white-space: nowrap !important;
+    width: 80px !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
-/* Responsive for tablet */
+/* Responsive - tablet */
 @media (max-width: 768px) {
     .glightbox-container .gdesc-inner,
     .glightbox-container .gslide-desc {
-        padding: 12px 20px !important;
+        max-width: 85vw !important;
+        padding: 8px 20px !important;
         font-size: 1rem !important;
     }
     
@@ -879,18 +894,29 @@ footer {
     }
 }
 
-/* Responsive for phone */
+/* Responsive - phone */
 @media (max-width: 480px) {
     .glightbox-container .gdesc-inner,
     .glightbox-container .gslide-desc {
-        padding: 10px 16px !important;
+        max-width: 90vw !important;
+        padding: 8px 16px !important;
         font-size: 0.9rem !important;
         flex-direction: column !important;
-        gap: 4px !important;
+        align-items: center !important;
+    }
+    
+    .caption-text {
+        position: relative !important;
+        left: auto !important;
+        right: auto !important;
+        padding: 0 !important;
+        text-align: center !important;
+        margin-bottom: 4px !important;
     }
     
     .caption-counter {
         position: relative !important;
         right: auto !important;
+        text-align: center !important;
     }
 }
