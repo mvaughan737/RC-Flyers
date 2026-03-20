@@ -681,90 +681,78 @@ footer {
     font-size: 1.05rem;
     margin-bottom: 2px;
 }
-/* Lightbox Styles */
-.lightbox {
-    display: none;
-    position: fixed;
-    z-index: 2000;
-    left: 0;
-    top: 0;
+/* Enhanced Gallery Grid with Hover Effects */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    padding: 20px 0;
+}
+
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    height: 280px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: block;
+    text-decoration: none;
+}
+
+.gallery-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.25);
+}
+
+.gallery-item img {
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.9);
-    justify-content: center;
-    align-items: center;
+    object-fit: cover;
+    transition: transform 0.5s ease;
 }
 
-.lightbox-content {
-    position: relative;
-    max-width: 90%;
-    max-height: 80%;
-    text-align: center;
+.gallery-item:hover img {
+    transform: scale(1.15);
 }
 
-.lightbox-content img {
-    max-width: 100%;
-    max-height: 80vh;
-    border-radius: 5px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
-}
-
-#lightbox-caption {
-    color: var(--white);
-    margin-top: 15px;
-    font-size: 1.1rem;
-    font-weight: 500;
-}
-
-.close-btn {
+.gallery-item .overlay {
     position: absolute;
-    top: 20px;
-    right: 35px;
-    color: #f1f1f1;
-    font-size: 40px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.close-btn:hover {
-    color: var(--gold);
-}
-
-.prev, .next {
-    cursor: pointer;
-    position: absolute;
-    top: 50%;
-    width: auto;
-    padding: 16px;
-    margin-top: -50px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.85));
     color: white;
-    font-weight: bold;
-    font-size: 24px;
-    transition: 0.6s ease;
-    border-radius: 0 3px 3px 0;
-    user-select: none;
-    background-color: rgba(0,0,0,0.3);
+    padding: 16px;
+    font-size: 0.95rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
 }
 
-.next {
-    right: -60px;
-    border-radius: 3px 0 0 3px;
+.gallery-item:hover .overlay {
+    opacity: 1;
 }
 
-.prev {
-    left: -60px;
-    border-radius: 3px 0 0 3px;
+/* GLightbox Custom Styling */
+.gslide-description {
+    background: rgba(0, 0, 128, 0.9) !important;
+    color: var(--gold) !important;
+    padding: 12px 20px !important;
+    border-radius: 8px !important;
 }
 
-.prev:hover, .next:hover {
-    background-color: rgba(0,0,0,0.8);
-    color: var(--gold);
-}
-
+/* Mobile Responsive */
 @media (max-width: 768px) {
-    .next { right: 0; }
-    .prev { left: 0; }
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+    }
+    
+    .gallery-item {
+        height: 220px;
+    }
 }
 
 .no-data {

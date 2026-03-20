@@ -38,8 +38,6 @@ const GalleryController = (() => {
                 if (contentEl) contentEl.innerHTML = '<p class="no-data">No gallery events found.</p>';
             }
         }
-
-        setupLightbox();
     };
 
     const loadGalleries = async () => {
@@ -105,7 +103,7 @@ const GalleryController = (() => {
     };
 
     const renderGallery = (gallery) => {
-        currentGallery = gallery; // Ensure tracker is updated
+        currentGallery = gallery;
         const titleEl = document.getElementById('gallery-title');
         const gridEl = document.getElementById('gallery-grid');
         
@@ -118,11 +116,16 @@ const GalleryController = (() => {
         }
 
         gridEl.innerHTML = gallery.images.map((img, index) => `
-            <div class="gallery-item" onclick="GalleryController.openLightbox(${index})">
+            <a href="${img.src}" class="glightbox gallery-item" data-gallery="gallery-${gallery.slug}">
                 <img src="${img.thumb}" alt="${img.alt}" loading="lazy">
                 <div class="overlay">${img.alt || ''}</div>
-            </div>
+            </a>
         `).join('');
+        
+        // Initialize GLightbox after rendering
+        if (typeof window.initGLightbox === 'function') {
+            setTimeout(() => window.initGLightbox(), 100);
+        }
     };
 
     const updateNavigationDropdown = (galleries) => {
@@ -135,84 +138,8 @@ const GalleryController = (() => {
         });
     };
 
-    // Lightbox Logic
-    const openLightbox = (index) => {
-        currentIndex = index;
-        const lightbox = document.getElementById('lightbox');
-        const img = document.getElementById('lightbox-img');
-        const caption = document.getElementById('lightbox-caption');
-        
-        if (!lightbox || !img || !currentGallery) return;
-
-        const currentImg = currentGallery.images[currentIndex];
-        img.src = currentImg.src; // Use full image
-        caption.innerText = currentImg.alt || '';
-        
-        lightbox.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Prevent scroll
-    };
-
-    const closeLightbox = () => {
-        const lightbox = document.getElementById('lightbox');
-        if (lightbox) lightbox.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    };
-
-    const nextImage = () => {
-        if (!currentGallery) return;
-        currentIndex = (currentIndex + 1) % currentGallery.images.length;
-        updateLightboxImage();
-    };
-
-    const prevImage = () => {
-        if (!currentGallery) return;
-        currentIndex = (currentIndex - 1 + currentGallery.images.length) % currentGallery.images.length;
-        updateLightboxImage();
-    };
-
-    const updateLightboxImage = () => {
-        const img = document.getElementById('lightbox-img');
-        const caption = document.getElementById('lightbox-caption');
-        if (!img || !currentGallery) return;
-        const currentImg = currentGallery.images[currentIndex];
-        img.src = currentImg.src; // Use full image
-        caption.innerText = currentImg.alt || '';
-    };
-
-    const setupLightbox = () => {
-        // Create lightbox elements if they don't exist
-        if (document.getElementById('lightbox')) return;
-
-        const lightbox = document.createElement('div');
-        lightbox.id = 'lightbox';
-        lightbox.className = 'lightbox';
-        lightbox.innerHTML = `
-            <span class="close-btn" onclick="GalleryController.closeLightbox()">&times;</span>
-            <div class="lightbox-content">
-                <img id="lightbox-img" src="" alt="">
-                <div id="lightbox-caption"></div>
-                <a class="prev" onclick="GalleryController.prevImage()">&#10094;</a>
-                <a class="next" onclick="GalleryController.nextImage()">&#10095;</a>
-            </div>
-        `;
-        document.body.appendChild(lightbox);
-
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (lightbox.style.display === 'flex') {
-                if (e.key === 'Escape') closeLightbox();
-                if (e.key === 'ArrowRight') nextImage();
-                if (e.key === 'ArrowLeft') prevImage();
-            }
-        });
-    };
-
     return {
-        init,
-        openLightbox,
-        closeLightbox,
-        nextImage,
-        prevImage
+        init
     };
 })();
 
