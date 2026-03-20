@@ -11,6 +11,31 @@
           "caption": "Testing CMS Integration"
         }
       ]
+    },
+    {
+      "published": true,
+      "eventFolder": "spring-fun-2024-test",
+      "title": "Spring Fun 2024 TEST",
+      "slug": "spring-fun-2024-test",
+      "coverImage": "/images/gallery/picture1.jpg",
+      "images": [
+        {
+          "image": "/images/gallery/picture2.jpg",
+          "thumbnail": "/images/gallery/picture2.jpg"
+        },
+        {
+          "image": "/images/gallery/picture3.jpg",
+          "thumbnail": "/images/gallery/picture3.jpg"
+        },
+        {
+          "image": "/images/gallery/picture4.jpg",
+          "thumbnail": "/images/gallery/picture4.jpg"
+        },
+        {
+          "image": "/images/gallery/picture5.jpg",
+          "thumbnail": "/images/gallery/picture5.jpg"
+        }
+      ]
     }
   ]
 }
