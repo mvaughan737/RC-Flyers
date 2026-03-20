@@ -23,6 +23,10 @@
         {
           "image": "/images/gallery/picture5.jpg",
           "thumbnail": "/images/gallery/picture5.jpg"
+        },
+        {
+          "image": "/images/gallery/larger-pic.jpg",
+          "caption": "Franks Airplane in a Climbout."
         }
       ]
     }
