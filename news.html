@@ -66,20 +66,38 @@
     <script src="js/cms-loader.js"></script>
     <script src="js/gallery-controller.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const settings = DataManager.getSettings();
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 1. DATA INITIALIZATION
+            let newsData = DataManager.getNews();
+            let settings = DataManager.getSettings();
+            let links = DataManager.getLinks();
+
+            if (typeof CMSLoader !== 'undefined') {
+                try {
+                    const [cmsNews, cmsInfo, cmsLinks] = await Promise.all([
+                        CMSLoader.loadCmsNews(),
+                        CMSLoader.loadCmsClubInfo(),
+                        CMSLoader.loadCmsQuickLinks()
+                    ]);
+
+                    if (cmsNews && cmsNews.length > 0) newsData = cmsNews;
+                    if (cmsInfo) settings = { ...settings, ...cmsInfo };
+                    if (cmsLinks && cmsLinks.length > 0) links = cmsLinks;
+                } catch (err) {
+                    console.warn('CMS data load failed, using local data.', err);
+                }
+            }
             
             // Icons
             const icons = {
                 news: `<svg class="meta-icon" style="fill: var(--gold); vertical-align: middle; margin-right: 5px;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>`
             };
 
-            // News RENDERING
+            // 2. RENDER NEWS
             const container = document.getElementById('news-container');
-            const newsData = DataManager.getNews();
             
-            // Sort Newest First
-            newsData.sort((a, b) => new Date(b.date) - new Date(a.date));
+            // Sort Newest First (Safe handling of date strings)
+            newsData.sort((a, b) => new Date(b.date + 'T00:00:00') - new Date(a.date + 'T00:00:00'));
 
             if (newsData.length > 0) {
                 container.innerHTML = newsData.map(n => `
@@ -98,10 +116,10 @@
                 container.innerHTML = '<p style="text-align: center; color: #666;">No news updates at this time.</p>';
             }
 
-            // Footer
+            // 3. FOOTER
             document.getElementById('footer-email').innerText = `Email: ${settings.email}`;
             document.getElementById('footer-phone').innerText = `Phone: ${settings.phone}`;
-            document.getElementById('footer-links').innerHTML = DataManager.getLinks().map(l => `
+            document.getElementById('footer-links').innerHTML = links.map(l => `
                 <li style="margin-bottom: 0.5rem;"><a href="${l.url}" style="color: var(--white); text-decoration: none;">${l.title}</a></li>
             `).join('');
         });

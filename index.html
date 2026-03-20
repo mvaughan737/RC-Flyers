@@ -130,7 +130,7 @@
             </div>
             <div class="footer-section">
                 <h4>Quick Links</h4>
-                <ul style="list-style: none; padding: 0;">
+                <ul id="footer-links" style="list-style: none; padding: 0;">
                     <li><a href="contact.html" style="color: var(--white); text-decoration: none;">Join the Club</a>
                     </li>
                     <li><a href="weather_final.html" style="color: var(--white); text-decoration: none;">Weather
@@ -155,7 +155,7 @@
     <script src="js/cms-loader.js"></script>
     <script src="js/gallery-controller.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             // Icons
             const icons = {
                 time: `<svg class="meta-icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>`,
@@ -163,31 +163,57 @@
                 news: `<svg class="meta-icon" style="fill: var(--gold)" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>`
             };
 
-            // Render News
+            // 1. DATA INITIALIZATION (Try CMS, Fallback to DataManager)
+            let newsData = DataManager.getNews();
+            let eventData = DataManager.getEvents();
+            let settings = DataManager.getSettings();
+            let links = DataManager.getLinks();
+
+            if (typeof CMSLoader !== 'undefined') {
+                try {
+                    const [cmsNews, cmsEvents, cmsInfo, cmsLinks] = await Promise.all([
+                        CMSLoader.loadCmsNews(),
+                        CMSLoader.loadCmsEvents(),
+                        CMSLoader.loadCmsClubInfo(),
+                        CMSLoader.loadCmsQuickLinks()
+                    ]);
+
+                    if (cmsNews && cmsNews.length > 0) newsData = cmsNews;
+                    if (cmsEvents && cmsEvents.length > 0) eventData = cmsEvents;
+                    if (cmsInfo) settings = { ...settings, ...cmsInfo };
+                    if (cmsLinks && cmsLinks.length > 0) links = cmsLinks;
+                } catch (err) {
+                    console.warn('CMS data load failed, using local data.', err);
+                }
+            }
+
+            // 2. RENDER NEWS
             const newsList = document.getElementById('latest-news-list');
-            const newsData = DataManager.getNews().slice(0, 2);
-            if (newsData.length > 0) {
-                newsList.innerHTML = newsData.map(n => `
+            const latestNews = newsData.slice(0, 2);
+            if (latestNews.length > 0) {
+                newsList.innerHTML = latestNews.map(n => `
                     <div class="news-item">
                         <div class="news-tag">${icons.news} Latest Update</div>
                         <div class="news-title">${n.title}</div>
                         <div style="font-size: 0.8rem; color: #888; margin-bottom: 8px;">
-                            ${new Date(n.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                            ${new Date(n.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                         </div>
                         <p style="font-size: 0.9rem; color: #444;">${n.content.substring(0, 80)}${n.content.length > 80 ? '...' : ''}</p>
                     </div>
                 `).join('');
+            } else {
+                newsList.innerHTML = '<li>No news at this time.</li>';
             }
 
-            // Render Events
+            // 3. RENDER EVENTS
             const eventList = document.getElementById('upcoming-events-list');
-            const eventData = DataManager.getEvents()
-                .filter(e => new Date(e.date) >= new Date().setHours(0, 0, 0, 0))
+            const upcomingEvents = eventData
+                .filter(e => new Date(e.date + 'T00:00:00') >= new Date().setHours(0, 0, 0, 0))
                 .slice(0, 3);
 
-            if (eventData.length > 0) {
-                eventList.innerHTML = eventData.map(e => {
-                    const d = new Date(e.date);
+            if (upcomingEvents.length > 0) {
+                eventList.innerHTML = upcomingEvents.map(e => {
+                    const d = new Date(e.date + 'T00:00:00');
                     const month = d.toLocaleString('en-US', { month: 'short' });
                     const day = d.getDate();
 
@@ -209,23 +235,22 @@
                         </div>
                     `;
                 }).join('');
+            } else {
+                eventList.innerHTML = '<li>No upcoming events.</li>';
             }
 
-            // Footer / Settings / Hero
-            const settings = DataManager.getSettings();
-
-            // Dynamic Hero Background Integration
+            // 4. HERO SECTION
             const updateHero = (imageUrl) => {
                 if (imageUrl) {
                     document.getElementById('hero-section').style.setProperty('--hero-url', `url('${imageUrl}')`);
                 }
             };
 
-            // Try CMS background first
+            // Hero priority: CMS Active Background -> DataManager Hero Image
             if (typeof CMSLoader !== 'undefined') {
-                CMSLoader.loadCmsBackgroundSettings().then(cmsSettings => {
-                    if (cmsSettings && cmsSettings.activeBackgroundImage) {
-                        updateHero(cmsSettings.activeBackgroundImage);
+                CMSLoader.loadCmsBackgroundSettings().then(cmsBg => {
+                    if (cmsBg && cmsBg.activeBackgroundImage) {
+                        updateHero(cmsBg.activeBackgroundImage);
                     } else if (settings.heroImage) {
                         updateHero(settings.heroImage);
                     }
@@ -236,11 +261,13 @@
                 updateHero(settings.heroImage);
             }
 
+            // 5. FOOTER & SETTINGS
             document.getElementById('footer-email').innerText = `Email: ${settings.email}`;
             document.getElementById('footer-phone').innerText = `Phone: ${settings.phone}`;
+            
             const footerLinksEl = document.getElementById('footer-links');
             if (footerLinksEl) {
-                footerLinksEl.innerHTML = DataManager.getLinks().map(l => `
+                footerLinksEl.innerHTML = links.map(l => `
                     <li style="margin-bottom: 0.5rem;"><a href="${l.url}" style="color: var(--white); text-decoration: none;">${l.title}</a></li>
                 `).join('');
             }

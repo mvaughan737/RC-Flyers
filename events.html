@@ -96,43 +96,69 @@
     <script src="js/cms-loader.js"></script>
     <script src="js/gallery-controller.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const settings = DataManager.getSettings();
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 1. DATA INITIALIZATION
+            let eventData = DataManager.getEvents();
+            let settings = DataManager.getSettings();
+            let links = DataManager.getLinks();
+
+            if (typeof CMSLoader !== 'undefined') {
+                try {
+                    const [cmsEvents, cmsInfo, cmsLinks] = await Promise.all([
+                        CMSLoader.loadCmsEvents(),
+                        CMSLoader.loadCmsClubInfo(),
+                        CMSLoader.loadCmsQuickLinks()
+                    ]);
+
+                    if (cmsEvents && cmsEvents.length > 0) eventData = cmsEvents;
+                    if (cmsInfo) settings = { ...settings, ...cmsInfo };
+                    if (cmsLinks && cmsLinks.length > 0) links = cmsLinks;
+                } catch (err) {
+                    console.warn('CMS data load failed, using local data.', err);
+                }
+            }
             
-            // Meetings
+            // 2. RENDER MEETINGS
             document.getElementById('meeting-text').innerText = `Held ${settings.meetingTime}.`;
             document.getElementById('meeting-location').innerText = `Location: ${settings.meetingPlace.split(' (')[0]}.`;
             document.getElementById('meeting-note').innerText = settings.meetingPlace.includes('(') ? `*${settings.meetingPlace.split(' (')[1].replace(')', '')}` : '';
 
-            // Events
+            // 3. RENDER EVENTS
             const container = document.getElementById('events-container');
             const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
             
-            container.innerHTML = DataManager.getEvents().map(ev => {
-                const date = new Date(ev.date + 'T00:00:00'); // Ensure local day
-                const day = date.getDate().toString().padStart(2, '0');
-                const month = months[date.getMonth()];
-                const year = date.getFullYear();
+            // Safe sort and render
+            const sortedEvents = [...eventData].sort((a, b) => new Date(a.date + 'T00:00:00') - new Date(b.date + 'T00:00:00'));
 
-                return `
-                    <div class="event-card" data-date="${ev.date}">
-                        <div class="event-date">
-                            <span style="font-size: 1.5rem; font-weight: bold;">${day}</span>
-                            <span style="font-size: 0.9rem;">${month} ${year}</span>
-                        </div>
-                        <div class="event-details">
-                            <h3>${ev.title}</h3>
-                            <span class="time">${ev.time}</span>
-                            <p>Location: ${ev.location}</p>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            if (sortedEvents.length > 0) {
+                container.innerHTML = sortedEvents.map(ev => {
+                    const date = new Date(ev.date + 'T00:00:00');
+                    const day = date.getDate().toString().padStart(2, '0');
+                    const month = months[date.getMonth()];
+                    const year = date.getFullYear();
 
-            // Footer / Settings
+                    return `
+                        <div class="event-card" data-date="${ev.date}">
+                            <div class="event-date">
+                                <span style="font-size: 1.5rem; font-weight: bold;">${day}</span>
+                                <span style="font-size: 0.9rem;">${month} ${year}</span>
+                            </div>
+                            <div class="event-details">
+                                <h3>${ev.title}</h3>
+                                <span class="time">${ev.time}</span>
+                                <p>Location: ${ev.location}</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                container.innerHTML = '<p style="text-align: center; color: #666; margin-top: 2rem;">No upcoming events scheduled at this time.</p>';
+            }
+
+            // 4. FOOTER / SETTINGS
             document.getElementById('set-email').textContent = settings.email;
             document.getElementById('set-phone').textContent = settings.phone;
-            document.getElementById('footer-links').innerHTML = DataManager.getLinks().map(l => `
+            document.getElementById('footer-links').innerHTML = links.map(l => `
                 <li style="margin-bottom: 0.5rem;"><a href="${l.url}" style="color: var(--white); text-decoration: none;">${l.title}</a></li>
             `).join('');
         });

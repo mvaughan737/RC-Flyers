@@ -46,6 +46,118 @@ collections:
                 widget: "string"
                 required: false
 
+      - name: "club_info"
+        label: "Club Info & Meetings"
+        file: "admin/content/site-settings/club-info.json"
+        format: "json"
+        fields:
+          - label: "Contact Email"
+            name: "email"
+            widget: "string"
+            required: true
+          - label: "Contact Phone"
+            name: "phone"
+            widget: "string"
+            required: true
+          - label: "Mailing Address"
+            name: "address"
+            widget: "string"
+            required: true
+          - label: "Meeting Schedule"
+            name: "meetingTime"
+            widget: "string"
+            required: true
+            hint: "e.g., 1st Tuesday of the month, 6pm"
+          - label: "Meeting Location"
+            name: "meetingPlace"
+            widget: "string"
+            required: true
+            hint: "e.g., At the field (Winter: Marty’s hangar)"
+          - label: "Field Coordinates"
+            name: "coordinates"
+            widget: "string"
+            required: true
+            hint: "e.g., 40.575675, -85.900127"
+
+      - name: "quick_links"
+        label: "Quick Links (Pilot Resources)"
+        file: "admin/content/site-settings/quick-links.json"
+        format: "json"
+        fields:
+          - label: "Links"
+            name: "links"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - label: "Link Title"
+                name: "title"
+                widget: "string"
+                required: true
+              - label: "URL"
+                name: "url"
+                widget: "string"
+                required: true
+
+  - name: "news_content"
+    label: "News Management"
+    files:
+      - name: "news_data"
+        label: "News Posts"
+        file: "admin/content/news.json"
+        format: "json"
+        fields:
+          - label: "News Posts"
+            name: "news"
+            widget: "list"
+            summary: "{{fields.title}} ({{fields.date}})"
+            fields:
+              - label: "Post Title"
+                name: "title"
+                widget: "string"
+                required: true
+              - label: "Date"
+                name: "date"
+                widget: "date"
+                required: true
+                format: "YYYY-MM-DD"
+              - label: "Content"
+                name: "content"
+                widget: "text"
+                required: true
+
+  - name: "events_content"
+    label: "Events Calendar"
+    files:
+      - name: "events_data"
+        label: "Calendar Events"
+        file: "admin/content/events.json"
+        format: "json"
+        fields:
+          - label: "Scheduled Events"
+            name: "events"
+            widget: "list"
+            summary: "{{fields.title}} ({{fields.date}})"
+            fields:
+              - label: "Event Title"
+                name: "title"
+                widget: "string"
+                required: true
+              - label: "Date"
+                name: "date"
+                widget: "date"
+                required: true
+                format: "YYYY-MM-DD"
+              - label: "Time"
+                name: "time"
+                widget: "string"
+                required: false
+                hint: "e.g., 9am or TBD"
+              - label: "Location"
+                name: "location"
+                widget: "string"
+                required: false
+                hint: "e.g., Main Field"
+
   - name: "gallery_content"
     label: "Gallery Content"
     files:

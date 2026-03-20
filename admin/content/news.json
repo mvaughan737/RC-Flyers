@@ -1,0 +1,16 @@
+{
+  "news": [
+    {
+      "id": 1,
+      "title": "Spring Fun Fly 2026",
+      "date": "2026-03-15",
+      "content": "Registration is now open for our annual spring event!"
+    },
+    {
+      "id": 2,
+      "title": "Safety Update",
+      "date": "2026-03-10",
+      "content": "New FAA regulations regarding FRIA zones have been updated."
+    }
+  ]
+}

@@ -106,21 +106,37 @@
     <script src="js/cms-loader.js"></script>
     <script src="js/gallery-controller.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const settings = DataManager.getSettings();
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 1. DATA INITIALIZATION
+            let settings = DataManager.getSettings();
+            let links = DataManager.getLinks();
+
+            if (typeof CMSLoader !== 'undefined') {
+                try {
+                    const [cmsInfo, cmsLinks] = await Promise.all([
+                        CMSLoader.loadCmsClubInfo(),
+                        CMSLoader.loadCmsQuickLinks()
+                    ]);
+
+                    if (cmsInfo) settings = { ...settings, ...cmsInfo };
+                    if (cmsLinks && cmsLinks.length > 0) links = cmsLinks;
+                } catch (err) {
+                    console.warn('CMS data load failed, using local data.', err);
+                }
+            }
             
-            // Dynamic Resources
-            document.getElementById('dynamic-links-list').innerHTML = DataManager.getLinks().map(l => `
+            // 2. RENDER DYNAMIC RESOURCES
+            document.getElementById('dynamic-links-list').innerHTML = links.map(l => `
                 <li>
                     <span><strong>${l.title}</strong></span>
                     <a href="${l.url}" target="_blank">Visit Site &rarr;</a>
                 </li>
             `).join('');
 
-            // Footer
+            // 3. FOOTER
             document.getElementById('footer-email').innerText = `Email: ${settings.email}`;
             document.getElementById('footer-phone').innerText = `Phone: ${settings.phone}`;
-            document.getElementById('footer-links').innerHTML = DataManager.getLinks().map(l => `
+            document.getElementById('footer-links').innerHTML = links.map(l => `
                 <li style="margin-bottom: 0.5rem;"><a href="${l.url}" style="color: var(--white); text-decoration: none;">${l.title}</a></li>
             `).join('');
         });

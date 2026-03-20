@@ -1,0 +1,25 @@
+{
+  "events": [
+    {
+      "id": 1,
+      "title": "Indoor Fly",
+      "date": "2026-03-21",
+      "time": "9am",
+      "location": "Amboy Friends Church"
+    },
+    {
+      "id": 2,
+      "title": "Combat",
+      "date": "2026-05-16",
+      "time": "TBD",
+      "location": "Main Field"
+    },
+    {
+      "id": 3,
+      "title": "Egg Drop Competition",
+      "date": "2026-06-20",
+      "time": "TBD",
+      "location": "Main Field"
+    }
+  ]
+}

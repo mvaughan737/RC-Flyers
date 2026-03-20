@@ -1,0 +1,29 @@
+{
+  "links": [
+    {
+      "id": 1,
+      "title": "FAA Trust Test",
+      "url": "https://www.modelaircraft.org/trust"
+    },
+    {
+      "id": 2,
+      "title": "AMA Membership",
+      "url": "https://www.modelaircraft.org/membership/enroll"
+    },
+    {
+      "id": 3,
+      "title": "AMA Safety Code",
+      "url": "https://www.modelaircraft.org/files/100.pdf"
+    },
+    {
+      "id": 4,
+      "title": "RC Flight Simulator",
+      "url": "https://www.realflight.com/"
+    },
+    {
+      "id": 5,
+      "title": "Weather Status",
+      "url": "weather_final.html"
+    }
+  ]
+}
