@@ -116,7 +116,9 @@ const GalleryController = (() => {
         }
 
         gridEl.innerHTML = gallery.images.map((img, index) => `
-            <a href="${img.src}" class="glightbox gallery-item" data-gallery="gallery-${gallery.slug}">
+            <a href="${img.src}" class="glightbox gallery-item" 
+               data-gallery="gallery-${gallery.slug}" 
+               data-description="${img.alt || ''} (${index + 1} of ${gallery.images.length})">
                 <img src="${img.thumb}" alt="${img.alt}" loading="lazy">
                 <div class="overlay">${img.alt || ''}</div>
             </a>
