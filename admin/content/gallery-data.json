@@ -1,18 +1,6 @@
 {
   "galleries": [
     {
-      "title": "CMS Powered Event",
-      "slug": "cms-event",
-      "published": true,
-      "eventFolder": "gallery",
-      "images": [
-        {
-          "image": "images/gallery/picture1.jpg",
-          "caption": "Testing CMS Integration"
-        }
-      ]
-    },
-    {
       "published": true,
       "eventFolder": "spring-fun-2024-test",
       "title": "Spring Fun 2024 TEST",
@@ -21,7 +9,8 @@
       "images": [
         {
           "image": "/images/gallery/picture2.jpg",
-          "thumbnail": "/images/gallery/picture2.jpg"
+          "thumbnail": "/images/gallery/picture2.jpg",
+          "caption": "This was Charlie inspecting his plane."
         },
         {
           "image": "/images/gallery/picture3.jpg",
@@ -34,6 +23,10 @@
         {
           "image": "/images/gallery/picture5.jpg",
           "thumbnail": "/images/gallery/picture5.jpg"
+        },
+        {
+          "image": "/images/gallery/larger-pic.jpg",
+          "caption": "Franks Airplane in a Climbout."
         }
       ]
     }
