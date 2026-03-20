@@ -1,0 +1,125 @@
+backend:
+  name: git-gateway
+  branch: main
+
+local_backend: true
+
+media_folder: "images"
+public_folder: "/images"
+
+site_url: "https://converse-flying-eagles.netlify.app"
+display_url: "https://converse-flying-eagles.netlify.app"
+
+collections:
+  - name: "site_settings"
+    label: "Site Settings"
+    files:
+      - name: "background_settings"
+        label: "Background Images"
+        file: "admin/content/site-settings/background-images.json"
+        format: "json"
+        fields:
+          - label: "Active Background Image"
+            name: "activeBackgroundImage"
+            widget: "image"
+            media_folder: "/images"
+            public_folder: "/images"
+            required: true
+            hint: "Upload or select the background image currently used on the public site."
+
+          - label: "Background Image Library"
+            name: "backgroundImageOptions"
+            widget: "list"
+            required: false
+            summary: "{{fields.image}}"
+            hint: "Optional list of reusable background images."
+            fields:
+              - label: "Image"
+                name: "image"
+                widget: "image"
+                media_folder: "/images"
+                public_folder: "/images"
+                required: true
+
+              - label: "Label"
+                name: "label"
+                widget: "string"
+                required: false
+
+  - name: "gallery_content"
+    label: "Gallery Content"
+    files:
+      - name: "gallery_data"
+        label: "Gallery Data"
+        file: "admin/content/gallery-data.json"
+        format: "json"
+        fields:
+          - label: "Gallery Events"
+            name: "galleries"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - label: "Event Title"
+                name: "title"
+                widget: "string"
+                required: true
+                hint: "Example: Converse Fun Fly 2026"
+
+              - label: "Event Slug"
+                name: "slug"
+                widget: "string"
+                required: true
+                pattern:
+                  [
+                    "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                    "Use lowercase letters, numbers, and hyphens only."
+                  ]
+                hint: "Example: converse-fun-fly-2026"
+
+              - label: "Published"
+                name: "published"
+                widget: "boolean"
+                default: true
+                required: false
+
+              - label: "Event Folder"
+                name: "eventFolder"
+                widget: "string"
+                required: true
+                default: "converse-fun-fly-2026"
+                hint: "Folder name under /images/gallery/. This should normally match the slug."
+
+              - label: "Cover Image"
+                name: "coverImage"
+                widget: "image"
+                media_folder: "/images/gallery"
+                public_folder: "/images/gallery"
+                required: false
+                hint: "Upload or choose a cover image for this event."
+
+              - label: "Event Images"
+                name: "images"
+                widget: "list"
+                required: true
+                summary: "{{fields.image}}"
+                hint: "Upload or choose all images for this event."
+                fields:
+                  - label: "Image"
+                    name: "image"
+                    widget: "image"
+                    media_folder: "/images/gallery"
+                    public_folder: "/images/gallery"
+                    required: true
+
+                  - label: "Thumbnail"
+                    name: "thumbnail"
+                    widget: "image"
+                    media_folder: "/images/gallery"
+                    public_folder: "/images/gallery"
+                    required: false
+                    hint: "Optional thumbnail for grid view."
+
+                  - label: "Caption"
+                    name: "caption"
+                    widget: "string"
+                    required: false

@@ -131,6 +131,7 @@
     </footer>
     <script src="js/status_final.js?cb=987654321"></script>
     <script src="js/data-manager.js"></script>
+    <script src="js/cms-loader.js"></script>
     <script src="js/gallery-controller.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -192,16 +193,36 @@
             // Footer / Settings / Hero
             const settings = DataManager.getSettings();
             
-            // Dynamic Hero Background
-            if (settings.heroImage) {
-                document.getElementById('hero-section').style.setProperty('--hero-url', `url('${settings.heroImage}')`);
+            // Dynamic Hero Background Integration
+            const updateHero = (imageUrl) => {
+                if (imageUrl) {
+                    document.getElementById('hero-section').style.setProperty('--hero-url', `url('${imageUrl}')`);
+                }
+            };
+
+            // Try CMS background first
+            if (typeof CMSLoader !== 'undefined') {
+                CMSLoader.loadCmsBackgroundSettings().then(cmsSettings => {
+                    if (cmsSettings && cmsSettings.activeBackgroundImage) {
+                        updateHero(cmsSettings.activeBackgroundImage);
+                    } else if (settings.heroImage) {
+                        updateHero(settings.heroImage);
+                    }
+                }).catch(() => {
+                    if (settings.heroImage) updateHero(settings.heroImage);
+                });
+            } else if (settings.heroImage) {
+                updateHero(settings.heroImage);
             }
 
             document.getElementById('footer-email').innerText = `Email: ${settings.email}`;
             document.getElementById('footer-phone').innerText = `Phone: ${settings.phone}`;
-            document.getElementById('footer-links').innerHTML = DataManager.getLinks().map(l => `
-                <li style="margin-bottom: 0.5rem;"><a href="${l.url}" style="color: var(--white); text-decoration: none;">${l.title}</a></li>
-            `).join('');
+            const footerLinksEl = document.getElementById('footer-links');
+            if (footerLinksEl) {
+                footerLinksEl.innerHTML = DataManager.getLinks().map(l => `
+                    <li style="margin-bottom: 0.5rem;"><a href="${l.url}" style="color: var(--white); text-decoration: none;">${l.title}</a></li>
+                `).join('');
+            }
         });
     </script>
     <script src="js/visibility.js"></script>

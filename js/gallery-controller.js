@@ -9,6 +9,15 @@ const GalleryController = (() => {
     const init = async () => {
         const galleries = await loadGalleries();
         
+        // Always update navigation dropdowns globally
+        updateNavigationDropdown(galleries);
+
+        // Gallery-specific rendering: only proceed if we are on the gallery page or have gallery elements
+        const isGalleryPage = window.location.pathname.includes('gallery.html');
+        const gridEl = document.getElementById('gallery-grid');
+        
+        if (!isGalleryPage && !gridEl) return;
+
         const params = new URLSearchParams(window.location.search);
         const eventSlug = params.get('event');
 
@@ -31,18 +40,58 @@ const GalleryController = (() => {
         }
 
         setupLightbox();
-        updateNavigationDropdown(galleries);
     };
 
     const loadGalleries = async () => {
         try {
-            const response = await fetch('data/gallery.json');
-            if (!response.ok) throw new Error('File not found');
-            const data = await response.json();
-            return data.galleries || [];
+            // Priority 1: CMS Data
+            if (typeof CMSLoader !== 'undefined') {
+                const cmsGalleries = await CMSLoader.loadCmsGalleryData();
+                if (cmsGalleries && cmsGalleries.length > 0) {
+                    // Normalize CMS structure: mapping 'image' to 'src' and handling thumbnails
+                    return cmsGalleries.map(g => ({
+                        ...g,
+                        images: (g.images || []).map(img => ({
+                            src: img.image,
+                            thumb: img.thumbnail || img.image,
+                            alt: img.caption || g.title
+                        }))
+                    }));
+                }
+            }
+
+            // Priority 2: Local data/gallery.json
+            const response = await fetch('/data/gallery.json');
+            if (response.ok) {
+                const data = await response.json();
+                if (data.galleries) {
+                    // Normalize local file format (it might use src/alt already)
+                    return data.galleries.map(g => ({
+                        ...g,
+                        images: (g.images || []).map(img => ({
+                            src: img.src || img.image,
+                            thumb: img.thumb || img.thumbnail || img.src || img.image,
+                            alt: img.alt || img.caption || g.title
+                        }))
+                    }));
+                }
+            }
+            
+            throw new Error('No file-based data found');
         } catch (error) {
-            console.warn('Gallery source file not found or invalid, falling back to local data.', error);
-            return DataManager.getGalleries();
+            console.warn('CMS/File data loading failed, falling back to local storage.', error);
+            // Priority 3: localStorage (DataManager)
+            const localGalleries = (typeof DataManager !== 'undefined' && typeof DataManager.getGalleries === 'function')
+                ? DataManager.getGalleries()
+                : [];
+            return localGalleries.map(g => ({
+                ...g,
+                images: (g.images || []).map(img => ({
+                    src: img.src || img.image,
+                    thumb: img.thumb || img.thumbnail || img.src || img.image,
+                    alt: img.alt || img.caption || g.title
+                }))
+            }));
         }
     };
 
@@ -56,10 +105,12 @@ const GalleryController = (() => {
     };
 
     const renderGallery = (gallery) => {
+        currentGallery = gallery; // Ensure tracker is updated
         const titleEl = document.getElementById('gallery-title');
         const gridEl = document.getElementById('gallery-grid');
         
         if (titleEl) titleEl.innerText = gallery.title;
+        if (!gridEl) return;
         
         if (!gallery.images || gallery.images.length === 0) {
             gridEl.innerHTML = '<p class="no-data">This gallery is empty.</p>';
@@ -68,7 +119,7 @@ const GalleryController = (() => {
 
         gridEl.innerHTML = gallery.images.map((img, index) => `
             <div class="gallery-item" onclick="GalleryController.openLightbox(${index})">
-                <img src="${img.src}" alt="${img.alt || gallery.title}" loading="lazy">
+                <img src="${img.thumb}" alt="${img.alt}" loading="lazy">
                 <div class="overlay">${img.alt || ''}</div>
             </div>
         `).join('');
@@ -91,10 +142,10 @@ const GalleryController = (() => {
         const img = document.getElementById('lightbox-img');
         const caption = document.getElementById('lightbox-caption');
         
-        if (!lightbox || !img) return;
+        if (!lightbox || !img || !currentGallery) return;
 
         const currentImg = currentGallery.images[currentIndex];
-        img.src = currentImg.src;
+        img.src = currentImg.src; // Use full image
         caption.innerText = currentImg.alt || '';
         
         lightbox.style.display = 'flex';
@@ -102,16 +153,19 @@ const GalleryController = (() => {
     };
 
     const closeLightbox = () => {
-        document.getElementById('lightbox').style.display = 'none';
+        const lightbox = document.getElementById('lightbox');
+        if (lightbox) lightbox.style.display = 'none';
         document.body.style.overflow = 'auto';
     };
 
     const nextImage = () => {
+        if (!currentGallery) return;
         currentIndex = (currentIndex + 1) % currentGallery.images.length;
         updateLightboxImage();
     };
 
     const prevImage = () => {
+        if (!currentGallery) return;
         currentIndex = (currentIndex - 1 + currentGallery.images.length) % currentGallery.images.length;
         updateLightboxImage();
     };
@@ -119,8 +173,9 @@ const GalleryController = (() => {
     const updateLightboxImage = () => {
         const img = document.getElementById('lightbox-img');
         const caption = document.getElementById('lightbox-caption');
+        if (!img || !currentGallery) return;
         const currentImg = currentGallery.images[currentIndex];
-        img.src = currentImg.src;
+        img.src = currentImg.src; // Use full image
         caption.innerText = currentImg.alt || '';
     };
 
@@ -161,12 +216,5 @@ const GalleryController = (() => {
     };
 })();
 
-// Auto-init on gallery page
-if (window.location.pathname.includes('gallery.html')) {
-    document.addEventListener('DOMContentLoaded', GalleryController.init);
-} else {
-    // Just update dropdowns on other pages
-    document.addEventListener('DOMContentLoaded', () => {
-        GalleryController.init(); // Init handles both cases
-    });
-}
+// Auto-init on page load
+document.addEventListener('DOMContentLoaded', GalleryController.init);

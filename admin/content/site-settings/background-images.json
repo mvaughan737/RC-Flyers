@@ -1,0 +1,9 @@
+{
+  "activeBackgroundImage": "images/hero.jpg",
+  "backgroundImageOptions": [
+    {
+      "image": "images/hero.jpg",
+      "label": "Closer View"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "galleries": [
+    {
+      "title": "CMS Powered Event",
+      "slug": "cms-event",
+      "published": true,
+      "eventFolder": "gallery",
+      "images": [
+        {
+          "image": "images/gallery/Converse_Title_Picture.jpg",
+          "caption": "Testing CMS Integration"
+        }
+      ]
+    }
+  ]
+}
