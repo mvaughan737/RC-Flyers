@@ -763,28 +763,35 @@ footer {
     grid-column: 1 / -1;
 }
 
-/* GLightbox Counter and Description Styling */
-.gdesc-inner {
-    background: rgba(0, 0, 128, 0.9);
-    color: #FFD700;
-    padding: 12px 24px;
-    border-radius: 6px;
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-.gslide-title {
-    color: #FFD700;
-    font-size: 1.1rem;
-}
-
-/* Ensure lightbox is truly fullscreen */
+/* Force GLightbox to display images at maximum size */
 .glightbox-container {
     width: 100vw !important;
     height: 100vh !important;
 }
 
-.gslide-image img {
-    max-width: 100% !important;
-    max-height: 100% !important;
+.glightbox-container .gslide-media {
+    max-width: 95vw !important;
+    max-height: 95vh !important;
+}
+
+.glightbox-container .gslide-image {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.glightbox-container .gslide-image img {
+    width: 95vw !important;
+    height: 95vh !important;
+    object-fit: contain !important;
+}
+
+/* Description styling */
+.gdesc-inner {
+    background: rgba(0, 0, 128, 0.95) !important;
+    color: #FFD700 !important;
+    padding: 14px 28px !important;
+    border-radius: 8px !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
 }
