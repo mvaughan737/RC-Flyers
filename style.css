@@ -769,21 +769,24 @@ footer {
     height: 100vh !important;
 }
 
-.glightbox-container .gslide-media {
+.glightbox-container .gslide-image img {
     max-width: 95vw !important;
     max-height: 95vh !important;
-}
-
-.glightbox-container .gslide-image {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-}
-
-.glightbox-container .gslide-image img {
-    width: 95vw !important;
-    height: 95vh !important;
+    width: auto !important;
+    height: auto !important;
     object-fit: contain !important;
+    object-position: center !important;
+    display: block !important;
+}
+
+/* Remove any width/height constraints from parent containers */
+.glightbox-container .ginner-container,
+.glightbox-container .gslide-inline,
+.glightbox-container .gslide-image {
+    width: auto !important;
+    height: auto !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
 }
 
 /* Description styling */
