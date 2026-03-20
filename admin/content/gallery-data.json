@@ -21,7 +21,8 @@
       "images": [
         {
           "image": "/images/gallery/picture2.jpg",
-          "thumbnail": "/images/gallery/picture2.jpg"
+          "thumbnail": "/images/gallery/picture2.jpg",
+          "caption": "This was Charlie inspecting his plane."
         },
         {
           "image": "/images/gallery/picture3.jpg",
