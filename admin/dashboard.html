@@ -210,61 +210,84 @@
                 </div>
             </section>
 
-            <!-- SETTINGS SECTION (Restored) -->
+            <!-- SETTINGS SECTION -->
             <section id="settings-section" class="admin-section" style="display: none;">
                 <div class="admin-card">
-                    <h3>Club Contact Info</h3>
-                    <div id="contact-status" style="display: none; color: green; margin-bottom: 10px; font-weight: bold;">✓ Contact info saved successfully!</div>
-                    <form id="contact-settings-form">
-                        <div class="form-group">
-                            <label>Contact Email</label>
-                            <input type="email" id="set-email" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Contact Phone</label>
-                            <input type="text" id="set-phone" required>
-                        </div>
-                        <button type="submit" class="btn btn-gold">Update Contact Info</button>
-                    </form>
-                </div>
-
-                <div class="admin-card">
-                    <h3>Monthly Meeting Info</h3>
-                    <div id="meeting-status" style="display: none; color: green; margin-bottom: 10px; font-weight: bold;">✓ Meeting details saved successfully!</div>
-                    <form id="meeting-settings-form">
-                        <div class="form-group">
-                            <label>Meeting Schedule</label>
-                            <input type="text" id="set-meeting-schedule" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Meeting Location</label>
-                            <input type="text" id="set-meeting-place" required>
-                        </div>
-                        <button type="submit" class="btn btn-gold">Update Meeting Details</button>
-                    </form>
-                </div>
-
-                <div class="admin-card">
-                    <h3>Quick Links (Pilot Resources)</h3>
-                    <div id="links-list"></div>
-                    <hr style="margin: 1rem 0;">
-                    <div id="link-edit-indicator" style="display: none; background: #fffcf0; padding: 10px; border-left: 4px solid var(--gold); margin-bottom: 1rem; font-weight: bold;">
-                        Editing Quick Link...
+                    <div style="margin-bottom: 1.5rem;">
+                        <h3>Contact & Meetings</h3>
+                        <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Manage the club's contact details, meeting schedule, and pilot resources.</p>
                     </div>
-                    <form id="add-link-form">
-                        <div class="form-group">
-                            <label>Link Title</label>
-                            <input type="text" id="link-title" required>
+
+                    <!-- Tabs Bar -->
+                    <div class="tab-bar">
+                        <button class="tab-btn active" onclick="switchSettingsTab('tab-contact')">Club Contact Info</button>
+                        <button class="tab-btn" onclick="switchSettingsTab('tab-meeting')">Monthly Meeting Info</button>
+                        <button class="tab-btn" onclick="switchSettingsTab('tab-links')">Pilot Resources</button>
+                    </div>
+
+                    <!-- Tab 1: Club Contact Info -->
+                    <div id="tab-contact" class="tab-content active" style="padding-top: 1rem;">
+                        <h4 style="margin-bottom: 0.5rem; color: var(--navy-blue);">Club Contact Info</h4>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Update the club’s public contact details shown on the website.</p>
+                        
+                        <div id="contact-status" style="display: none; color: green; margin-bottom: 10px; font-weight: bold;">✓ Contact info saved successfully!</div>
+                        <form id="contact-settings-form">
+                            <div class="form-group">
+                                <label>Contact Email</label>
+                                <input type="email" id="set-email" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Contact Phone</label>
+                                <input type="text" id="set-phone" required>
+                            </div>
+                            <button type="submit" class="btn btn-gold">Update Contact Info</button>
+                        </form>
+                    </div>
+
+                    <!-- Tab 2: Monthly Meeting Info -->
+                    <div id="tab-meeting" class="tab-content" style="padding-top: 1rem;">
+                        <h4 style="margin-bottom: 0.5rem; color: var(--navy-blue);">Monthly Meeting Info</h4>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Set the club’s meeting schedule and location displayed to members and visitors.</p>
+                        
+                        <div id="meeting-status" style="display: none; color: green; margin-bottom: 10px; font-weight: bold;">✓ Meeting details saved successfully!</div>
+                        <form id="meeting-settings-form">
+                            <div class="form-group">
+                                <label>Meeting Schedule</label>
+                                <input type="text" id="set-meeting-schedule" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Meeting Location</label>
+                                <input type="text" id="set-meeting-place" required>
+                            </div>
+                            <button type="submit" class="btn btn-gold">Update Meeting Details</button>
+                        </form>
+                    </div>
+
+                    <!-- Tab 3: Pilot Resources -->
+                    <div id="tab-links" class="tab-content" style="padding-top: 1rem;">
+                        <h4 style="margin-bottom: 0.5rem; color: var(--navy-blue);">Pilot Resources</h4>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Manage helpful links for pilots such as FAA resources, AMA info, and training tools.</p>
+                        
+                        <div id="links-list"></div>
+                        <hr style="margin: 1.5rem 0;">
+                        <div id="link-edit-indicator" style="display: none; background: #fffcf0; padding: 10px; border-left: 4px solid var(--gold); margin-bottom: 1rem; font-weight: bold;">
+                            Editing Quick Link...
                         </div>
-                        <div class="form-group">
-                            <label>URL</label>
-                            <input type="text" id="link-url" required>
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button type="submit" id="link-submit-btn" class="btn btn-gold">Add Link</button>
-                            <button type="button" id="link-cancel-btn" class="btn" style="display: none; background: #eee;" onclick="cancelEdit('link')">Cancel Edit</button>
-                        </div>
-                    </form>
+                        <form id="add-link-form">
+                            <div class="form-group">
+                                <label>Link Title</label>
+                                <input type="text" id="link-title" required>
+                            </div>
+                            <div class="form-group">
+                                <label>URL</label>
+                                <input type="text" id="link-url" required>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button type="submit" id="link-submit-btn" class="btn btn-gold">Add Link</button>
+                                <button type="button" id="link-cancel-btn" class="btn" style="display: none; background: #eee;" onclick="cancelEdit('link')">Cancel Edit</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </section>
         </main>
@@ -288,9 +311,11 @@
                 document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
                 link.classList.add('active');
 
-                // Default to first tab if Gallery section
+                // Default to first tab if Gallery or Settings section
                 if (section === 'gallery') {
                     switchGalleryTab('tab-backgrounds');
+                } else if (section === 'settings') {
+                    switchSettingsTab('tab-contact');
                 }
 
                 renderAll();
@@ -303,6 +328,20 @@
                 content.classList.remove('active');
             });
             document.querySelectorAll('#gallery-section .tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('onclick').includes(tabId)) {
+                    btn.classList.add('active');
+                }
+            });
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Settings Tab Switching
+        function switchSettingsTab(tabId) {
+            document.querySelectorAll('#settings-section .tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('#settings-section .tab-btn').forEach(btn => {
                 btn.classList.remove('active');
                 if (btn.getAttribute('onclick').includes(tabId)) {
                     btn.classList.add('active');
