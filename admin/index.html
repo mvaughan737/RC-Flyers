@@ -1,55 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Converse Flying Eagles Admin</title>
-    <meta name="robots" content="noindex" />
-  </head>
-  <body>
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
-    <script>
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on("init", function (user) {
-          if (!user) {
-            window.netlifyIdentity.on("login", function () {
-              document.location.href = "/admin/";
-            });
-          }
-        });
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Converse Flying Eagles Admin</title>
+  <meta name="robots" content="noindex" />
+</head>
 
-      // Auto-slug script for Decap CMS
-      document.addEventListener('input', (e) => {
-        // Find the input field for 'Event Title'
-        if (e.target.id && e.target.id.includes('title')) {
-          const title = e.target.value;
-          const slug = title.toLowerCase()
-            .replace(/[^\w\s-]/g, '')
-            .replace(/\s+/g, '-')
-            .replace(/--+/g, '-')
-            .trim();
-          
-          // Try to find the slug and eventFolder fields in the same list item
-          const parentItem = e.target.closest('li');
-          if (parentItem) {
-            const slugInput = parentItem.querySelector('input[id*="slug"]');
-            const folderInput = parentItem.querySelector('input[id*="eventFolder"]');
-            
-            // Only auto-populate if they are empty
-            if (slugInput && !slugInput.value) {
-              slugInput.value = slug;
-              slugInput.dispatchEvent(new Event('change', { bubbles: true }));
-            }
-            if (folderInput && !folderInput.value) {
-              folderInput.value = slug;
-              folderInput.dispatchEvent(new Event('change', { bubbles: true }));
-            }
-          }
+<body>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
+  <script>
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on("init", function (user) {
+        if (!user) {
+          window.netlifyIdentity.on("login", function () {
+            document.location.href = "/admin/";
+          });
         }
       });
-    </script>
-  </body>
+    }
+
+    // Auto-slug script for Decap CMS
+    document.addEventListener('input', (e) => {
+      // Find the input field for 'Event Title'
+      if (e.target.id && e.target.id.includes('title')) {
+        const title = e.target.value;
+        const slug = title.toLowerCase()
+          .replace(/[^\w\s-]/g, '')
+          .replace(/\s+/g, '-')
+          .replace(/--+/g, '-')
+          .trim();
+
+        // Try to find the slug and eventFolder fields in the same list item
+        const parentItem = e.target.closest('li');
+        if (parentItem) {
+          const slugInput = parentItem.querySelector('input[id*="slug"]');
+          const folderInput = parentItem.querySelector('input[id*="eventFolder"]');
+
+          // Only auto-populate if they are empty
+          if (slugInput && !slugInput.value) {
+            slugInput.value = slug;
+            slugInput.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+          if (folderInput && !folderInput.value) {
+            folderInput.value = slug;
+            folderInput.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        }
+      }
+    });
+  </script>
+  <!-- Back to Admin Dashboard Button -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const addBackButton = () => {
+        if (document.getElementById("back-to-dashboard")) return;
+
+        const header =
+          document.querySelector("header") ||
+          document.querySelector('[class*="AppHeader"]') ||
+          document.querySelector('[class*="Toolbar"]');
+
+        if (!header) return;
+
+        const btn = document.createElement("a");
+        btn.id = "back-to-dashboard";
+        btn.href = "/admin/dashboard.html";
+        btn.innerText = "← Back to Admin Dashboard";
+
+        btn.style.marginLeft = "15px";
+        btn.style.padding = "6px 10px";
+        btn.style.background = "#ffd700";
+        btn.style.color = "#001f4d";
+        btn.style.borderRadius = "5px";
+        btn.style.fontWeight = "bold";
+        btn.style.textDecoration = "none";
+        btn.style.display = "inline-block";
+
+        header.appendChild(btn);
+      };
+
+      setInterval(addBackButton, 800);
+    });
+  </script>
+</body>
+
 </html>
