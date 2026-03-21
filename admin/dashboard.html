@@ -26,6 +26,14 @@
         .form-group { margin-bottom: 1rem; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
+
+        /* Photo Manager Tabs */
+        .tab-bar { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .tab-btn { padding: 10px 20px; border: none; background: #f0f0f0; cursor: pointer; font-weight: bold; color: #666; border-radius: 5px; transition: all 0.3s; }
+        .tab-btn:hover { background: #e0e0e0; }
+        .tab-btn.active { background-color: var(--gold); color: var(--navy-blue); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
     </style>
 </head>
 <body>
@@ -120,69 +128,84 @@
                 </div>
             </section>
 
-            <!-- PHOTO MANAGER SECTION (Improved Guided Version Kept) -->
+            <!-- PHOTO MANAGER SECTION -->
             <section id="gallery-section" class="admin-section" style="display: none;">
                 <div class="admin-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                         <div>
-                            <h3>Gallery Folders & Backgrounds</h3>
-                            <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Review and manage the photos currently displayed on the website.</p>
+                            <h3>Photo Manager</h3>
+                            <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Manage backgrounds and gallery content.</p>
                         </div>
                         <button class="btn" style="background: #28a745; color: #fff; font-size: 0.8rem;" onclick="syncWithCMS()">↻ Refresh from Website</button>
-                    </div>
-
-                    <div style="margin-bottom: 2rem;">
-                        <h4 style="margin-bottom: 0.5rem; color: var(--navy-blue);">How to update your content:</h4>
-                        <div class="guide-step"><b>Step 1:</b> Click <a href="/admin/" target="_blank">Open Website Editor</a> to add photos or change the background.</div>
-                        <div class="guide-step"><b>Step 2:</b> Upload your images, save your changes, and wait a moment (Netlify build).</div>
-                        <div class="guide-step"><b>Step 3:</b> Return to this page and click <b>Refresh from Website</b> above to see the results.</div>
                     </div>
 
                     <div id="sync-notice" style="display: none; background: #e7f3ff; padding: 10px; border-left: 4px solid #007bff; margin-bottom: 1.5rem; font-size: 0.85rem;">
                         Website content has been successfully updated!
                     </div>
 
-                    <!-- Gallery List Preview -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem;">
-                        <h4>Current Gallery Folders</h4>
-                        <a href="/admin/#/collections/gallery_content/entries/gallery-data" target="_blank" class="btn btn-gold" style="font-size: 0.75rem; text-decoration: none;">Manage Folders in Editor</a>
-                    </div>
-                    <div id="gallery-events-list" style="margin-top: 1rem;"></div>
-                </div>
-
-                <!-- Homepage Background Preview -->
-                <div class="admin-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3>Homepage Background Image</h3>
-                        <a href="/admin/#/collections/site_settings/entries/background-images" target="_blank" class="btn btn-gold" style="font-size: 0.75rem; text-decoration: none;">Change Background in Editor</a>
-                    </div>
-                    <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">The grid below shows all available images. To change which one appears on the homepage, use the button above.</p>
-                    
-                    <div id="hero-picker-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 1.5rem;">
-                        <!-- JS handles injection -->
+                    <!-- Tabs Bar -->
+                    <div class="tab-bar">
+                        <button class="tab-btn active" onclick="switchGalleryTab('tab-backgrounds')">Background Images</button>
+                        <button class="tab-btn" onclick="switchGalleryTab('tab-create')">Create Gallery Folders</button>
+                        <button class="tab-btn" onclick="switchGalleryTab('tab-show')">Current Gallery Folders</button>
                     </div>
 
-                    <div id="hero-preview-container" style="background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #eee;">
-                        <div style="font-size: 0.75rem; font-weight: bold; margin-bottom: 5px; color: var(--navy-blue);">WEBSITE CURRENTLY DISPLAYS:</div>
-                        <div id="active-hero-preview" style="height: 120px; border-radius: 4px; background: #eee center/cover no-repeat; border: 2px solid var(--gold);"></div>
-                        <div id="active-hero-path" style="font-size: 0.7rem; color: #888; margin-top: 5px; word-break: break-all;">No image selected</div>
-                    </div>
-                </div>
+                    <!-- Tab 1: Background Images -->
+                    <div id="tab-backgrounds" class="tab-content active" style="padding-top: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <h4 style="margin: 0;">Background Images</h4>
+                            <a href="/admin/#/collections/site_settings/entries/background-images" target="_blank" class="btn btn-gold" style="font-size: 0.75rem; text-decoration: none;">Change Background in Editor</a>
+                        </div>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Choose and review the homepage background images used on the website.</p>
+                        
+                        <div id="hero-picker-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 1.5rem;">
+                            <!-- JS handles injection -->
+                        </div>
 
-                <!-- Modal for Previewing Folder Contents -->
-                <div id="gallery-images-manager" class="admin-card" style="display: none; border: 1px solid var(--sky-blue);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3>Previewing Photos: <span id="current-gallery-title"></span></h3>
-                        <button class="btn" style="background: #eee; font-size: 0.75rem;" onclick="document.getElementById('gallery-images-manager').style.display='none'">Close Preview</button>
+                        <div id="hero-preview-container" style="background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #eee;">
+                            <div style="font-size: 0.75rem; font-weight: bold; margin-bottom: 5px; color: var(--navy-blue);">WEBSITE CURRENTLY DISPLAYS:</div>
+                            <div id="active-hero-preview" style="height: 120px; border-radius: 4px; background: #eee center/cover no-repeat; border: 2px solid var(--gold);"></div>
+                            <div id="active-hero-path" style="font-size: 0.7rem; color: #888; margin-top: 5px; word-break: break-all;">No image selected</div>
+                        </div>
                     </div>
-                    
-                    <div id="gallery-images-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 2rem;"></div>
 
-                    <div style="background: #fffcf0; padding: 1rem; border-radius: 8px; border: 1px solid var(--gold);">
-                        <p style="font-size: 0.85rem; color: #444; margin: 0;">
-                            <b>Want to add or remove photos?</b><br>
-                            Please use the <a href="/admin/#/collections/gallery_content/entries/gallery-data" target="_blank" style="font-weight: bold; color: var(--navy-blue);">Website Content Editor</a> to make changes. After saving your edits, return here and click "Refresh from Website" to see the updated list.
-                        </p>
+                    <!-- Tab 2: Create Gallery Folders -->
+                    <div id="tab-create" class="tab-content" style="padding-top: 1rem;">
+                        <h4 style="margin-bottom: 0.5rem; color: var(--navy-blue);">Create Gallery Folders</h4>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Use the website editor to create folders, upload photos, and save gallery updates.</p>
+                        
+                        <div class="guide-step"><b>Step 1:</b> Click <a href="/admin/" target="_blank">Open Website Editor</a> to add photos or change the background.</div>
+                        <div class="guide-step"><b>Step 2:</b> Upload your images, save your changes, and wait a moment (Netlify build).</div>
+                        <div class="guide-step"><b>Step 3:</b> Return to this page and click <b>Refresh from Website</b> above to see the results.</div>
+                        
+                        <div style="margin-top: 2rem; padding: 1.5rem; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee;">
+                            <h4 style="margin-bottom: 0.5rem;">Ready to manage folders?</h4>
+                            <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">Use the editor to create new gallery events, set slugs, and upload photo batches.</p>
+                            <a href="/admin/#/collections/gallery_content/entries/gallery-data" target="_blank" class="btn btn-gold" style="font-size: 0.85rem; text-decoration: none;">Manage Folders in Editor</a>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Current Gallery Folders -->
+                    <div id="tab-show" class="tab-content" style="padding-top: 1rem;">
+                        <h4 style="margin-bottom: 0.5rem;">Current Gallery Folders</h4>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Browse current gallery folders and preview the photos already assigned to them.</p>
+                        
+                        <div id="gallery-events-list" style="margin-top: 1rem;"></div>
+
+                        <!-- Gallery Preview Area -->
+                        <div id="gallery-images-manager" style="display: none; margin-top: 2rem; padding: 1.5rem; background: #fffcf0; border-radius: 8px; border: 1px solid var(--gold);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                <h3>Previewing Photos: <span id="current-gallery-title"></span></h3>
+                                <button class="btn" style="background: #eee; font-size: 0.75rem;" onclick="document.getElementById('gallery-images-manager').style.display='none'">Close Preview</button>
+                            </div>
+                            
+                            <div id="gallery-images-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 1.5rem;"></div>
+
+                            <p style="font-size: 0.85rem; color: #444; margin: 0;">
+                                <b>Want to add or remove photos?</b><br>
+                                Please use the <a href="/admin/#/collections/gallery_content/entries/gallery-data" target="_blank" style="font-weight: bold; color: var(--navy-blue);">Website Content Editor</a> to make changes.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -265,9 +288,28 @@
                 document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
                 link.classList.add('active');
 
+                // Default to first tab if Gallery section
+                if (section === 'gallery') {
+                    switchGalleryTab('tab-backgrounds');
+                }
+
                 renderAll();
             });
         });
+
+        // Photo Manager Tab Switching
+        function switchGalleryTab(tabId) {
+            document.querySelectorAll('#gallery-section .tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('#gallery-section .tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('onclick').includes(tabId)) {
+                    btn.classList.add('active');
+                }
+            });
+            document.getElementById(tabId).classList.add('active');
+        }
 
         function showSuccess(id) {
             const el = document.getElementById(id);
