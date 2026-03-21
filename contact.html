@@ -131,13 +131,15 @@
             emailjs.init("XnsVrI4qM6uDxq12m");
         })();
 
-        document.getElementById('contact-form').addEventListener('submit', function (event) {
+        document.getElementById('contact-form').addEventListener('submit', async function (event) {
             event.preventDefault();
 
             let isValid = true;
+            const form = this;
             const name = document.getElementById('user_name');
             const email = document.getElementById('user_email');
             const phone = document.getElementById('user_phone');
+            const submitBtn = form.querySelector('button[type="submit"]');
 
             // Validation
             if (!name.value.trim()) {
@@ -148,15 +150,16 @@
             }
 
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email.value)) {
+            if (!emailRegex.test(email.value.trim())) {
                 document.getElementById('email-error').style.display = 'block';
                 isValid = false;
             } else {
                 document.getElementById('email-error').style.display = 'none';
             }
 
-            const phoneRegex = /^[\d\s\-\+\(\)]+$/;
-            if (!phone.value.trim() || !phoneRegex.test(phone.value)) {
+            const digitsOnly = phone.value.replace(/\D/g, '');
+            const phoneRegex = /^[\d\s\-+()]+$/;
+            if (!phone.value.trim() || !phoneRegex.test(phone.value) || digitsOnly.length < 10) {
                 document.getElementById('phone-error').style.display = 'block';
                 isValid = false;
             } else {
@@ -165,32 +168,39 @@
 
             if (!isValid) return;
 
-            const form = this;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
 
-            // 1️⃣ Send to YOU
-            emailjs.sendForm(
-                "service_slxz04a",
-                "template_bs70uq7",
-                form
-            ).then(() => {
-
-                // 2️⃣ Send auto-reply to USER
-                return emailjs.sendForm(
+            try {
+                // Main email to club/admin
+                await emailjs.sendForm(
                     "service_slxz04a",
-                    "template_mjvv22r",
+                    "template_bs70uq7",
                     form
                 );
 
-            }).then(() => {
-
-                // Success UI
+                // Show success to user immediately
                 document.getElementById('success-msg').style.display = 'block';
                 form.reset();
 
-            }).catch((error) => {
-                console.error("EmailJS Error:", error);
-                alert("Failed to send message. Please try again.");
-            });
+                // Best-effort auto reply - do not fail form if this breaks
+                emailjs.sendForm(
+                    "service_slxz04a",
+                    "template_mjyv22r",
+                    form
+                ).catch((autoReplyError) => {
+                    console.warn("Auto-reply failed:", autoReplyError);
+                });
+
+                alert("Success! Your message has been sent.");
+
+            } catch (error) {
+                console.error("EmailJS main send failed:", error);
+                alert("Sorry, your message could not be sent. Please try again.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send Message';
+            }
         });
     </script>
 
