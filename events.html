@@ -76,24 +76,31 @@
         </section>
     </main>
 
-    <footer style="background-color: var(--navy-blue); color: var(--white); padding: 3rem 0 1rem 0; margin-top: 4rem;">
-        <div class="container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
-            <div>
-                <h4 style="color: var(--gold); margin-bottom: 1.5rem;">Converse Flying Eagles</h4>
-                <p style="font-size: 0.9rem; line-height: 1.6;">Dedicated to the hobby of radio-controlled flight in Converse, Indiana and surrounding areas.</p>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Flying Eagles</h4>
+                <p>Converse Flying Eagles<br>PO Box 214<br>Converse, IN 46919</p>
+                <p style="margin-top: 0.5rem; font-size: 0.85rem;">Coordinates: 40.575675, -85.900127</p>
             </div>
-            <div>
-                <h4 style="color: var(--gold); margin-bottom: 1.5rem;">Quick Links</h4>
-                <ul id="footer-links" style="list-style: none; padding: 0; font-size: 0.9rem;"></ul>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul id="footer-links" style="list-style: none; padding: 0;">
+                    <!-- Populated by JS -->
+                </ul>
             </div>
-            <div>
-                <h4 style="color: var(--gold); margin-bottom: 1.5rem;">Contact Us</h4>
-                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;" id="footer-email">Email: <span id="set-email">geomarfar@gmail.com</span></p>
-                <p style="font-size: 0.9rem;" id="footer-phone">Phone: <span id="set-phone">(765) 555-0123</span></p>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p id="footer-email">Email: geomarfar@gmail.com</p>
+                <p id="footer-phone">Phone: (765) 555-0123</p>
+                <a href="https://www.facebook.com/groups/converseeagles" target="_blank" rel="noopener noreferrer" class="facebook-button-compact">
+                    <svg class="fb-icon-small" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    Join us on Facebook!
+                </a>
             </div>
         </div>
-        <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem;">
-            &copy; 2026 Converse Flying Eagles RC Club. | <a href="admin/login.html" style="color: var(--gold);">Admin Login</a>
+        <div class="footer-bottom">
+            &copy; 2026 Converse Flying Eagles RC Club. All rights reserved. | <a href="admin/login.html" style="color: var(--gold);">Admin Login</a>
         </div>
     </footer>
     <script src="js/status_final.js?cb=987654321"></script>
@@ -161,8 +168,8 @@
             }
 
             // 4. FOOTER / SETTINGS
-            document.getElementById('set-email').textContent = settings.email;
-            document.getElementById('set-phone').textContent = settings.phone;
+            document.getElementById('footer-email').innerText = `Email: ${settings.email}`;
+            document.getElementById('footer-phone').innerText = `Phone: ${settings.phone}`;
             document.getElementById('footer-links').innerHTML = links.map(l => `
                 <li style="margin-bottom: 0.5rem;"><a href="${l.url}" style="color: var(--white); text-decoration: none;">${l.title}</a></li>
             `).join('');
