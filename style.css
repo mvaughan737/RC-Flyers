@@ -143,6 +143,31 @@ header {
     border-bottom: 2px solid var(--gold);
 }
 
+/* Hamburger Menu Icon */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 24px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 10;
+    justify-self: end;
+}
+
+.hamburger span {
+    width: 30px;
+    height: 3px;
+    background: var(--gold);
+    border-radius: 10px;
+    transition: all 0.3s linear;
+    position: relative;
+    transform-origin: 1px;
+}
+
 /* --- Splash Screen Intro --- */
 #splash-screen {
     position: fixed;
@@ -407,9 +432,79 @@ footer {
 
 /* Responsive */
 @media (max-width: 768px) {
-    .nav-links {
-        display: none; /* Mobile menu should be implemented properly with JS */
+    .nav-container {
+        grid-template-columns: 1fr auto;
+        padding: 0.5rem 0;
     }
+
+    .nav-container > nav {
+        grid-column: 1 / span 2;
+        width: 100%;
+    }
+
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: var(--navy-blue);
+        position: absolute;
+        top: 100%;
+        left: 0;
+        padding: 1rem 5%;
+        gap: 0;
+        box-shadow: 0 10px 15px rgba(0,0,0,0.2);
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .nav-links.open {
+        display: flex;
+    }
+
+    .nav-links li {
+        width: 100%;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .nav-links li:last-child {
+        border-bottom: none;
+    }
+
+    .nav-links a {
+        display: block;
+        padding: 12px 0;
+        font-size: 1.1rem;
+    }
+
+    .nav-links a.active {
+        border-bottom: none;
+        color: var(--gold);
+        font-weight: bold;
+    }
+
+    .gallery-dropdown-content {
+        position: static;
+        display: block;
+        background-color: rgba(255,255,255,0.05);
+        box-shadow: none;
+        padding-left: 1.5rem;
+        border: none;
+        margin-bottom: 10px;
+        min-width: 0;
+    }
+
+    .gallery-dropdown-content a {
+        padding: 8px 0;
+        font-size: 0.95rem;
+    }
+
+    .field-status {
+        display: none; /* Hide in header on mobile to save space, but it's on the homepage anyway */
+    }
+
+    .hamburger {
+        display: flex;
+    }
+
     .hero h1 {
         font-size: 2.5rem;
     }
