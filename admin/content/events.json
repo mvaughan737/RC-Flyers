@@ -1,20 +1,6 @@
 {
   "events": [
     {
-      "id": 1,
-      "title": "Indoor Fly",
-      "date": "2026-03-21",
-      "time": "9am",
-      "location": "Amboy Friends Church"
-    },
-    {
-      "title": "Pumpkin Day",
-      "date": "2026-03-28",
-      "time": "TBD",
-      "location": "Club Field",
-      "id": 1774243211656
-    },
-    {
       "id": 2,
       "title": "Combat",
       "date": "2026-05-16",
@@ -27,6 +13,41 @@
       "date": "2026-06-20",
       "time": "TBD",
       "location": "Main Field"
+    },
+    {
+      "title": "Warbird Day",
+      "date": "2026-07-18",
+      "time": "TBD",
+      "location": "Club Field",
+      "id": 1774247800407
+    },
+    {
+      "title": "Eagles and Friends Fly-In",
+      "date": "2026-08-15",
+      "time": "TBD",
+      "location": "Club Field",
+      "id": 1774247849319
+    },
+    {
+      "title": "Kids and Eagles Fly-In",
+      "date": "2026-09-12",
+      "time": "TBD",
+      "location": "Club Field",
+      "id": 1774247889219
+    },
+    {
+      "title": "Christmas Party",
+      "date": "2026-12-05",
+      "time": "TBD",
+      "location": "Club Field",
+      "id": 1774247922325
+    },
+    {
+      "title": "Santa Shop and Swap",
+      "date": "2026-12-12",
+      "time": "TBD",
+      "location": "Club Field",
+      "id": 1774247962943
     }
   ]
 }
