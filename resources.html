@@ -128,6 +128,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             // 1. DATA INITIALIZATION (DataManager is the Source of Truth for text content)
+            await DataManager.loadContactFromSource();
             let settings = DataManager.getSettings();
             let links = DataManager.getLinks();
 

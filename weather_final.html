@@ -258,10 +258,11 @@
     <script src="js/gallery-controller.js"></script>
     <script src="js/status_final.js?cb=9876543210"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            await DataManager.loadContactFromSource();
             const settings = DataManager.getSettings();
             document.getElementById('footer-email').innerText = `Email: ${settings.email}`;
-            document.getElementById('footer-phone').innerText = `Phone: ${settings.phone}`;
+            document.getElementById('footer-phone').innerText = `Ph: ${settings.phone}`;
             document.getElementById('footer-links').innerHTML = DataManager.getLinks().map(l => `
                 <li style="margin-bottom: 0.5rem;"><a href="${l.url}" style="color: var(--white); text-decoration: none;">${l.title}</a></li>
             `).join('');

@@ -182,6 +182,7 @@
 
             // 1. DATA INITIALIZATION (DataManager is the Source of Truth for text content)
             await DataManager.loadEventsFromSource();
+            await DataManager.loadContactFromSource();
             let newsData = DataManager.getNews();
             let eventData = DataManager.getEvents();
             let settings = DataManager.getSettings();

@@ -190,6 +190,70 @@ const DataManager = (() => {
 
             return true;
         },
+        loadContactFromSource: async () => {
+            try {
+                const response = await fetch('/admin/content/contact.json?cb=' + Date.now());
+                if (response.ok) {
+                    const remote = await response.json();
+                    if (remote && remote.contact) {
+                        data.settings.email = remote.contact.email || data.settings.email;
+                        data.settings.phone = remote.contact.phone || data.settings.phone;
+                        save();
+                        return true;
+                    }
+                }
+            } catch (err) {
+                console.warn('DataManager: Failed to load remote contact info', err);
+            }
+            return false;
+        },
+        publishContact: async () => {
+            if (!github.token) throw new Error('GitHub Token not found.');
+            
+            const path = 'admin/content/contact.json';
+            const url = `https://api.github.com/repos/${github.owner}/${github.repo}/contents/${path}`;
+            
+            // 1. Get current file data (to get SHA)
+            const getRes = await fetch(url, {
+                headers: { 'Authorization': `token ${github.token}` }
+            });
+            
+            let sha = null;
+            if (getRes.ok) {
+                const fileData = await getRes.json();
+                sha = fileData.sha;
+            }
+
+            // 2. Prepare content (Only Email and Phone for this phase)
+            const content = btoa(JSON.stringify({ 
+                contact: {
+                    email: data.settings.email,
+                    phone: data.settings.phone
+                }
+            }, null, 2));
+            
+            // 3. Commit change
+            const putRes = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${github.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `Update club contact info via Admin Dashboard [${new Date().toLocaleString()}]`,
+                    content: content,
+                    sha: sha,
+                    branch: github.branch
+                })
+            });
+
+            if (!putRes.ok) {
+                const err = await putRes.json();
+                throw new Error(err.message || 'Failed to publish to GitHub.');
+            }
+
+            return true;
+        },
 
         // Links
         getLinks: () => data.links,

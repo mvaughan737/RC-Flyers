@@ -119,7 +119,8 @@
         };
     </script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            await DataManager.loadContactFromSource();
             const settings = DataManager.getSettings();
             document.getElementById('footer-email').innerText = `Email: ${settings.email}`;
             document.getElementById('footer-phone').innerText = `Phone: ${settings.phone}`;

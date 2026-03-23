@@ -237,10 +237,22 @@
 
                     <!-- Tab 1: Club Contact Info -->
                     <div id="tab-contact" class="tab-content active" style="padding-top: 1rem;">
-                        <h4 style="margin-bottom: 0.5rem; color: var(--navy-blue);">Club Contact Info</h4>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <h4 style="color: var(--navy-blue); margin: 0;">Club Contact Info</h4>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn" style="background: #28a745; color: #fff; font-size: 0.75rem;" onclick="refreshContact()">↻ Sync Web data</button>
+                                <button class="btn btn-gold" style="font-size: 0.75rem;" onclick="openPublishContactModal()">↑ Publish to Website</button>
+                            </div>
+                        </div>
                         <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Update the club’s public contact details shown on the website.</p>
                         
-                        <div id="contact-status" style="display: none; color: green; margin-bottom: 10px; font-weight: bold;">✓ Contact info saved successfully!</div>
+                        <div id="contact-publish-notice" style="display: none; background: #e7f3ff; padding: 10px; border-left: 4px solid var(--sky-blue); margin-bottom: 1rem; font-size: 0.85rem;">
+                            <strong>Changes Pending:</strong> Contact details are updated locally, but not yet live. Click 'Publish' to sync.
+                        </div>
+
+                        <div id="contact-status" style="display: none; color: green; margin-bottom: 10px; font-weight: bold;">
+                             ✓ Contact info saved successfully!
+                        </div>
                         <form id="contact-settings-form">
                             <div class="form-group">
                                 <label>Contact Email</label>
@@ -614,6 +626,8 @@
                 phone: document.getElementById('set-phone').value
             });
             showSuccess('contact-status');
+            // Show the pending changes notice
+            document.getElementById('contact-publish-notice').style.display = 'block';
             renderAll();
         });
 
@@ -924,13 +938,18 @@
             }
         }
 
-        // Modification to renderAll to show the publish notice if events changed
+        // Modification to renderAll to show the publish notice if events/contact changed
         const originalRenderAll = renderAll;
         renderAll = function() {
             originalRenderAll();
-            // Show publish notice if we are in admin and have local data (always show for now to remind the flow)
-            const notice = document.getElementById('publish-notice');
-            if (notice) notice.style.display = 'block';
+            // We show notices to remind users to publish
+            // For now, mirroring the events logic
+            const eventNotice = document.getElementById('publish-notice');
+            if (eventNotice) eventNotice.style.display = 'block';
+
+            const contactNotice = document.getElementById('contact-publish-notice');
+            if (contactNotice) contactNotice.style.display = 'block';
+            
             initGithubFields();
         };
 
