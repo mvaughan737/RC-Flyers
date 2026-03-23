@@ -875,6 +875,38 @@
             }
         }
 
+        function openPublishContactModal() {
+            const github = DataManager.getGithubSettings();
+            if (!github.token || !github.owner || !github.repo) {
+                alert('Please configure your GitHub settings first in the Analytics > GitHub Sync tab.');
+                switchSection('analytics');
+                switchAnalyticsTab('tab-github-sync');
+                return;
+            }
+            if (confirm('Deploying Contact Info to website now. This will:\n1. Update the shared contact.json file on GitHub\n2. Trigger a Netlify redeploy\n\nContinue?')) {
+                publishContactToWebsite();
+            }
+        }
+
+        async function publishContactToWebsite() {
+            const btn = document.querySelector('button[onclick="openPublishContactModal()"]');
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = 'Publishing...';
+            
+            try {
+                await DataManager.publishContact();
+                alert('Contact Info successfully published! The website will update in 1-2 minutes.');
+                document.getElementById('contact-publish-notice').style.display = 'none';
+            } catch (err) {
+                console.error(err);
+                alert('Publish failed: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        }
+
         function saveGithubConfig() {
             const settings = {
                 owner: document.getElementById('gh-owner').value.trim(),
@@ -919,6 +951,21 @@
             btn.innerText = originalText;
         }
 
+        async function refreshContact() {
+            const btn = document.querySelector('button[onclick="refreshContact()"]');
+            const originalText = btn.innerText;
+            btn.innerText = 'Updating...';
+            
+            const success = await DataManager.loadContactFromSource();
+            if (success) {
+                alert('Fetched latest club contact info from website.');
+                renderAll();
+            } else {
+                alert('Failed to fetch remote contact info. You may be offline.');
+            }
+            btn.innerText = originalText;
+        }
+
         function switchSection(section) {
             document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none');
             document.getElementById(`${section}-section`).style.display = 'block';
@@ -955,6 +1002,7 @@
 
         window.addEventListener('load', async () => {
             await DataManager.loadEventsFromSource();
+            await DataManager.loadContactFromSource();
             syncWithCMS();
             initGithubFields();
         });
