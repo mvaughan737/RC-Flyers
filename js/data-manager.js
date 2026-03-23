@@ -4,6 +4,7 @@
  */
 const DataManager = (() => {
     const STORAGE_KEY = 'flying_eagles_data';
+    const GITHUB_KEY = 'flying_eagles_github';
 
     // Initial default data
     const defaults = {
@@ -53,6 +54,7 @@ const DataManager = (() => {
     };
 
     let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaults;
+    let github = JSON.parse(localStorage.getItem(GITHUB_KEY)) || { owner: 'mvaughan737', repo: 'RC-Flyers', branch: 'main', token: '' };
     
     // Ensure core links are always present
     const coreTitles = defaults.links.map(l => l.title);
@@ -65,6 +67,10 @@ const DataManager = (() => {
 
     const save = () => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    };
+
+    const saveGithub = () => {
+        localStorage.setItem(GITHUB_KEY, JSON.stringify(github));
     };
 
     return {
@@ -96,6 +102,27 @@ const DataManager = (() => {
 
         // Events
         getEvents: () => data.events,
+        loadEventsFromSource: async () => {
+            try {
+                // Fetch from the shared published source
+                const response = await fetch('/admin/content/events.json?cb=' + Date.now());
+                if (response.ok) {
+                    const remote = await response.json();
+                    if (remote && Array.isArray(remote.events)) {
+                        // Merge logic: Prioritize remote data for public site
+                        // but if we are in admin, we might want to keep local changes.
+                        // For now, we update local data but keep the 'published' state in mind.
+                        data.events = remote.events;
+                        data.events.sort((a, b) => new Date(a.date) - new Date(b.date));
+                        save();
+                        return true;
+                    }
+                }
+            } catch (err) {
+                console.warn('DataManager: Failed to load remote events', err);
+            }
+            return false;
+        },
         addEvent: (item) => {
             item.id = Date.now();
             data.events.push(item);
@@ -113,6 +140,55 @@ const DataManager = (() => {
         deleteEvent: (id) => {
             data.events = data.events.filter(e => e.id !== id);
             save();
+        },
+
+        // GitHub / Publishing
+        getGithubSettings: () => github,
+        updateGithubSettings: (newSettings) => {
+            github = { ...github, ...newSettings };
+            saveGithub();
+        },
+        publishEvents: async () => {
+            if (!github.token) throw new Error('GitHub Token not found.');
+            
+            const path = 'admin/content/events.json';
+            const url = `https://api.github.com/repos/${github.owner}/${github.repo}/contents/${path}`;
+            
+            // 1. Get current file data (to get SHA)
+            const getRes = await fetch(url, {
+                headers: { 'Authorization': `token ${github.token}` }
+            });
+            
+            let sha = null;
+            if (getRes.ok) {
+                const fileData = await getRes.json();
+                sha = fileData.sha;
+            }
+
+            // 2. Prepare content
+            const content = btoa(JSON.stringify({ events: data.events }, null, 2));
+            
+            // 3. Commit change
+            const putRes = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${github.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `Update events via Admin Dashboard [${new Date().toLocaleString()}]`,
+                    content: content,
+                    sha: sha,
+                    branch: github.branch
+                })
+            });
+
+            if (!putRes.ok) {
+                const err = await putRes.json();
+                throw new Error(err.message || 'Failed to publish to GitHub.');
+            }
+
+            return true;
         },
 
         // Links

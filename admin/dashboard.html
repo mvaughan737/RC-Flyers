@@ -124,7 +124,16 @@
                     </form>
                 </div>
                 <div class="admin-card">
-                    <h3>Scheduled Events</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Scheduled Events</h3>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn" style="background: #28a745; color: #fff; font-size: 0.8rem;" onclick="refreshEvents()">↻ Sync Web data</button>
+                            <button class="btn btn-gold" style="font-size: 0.8rem;" onclick="openPublishModal()">↑ Publish to Website</button>
+                        </div>
+                    </div>
+                    <div id="publish-notice" style="display: none; background: #e7f3ff; padding: 10px; border-left: 4px solid var(--sky-blue); margin-bottom: 1rem; font-size: 0.85rem;">
+                        <strong>Changes Pending:</strong> Local events are updated, but not yet live on the website. Click 'Publish' to sync.
+                    </div>
                     <div id="events-list"></div>
                 </div>
             </section>
@@ -305,6 +314,7 @@
                         <button class="tab-btn active" onclick="switchAnalyticsTab('tab-overview')">Website Overview</button>
                         <button class="tab-btn" onclick="switchAnalyticsTab('tab-visitor-stats')">Visitor Stats</button>
                         <button class="tab-btn" onclick="switchAnalyticsTab('tab-usage-insights')">Usage Insights</button>
+                        <button class="tab-btn" onclick="switchAnalyticsTab('tab-github-sync')">GitHub Sync</button>
                     </div>
 
                     <!-- Tab 1: Website Overview -->
@@ -391,6 +401,42 @@
                                 <li><strong>Fresh Content:</strong> Regularly update the News and Events to keep visitors engaged.</li>
                             </ul>
                         </div>
+                    </div>
+
+                    <!-- Tab 4: GitHub Sync -->
+                    <div id="tab-github-sync" class="tab-content" style="padding-top: 1rem;">
+                        <h4 style="margin-bottom: 1rem; color: var(--navy-blue);">GitHub Publishing Configuration</h4>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Configure your GitHub repository and Personal Access Token (PAT) to enable publishing events directly to the website.</p>
+                        
+                        <div id="github-status" style="display: none; background: #e7f3ff; padding: 10px; border-left: 4px solid var(--sky-blue); margin-bottom: 1.5rem; font-size: 0.85rem;">
+                            ✓ Configuration saved successfully.
+                        </div>
+
+                        <form id="github-config-form">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div class="form-group">
+                                    <label>Repo Owner</label>
+                                    <input type="text" id="gh-owner" placeholder="e.g., mvaughan737">
+                                </div>
+                                <div class="form-group">
+                                    <label>Repo Name</label>
+                                    <input type="text" id="gh-repo" placeholder="e.g., RC-Flyers">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Repository Branch</label>
+                                <input type="text" id="gh-branch" placeholder="main">
+                            </div>
+                            <div class="form-group">
+                                <label>Personal Access Token (PAT)</label>
+                                <div style="position: relative;">
+                                    <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx">
+                                    <span style="position: absolute; right: 10px; top: 8px; font-size: 0.7rem; color: var(--gold); cursor: pointer;" onclick="togglePassword('gh-token')">Show</span>
+                                </div>
+                                <p style="font-size: 0.75rem; color: #888; margin-top: 5px;">Your token is stored locally in this browser and never sent to our servers.</p>
+                            </div>
+                            <button type="button" class="btn btn-gold" onclick="saveGithubConfig()">Save Configuration</button>
+                        </form>
                     </div>
                 </div>
             </section>
@@ -782,8 +828,116 @@
             renderAll();
         }
 
-        window.addEventListener('load', () => {
+        // GitHub Publishing UI Logic
+        function openPublishModal() {
+            const github = DataManager.getGithubSettings();
+            if (!github.token || !github.owner || !github.repo) {
+                alert('Please configure your GitHub settings first in the Analytics > GitHub Sync tab.');
+                switchSection('analytics');
+                switchAnalyticsTab('tab-github-sync');
+                return;
+            }
+            if (confirm('Deploying to website now. This will:\n1. Update the shared events.json file on GitHub\n2. Trigger a Netlify redeploy\n\nContinue?')) {
+                publishToWebsite();
+            }
+        }
+
+        async function publishToWebsite() {
+            const btn = document.querySelector('button[onclick="openPublishModal()"]');
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = 'Publishing...';
+            
+            try {
+                await DataManager.publishEvents();
+                alert('Successfully published! The website will update in 1-2 minutes.');
+                document.getElementById('publish-notice').style.display = 'none';
+            } catch (err) {
+                console.error(err);
+                alert('Publish failed: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        }
+
+        function saveGithubConfig() {
+            const settings = {
+                owner: document.getElementById('gh-owner').value.trim(),
+                repo: document.getElementById('gh-repo').value.trim(),
+                branch: document.getElementById('gh-branch').value.trim() || 'main',
+                token: document.getElementById('gh-token').value.trim()
+            };
+            
+            if (!settings.owner || !settings.repo || !settings.token) {
+                alert('Please fill in all required fields (Owner, Repo, Token).');
+                return;
+            }
+
+            DataManager.updateGithubSettings(settings);
+            showSuccess('github-status');
+        }
+
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            const span = input.nextElementSibling;
+            if (input.type === 'password') {
+                input.type = 'text';
+                span.innerText = 'Hide';
+            } else {
+                input.type = 'password';
+                span.innerText = 'Show';
+            }
+        }
+
+        async function refreshEvents() {
+            const btn = document.querySelector('button[onclick="refreshEvents()"]');
+            const originalText = btn.innerText;
+            btn.innerText = 'Updating...';
+            
+            const success = await DataManager.loadEventsFromSource();
+            if (success) {
+                alert('Fetched latest events from website.');
+                renderAll();
+            } else {
+                alert('Failed to fetch remote events. You may be offline.');
+            }
+            btn.innerText = originalText;
+        }
+
+        function switchSection(section) {
+            document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none');
+            document.getElementById(`${section}-section`).style.display = 'block';
+            document.getElementById('section-title').innerText = document.querySelector(`[data-section="${section}"]`).innerText;
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelector(`[data-section="${section}"]`).classList.add('active');
+        }
+
+        // Initialize local GitHub fields
+        function initGithubFields() {
+            const g = DataManager.getGithubSettings();
+            if (document.getElementById('gh-owner')) {
+                document.getElementById('gh-owner').value = g.owner || '';
+                document.getElementById('gh-repo').value = g.repo || '';
+                document.getElementById('gh-branch').value = g.branch || 'main';
+                document.getElementById('gh-token').value = g.token || '';
+            }
+        }
+
+        // Modification to renderAll to show the publish notice if events changed
+        const originalRenderAll = renderAll;
+        renderAll = function() {
+            originalRenderAll();
+            // Show publish notice if we are in admin and have local data (always show for now to remind the flow)
+            const notice = document.getElementById('publish-notice');
+            if (notice) notice.style.display = 'block';
+            initGithubFields();
+        };
+
+        window.addEventListener('load', async () => {
+            await DataManager.loadEventsFromSource();
             syncWithCMS();
+            initGithubFields();
         });
     </script>
 </body>
