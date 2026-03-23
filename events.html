@@ -117,26 +117,13 @@
     <script src="js/gallery-controller.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // 1. DATA INITIALIZATION
+            // 1. DATA INITIALIZATION (DataManager is the Source of Truth for text content)
             let eventData = DataManager.getEvents();
             let settings = DataManager.getSettings();
             let links = DataManager.getLinks();
 
-            if (typeof CMSLoader !== 'undefined') {
-                try {
-                    const [cmsEvents, cmsInfo, cmsLinks] = await Promise.all([
-                        CMSLoader.loadCmsEvents(),
-                        CMSLoader.loadCmsClubInfo(),
-                        CMSLoader.loadCmsQuickLinks()
-                    ]);
-
-                    if (cmsEvents && cmsEvents.length > 0) eventData = cmsEvents;
-                    if (cmsInfo) settings = { ...settings, ...cmsInfo };
-                    if (cmsLinks && cmsLinks.length > 0) links = cmsLinks;
-                } catch (err) {
-                    console.warn('CMS data load failed, using local data.', err);
-                }
-            }
+            // Note: CMSLoader is now used EXCLUSIVELY for image/media data (Backgrounds, Gallery)
+            // as per architectural refactor to make the Admin Dashboard the primary source of truth.
             
             // 2. RENDER MEETINGS
             document.getElementById('meeting-text').innerText = `Held ${settings.meetingTime}.`;

@@ -87,26 +87,13 @@
     <script src="js/gallery-controller.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // 1. DATA INITIALIZATION
+            // 1. DATA INITIALIZATION (DataManager is the Source of Truth for text content)
             let newsData = DataManager.getNews();
             let settings = DataManager.getSettings();
             let links = DataManager.getLinks();
 
-            if (typeof CMSLoader !== 'undefined') {
-                try {
-                    const [cmsNews, cmsInfo, cmsLinks] = await Promise.all([
-                        CMSLoader.loadCmsNews(),
-                        CMSLoader.loadCmsClubInfo(),
-                        CMSLoader.loadCmsQuickLinks()
-                    ]);
-
-                    if (cmsNews && cmsNews.length > 0) newsData = cmsNews;
-                    if (cmsInfo) settings = { ...settings, ...cmsInfo };
-                    if (cmsLinks && cmsLinks.length > 0) links = cmsLinks;
-                } catch (err) {
-                    console.warn('CMS data load failed, using local data.', err);
-                }
-            }
+            // Note: CMSLoader is now used EXCLUSIVELY for image/media data (Backgrounds, Gallery)
+            // as per architectural refactor to make the Admin Dashboard the primary source of truth.
             
             // Icons
             const icons = {

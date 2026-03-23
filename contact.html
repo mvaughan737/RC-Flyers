@@ -347,23 +347,12 @@
     <script src="js/gallery-controller.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // 1. DATA INITIALIZATION
+            // 1. DATA INITIALIZATION (DataManager is the Source of Truth for text content)
             let settings = DataManager.getSettings();
             let links = DataManager.getLinks();
 
-            if (typeof CMSLoader !== 'undefined') {
-                try {
-                    const [cmsInfo, cmsLinks] = await Promise.all([
-                        CMSLoader.loadCmsClubInfo(),
-                        CMSLoader.loadCmsQuickLinks()
-                    ]);
-
-                    if (cmsInfo) settings = { ...settings, ...cmsInfo };
-                    if (cmsLinks && cmsLinks.length > 0) links = cmsLinks;
-                } catch (err) {
-                    console.warn('CMS data load failed, using local data.', err);
-                }
-            }
+            // Note: CMSLoader is now used EXCLUSIVELY for image/media data (Backgrounds, Gallery)
+            // as per architectural refactor to make the Admin Dashboard the primary source of truth.
 
             // 2. RENDER CONTENT
             document.getElementById('footer-email').innerText = `Email: ${settings.email}`;

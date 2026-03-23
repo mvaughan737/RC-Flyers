@@ -180,29 +180,14 @@
                 news: `<svg class="meta-icon" style="fill: var(--gold)" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>`
             };
 
-            // 1. DATA INITIALIZATION (Try CMS, Fallback to DataManager)
+            // 1. DATA INITIALIZATION (DataManager is the Source of Truth for text content)
             let newsData = DataManager.getNews();
             let eventData = DataManager.getEvents();
             let settings = DataManager.getSettings();
             let links = DataManager.getLinks();
 
-            if (typeof CMSLoader !== 'undefined') {
-                try {
-                    const [cmsNews, cmsEvents, cmsInfo, cmsLinks] = await Promise.all([
-                        CMSLoader.loadCmsNews(),
-                        CMSLoader.loadCmsEvents(),
-                        CMSLoader.loadCmsClubInfo(),
-                        CMSLoader.loadCmsQuickLinks()
-                    ]);
-
-                    if (cmsNews && cmsNews.length > 0) newsData = cmsNews;
-                    if (cmsEvents && cmsEvents.length > 0) eventData = cmsEvents;
-                    if (cmsInfo) settings = { ...settings, ...cmsInfo };
-                    if (cmsLinks && cmsLinks.length > 0) links = cmsLinks;
-                } catch (err) {
-                    console.warn('CMS data load failed, using local data.', err);
-                }
-            }
+            // Note: CMSLoader is now used EXCLUSIVELY for image/media data (Backgrounds, Gallery)
+            // as per architectural refactor to make the Admin Dashboard the primary source of truth.
 
             // 2. RENDER NEWS
             const newsList = document.getElementById('latest-news-list');
