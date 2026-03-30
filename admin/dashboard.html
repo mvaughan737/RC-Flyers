@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,31 +12,115 @@
             grid-template-columns: 250px 1fr;
             min-height: 100vh;
         }
+
         .sidebar {
             background-color: var(--navy-blue);
             color: var(--white);
             padding: 2rem 1rem;
         }
-        .sidebar ul { list-style: none; padding: 0; }
-        .sidebar li { margin-bottom: 1rem; }
-        .sidebar a { color: var(--white); text-decoration: none; display: block; padding: 10px; border-radius: 5px; transition: background 0.3s; }
-        .sidebar a:hover, .sidebar a.active { background-color: var(--sky-blue); color: var(--navy-blue); }
-        .content { padding: 3rem; }
-        .admin-card { background: var(--white); padding: 2rem; border-radius: 10px; box-shadow: var(--shadow); margin-bottom: 2rem; }
-        .guide-step { background: #fdfdfd; padding: 10px; border-left: 4px solid var(--gold); margin-bottom: 5px; font-size: 0.85rem; }
-        .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar li {
+            margin-bottom: 1rem;
+        }
+
+        .sidebar a {
+            color: var(--white);
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: var(--sky-blue);
+            color: var(--navy-blue);
+        }
+
+        .content {
+            padding: 3rem;
+        }
+
+        .admin-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .guide-step {
+            background: #fdfdfd;
+            padding: 10px;
+            border-left: 4px solid var(--gold);
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
 
         /* Photo Manager Tabs */
-        .tab-bar { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .tab-btn { padding: 10px 20px; border: none; background: #f0f0f0; cursor: pointer; font-weight: bold; color: #666; border-radius: 5px; transition: all 0.3s; }
-        .tab-btn:hover { background: #e0e0e0; }
-        .tab-btn.active { background-color: var(--gold); color: var(--navy-blue); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .tab-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: #f0f0f0;
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .tab-btn.active {
+            background-color: var(--gold);
+            color: var(--navy-blue);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
     </style>
 </head>
+
 <body>
     <script>
         if (localStorage.getItem('admin_auth') !== 'true') {
@@ -46,9 +131,11 @@
     <div class="admin-main">
         <aside class="sidebar">
             <div style="text-align: center; margin-bottom: 2rem;">
-                <img src="../images/logo.png" alt="Club Logo" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--gold);">
+                <img src="../images/logo.png" alt="Club Logo"
+                    style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--gold);">
                 <h3 style="color: var(--gold); margin-top: 10px;">Eagle Admin</h3>
-                <div style="margin-top: 5px; font-size: 0.7rem; color: #aaa;">Status: <span id="sync-indicator">Connecting...</span></div>
+                <div style="margin-top: 5px; font-size: 0.7rem; color: #aaa;">Status: <span
+                        id="sync-indicator">Connecting...</span></div>
             </div>
             <ul>
                 <li><a href="#" class="nav-link active" data-section="news">News Management</a></li>
@@ -56,17 +143,19 @@
                 <li><a href="#" class="nav-link" data-section="gallery">Photo Manager</a></li>
                 <li><a href="#" class="nav-link" data-section="settings">Contact & Meetings</a></li>
                 <li><a href="#" class="nav-link" data-section="analytics">Analytics</a></li>
-                <li><a href="#" onclick="localStorage.removeItem('admin_auth'); window.location.href='login.html';" style="margin-top: 4rem; color: #ff6b6b;">Logout</a></li>
+                <li><a href="#" onclick="localStorage.removeItem('admin_auth'); window.location.href='login.html';"
+                        style="margin-top: 4rem; color: #ff6b6b;">Logout</a></li>
             </ul>
         </aside>
-        
+
         <main class="content">
             <h2 id="section-title">News Management</h2>
 
             <!-- NEWS SECTION (Restored) -->
             <section id="news-section" class="admin-section">
                 <div class="admin-card">
-                    <div id="news-edit-indicator" style="display: none; background: #fffcf0; padding: 10px; border-left: 4px solid var(--gold); margin-bottom: 1rem; font-weight: bold;">
+                    <div id="news-edit-indicator"
+                        style="display: none; background: #fffcf0; padding: 10px; border-left: 4px solid var(--gold); margin-bottom: 1rem; font-weight: bold;">
                         Editing News Post...
                     </div>
                     <form id="news-form">
@@ -84,7 +173,9 @@
                         </div>
                         <div style="display: flex; gap: 10px;">
                             <button type="submit" id="news-submit-btn" class="btn btn-gold">Publish Post</button>
-                            <button type="button" id="news-cancel-btn" class="btn" style="display: none; background: #eee;" onclick="cancelEdit('news')">Cancel Edit</button>
+                            <button type="button" id="news-cancel-btn" class="btn"
+                                style="display: none; background: #eee;" onclick="cancelEdit('news')">Cancel
+                                Edit</button>
                         </div>
                     </form>
                 </div>
@@ -97,7 +188,8 @@
             <!-- EVENTS SECTION (Restored) -->
             <section id="events-section" class="admin-section" style="display: none;">
                 <div class="admin-card">
-                    <div id="event-edit-indicator" style="display: none; background: #fffcf0; padding: 10px; border-left: 4px solid var(--gold); margin-bottom: 1rem; font-weight: bold;">
+                    <div id="event-edit-indicator"
+                        style="display: none; background: #fffcf0; padding: 10px; border-left: 4px solid var(--gold); margin-bottom: 1rem; font-weight: bold;">
                         Editing Event...
                     </div>
                     <form id="event-form">
@@ -119,20 +211,27 @@
                         </div>
                         <div style="display: flex; gap: 10px;">
                             <button type="submit" id="event-submit-btn" class="btn btn-gold">Save Event</button>
-                            <button type="button" id="event-cancel-btn" class="btn" style="display: none; background: #eee;" onclick="cancelEdit('event')">Cancel Edit</button>
+                            <button type="button" id="event-cancel-btn" class="btn"
+                                style="display: none; background: #eee;" onclick="cancelEdit('event')">Cancel
+                                Edit</button>
                         </div>
                     </form>
                 </div>
                 <div class="admin-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3>Scheduled Events</h3>
                         <div style="display: flex; gap: 10px;">
-                            <button class="btn" style="background: #28a745; color: #fff; font-size: 0.8rem;" onclick="refreshEvents()">↻ Sync Web data</button>
-                            <button class="btn btn-gold" style="font-size: 0.8rem;" onclick="openPublishModal()">↑ Publish to Website</button>
+                            <button class="btn" style="background: #28a745; color: #fff; font-size: 0.8rem;"
+                                onclick="refreshEvents()">↻ Sync Web data</button>
+                            <button class="btn btn-gold" style="font-size: 0.8rem;" onclick="openPublishModal()">↑
+                                Publish to Website</button>
                         </div>
                     </div>
-                    <div id="publish-notice" style="display: none; background: #e7f3ff; padding: 10px; border-left: 4px solid var(--sky-blue); margin-bottom: 1rem; font-size: 0.85rem;">
-                        <strong>Changes Pending:</strong> Local events are updated, but not yet live on the website. Click 'Publish' to sync.
+                    <div id="publish-notice"
+                        style="display: none; background: #e7f3ff; padding: 10px; border-left: 4px solid var(--sky-blue); margin-bottom: 1rem; font-size: 0.85rem;">
+                        <strong>Changes Pending:</strong> Local events are updated, but not yet live on the website.
+                        Click 'Publish' to sync.
                     </div>
                     <div id="events-list"></div>
                 </div>
@@ -141,79 +240,114 @@
             <!-- PHOTO MANAGER SECTION -->
             <section id="gallery-section" class="admin-section" style="display: none;">
                 <div class="admin-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                         <div>
                             <h3>Photo Manager</h3>
-                            <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Manage backgrounds and gallery content.</p>
+                            <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Manage backgrounds and gallery
+                                content.</p>
                         </div>
-                        <button class="btn" style="background: #28a745; color: #fff; font-size: 0.8rem;" onclick="syncWithCMS()">↻ Refresh from Website</button>
+                        <button class="btn" style="background: #28a745; color: #fff; font-size: 0.8rem;"
+                            onclick="syncWithCMS()">↻ Refresh from Website</button>
                     </div>
 
-                    <div id="sync-notice" style="display: none; background: #e7f3ff; padding: 10px; border-left: 4px solid #007bff; margin-bottom: 1.5rem; font-size: 0.85rem;">
+                    <div id="sync-notice"
+                        style="display: none; background: #e7f3ff; padding: 10px; border-left: 4px solid #007bff; margin-bottom: 1.5rem; font-size: 0.85rem;">
                         Website content has been successfully updated!
                     </div>
 
                     <!-- Tabs Bar -->
                     <div class="tab-bar">
-                        <button class="tab-btn active" onclick="switchGalleryTab('tab-backgrounds')">Background Images</button>
+                        <button class="tab-btn active" onclick="switchGalleryTab('tab-backgrounds')">Background
+                            Images</button>
                         <button class="tab-btn" onclick="switchGalleryTab('tab-create')">Create Gallery Folders</button>
                         <button class="tab-btn" onclick="switchGalleryTab('tab-show')">Current Gallery Folders</button>
                     </div>
 
                     <!-- Tab 1: Background Images -->
                     <div id="tab-backgrounds" class="tab-content active" style="padding-top: 1rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                             <h4 style="margin: 0;">Background Images</h4>
-                            <a href="/admin/#/collections/site_settings/entries/background_settings" target="_blank" class="btn btn-gold" style="font-size: 0.75rem; text-decoration: none;">Change Background in Editor</a>
+                            <a href="/admin/#/collections/site_settings/entries/background_settings" target="_blank"
+                                class="btn btn-gold" style="font-size: 0.75rem; text-decoration: none;">Change
+                                Background in Editor</a>
                         </div>
-                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Choose and review the homepage background images used on the website.</p>
-                        
-                        <div id="hero-picker-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 1.5rem;">
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Choose and review the
+                            homepage background images used on the website.</p>
+
+                        <div id="hero-picker-grid"
+                            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 1.5rem;">
                             <!-- JS handles injection -->
                         </div>
 
-                        <div id="hero-preview-container" style="background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #eee;">
-                            <div style="font-size: 0.75rem; font-weight: bold; margin-bottom: 5px; color: var(--navy-blue);">WEBSITE CURRENTLY DISPLAYS:</div>
-                            <div id="active-hero-preview" style="height: 120px; border-radius: 4px; background: #eee center/cover no-repeat; border: 2px solid var(--gold);"></div>
-                            <div id="active-hero-path" style="font-size: 0.7rem; color: #888; margin-top: 5px; word-break: break-all;">No image selected</div>
+                        <div id="hero-preview-container"
+                            style="background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #eee;">
+                            <div
+                                style="font-size: 0.75rem; font-weight: bold; margin-bottom: 5px; color: var(--navy-blue);">
+                                WEBSITE CURRENTLY DISPLAYS:</div>
+                            <div id="active-hero-preview"
+                                style="height: 120px; border-radius: 4px; background: #eee center/cover no-repeat; border: 2px solid var(--gold);">
+                            </div>
+                            <div id="active-hero-path"
+                                style="font-size: 0.7rem; color: #888; margin-top: 5px; word-break: break-all;">No image
+                                selected</div>
                         </div>
                     </div>
 
                     <!-- Tab 2: Create Gallery Folders -->
                     <div id="tab-create" class="tab-content" style="padding-top: 1rem;">
                         <h4 style="margin-bottom: 0.5rem; color: var(--navy-blue);">Create Gallery Folders</h4>
-                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Use the website editor to create folders, upload photos, and save gallery updates.</p>
-                        
-                        <div class="guide-step"><b>Step 1:</b> Click <a href="/admin/#/collections/gallery_content/entries/gallery_data" target="_blank">Open Website Editor</a> to add photos or change the background.</div>
-                        <div class="guide-step"><b>Step 2:</b> Upload your images, save your changes, and wait a moment (Netlify build).</div>
-                        <div class="guide-step"><b>Step 3:</b> Return to this page and click <b>Refresh from Website</b> above to see the results.</div>
-                        
-                        <div style="margin-top: 2rem; padding: 1.5rem; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee;">
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Use the website editor to
+                            create folders, upload photos, and save gallery updates.</p>
+
+                        <div class="guide-step"><b>Step 1:</b> Click <a
+                                href="/admin/#/collections/gallery_content/entries/gallery_data" target="_blank">Open
+                                Website Editor</a> to add photos or change the background.</div>
+                        <div class="guide-step"><b>Step 2:</b> Upload your images, save your changes, and wait a moment
+                            (Netlify build).</div>
+                        <div class="guide-step"><b>Step 3:</b> Return to this page and click <b>Refresh from Website</b>
+                            above to see the results.</div>
+
+                        <div
+                            style="margin-top: 2rem; padding: 1.5rem; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee;">
                             <h4 style="margin-bottom: 0.5rem;">Ready to manage folders?</h4>
-                            <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">Use the editor to create new gallery events, set slugs, and upload photo batches.</p>
-                            <a href="/admin/#/collections/gallery_content/entries/gallery_data" target="_blank" class="btn btn-gold" style="font-size: 0.85rem; text-decoration: none;">Manage Folders in Editor</a>
+                            <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">Use the editor to create
+                                new gallery events, set slugs, and upload photo batches.</p>
+                            <a href="/admin/#/collections/gallery_content/entries/gallery_data" target="_blank"
+                                class="btn btn-gold" style="font-size: 0.85rem; text-decoration: none;">Manage Folders
+                                in Editor</a>
                         </div>
                     </div>
 
                     <!-- Tab 3: Current Gallery Folders -->
                     <div id="tab-show" class="tab-content" style="padding-top: 1rem;">
                         <h4 style="margin-bottom: 0.5rem;">Current Gallery Folders</h4>
-                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Browse current gallery folders and preview the photos already assigned to them.</p>
-                        
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Browse current gallery
+                            folders and preview the photos already assigned to them.</p>
+
                         <div id="gallery-events-list" style="margin-top: 1rem;"></div>
 
                         <!-- Gallery Preview Area -->
-                        <div id="gallery-images-manager" style="display: none; margin-top: 2rem; padding: 1.5rem; background: #fffcf0; border-radius: 8px; border: 1px solid var(--gold);">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <div id="gallery-images-manager"
+                            style="display: none; margin-top: 2rem; padding: 1.5rem; background: #fffcf0; border-radius: 8px; border: 1px solid var(--gold);">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                                 <h3>Previewing Photos: <span id="current-gallery-title"></span></h3>
-                                <button class="btn" style="background: #eee; font-size: 0.75rem;" onclick="document.getElementById('gallery-images-manager').style.display='none'">Close Preview</button>
+                                <button class="btn" style="background: #eee; font-size: 0.75rem;"
+                                    onclick="document.getElementById('gallery-images-manager').style.display='none'">Close
+                                    Preview</button>
                             </div>
-                            
-                            <div id="gallery-images-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 1.5rem;"></div>
+
+                            <div id="gallery-images-list"
+                                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 1.5rem;">
+                            </div>
 
                             <p style="font-size: 0.85rem; color: #444; margin: 0;">
                                 <b>Want to add or remove photos?</b><br>
-                                Please use the <a href="/admin/#/collections/gallery_content/entries/gallery_data" target="_blank" style="font-weight: bold; color: var(--navy-blue);">Website Content Editor</a> to make changes.
+                                Please use the <a href="/admin/#/collections/gallery_content/entries/gallery_data"
+                                    target="_blank" style="font-weight: bold; color: var(--navy-blue);">Website Content
+                                    Editor</a> to make changes.
                             </p>
                         </div>
                     </div>
@@ -225,33 +359,42 @@
                 <div class="admin-card">
                     <div style="margin-bottom: 1.5rem;">
                         <h3>Contact & Meetings</h3>
-                        <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Manage the club's contact details, meeting schedule, and pilot resources.</p>
+                        <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Manage the club's contact details,
+                            meeting schedule, and pilot resources.</p>
                     </div>
 
                     <!-- Tabs Bar -->
                     <div class="tab-bar">
-                        <button class="tab-btn active" onclick="switchSettingsTab('tab-contact')">Club Contact Info</button>
+                        <button class="tab-btn active" onclick="switchSettingsTab('tab-contact')">Club Contact
+                            Info</button>
                         <button class="tab-btn" onclick="switchSettingsTab('tab-meeting')">Monthly Meeting Info</button>
                         <button class="tab-btn" onclick="switchSettingsTab('tab-links')">Pilot Resources</button>
                     </div>
 
                     <!-- Tab 1: Club Contact Info -->
                     <div id="tab-contact" class="tab-content active" style="padding-top: 1rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                             <h4 style="color: var(--navy-blue); margin: 0;">Club Contact Info</h4>
                             <div style="display: flex; gap: 10px;">
-                                <button class="btn" style="background: #28a745; color: #fff; font-size: 0.75rem;" onclick="refreshContact()">↻ Sync Web data</button>
-                                <button class="btn btn-gold" style="font-size: 0.75rem;" onclick="openPublishContactModal()">↑ Publish to Website</button>
+                                <button class="btn" style="background: #28a745; color: #fff; font-size: 0.75rem;"
+                                    onclick="refreshContact()">↻ Sync Web data</button>
+                                <button class="btn btn-gold" style="font-size: 0.75rem;"
+                                    onclick="openPublishContactModal()">↑ Publish to Website</button>
                             </div>
                         </div>
-                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Update the club’s public contact details shown on the website.</p>
-                        
-                        <div id="contact-publish-notice" style="display: none; background: #e7f3ff; padding: 10px; border-left: 4px solid var(--sky-blue); margin-bottom: 1rem; font-size: 0.85rem;">
-                            <strong>Changes Pending:</strong> Contact details are updated locally, but not yet live. Click 'Publish' to sync.
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Update the club’s public
+                            contact details shown on the website.</p>
+
+                        <div id="contact-publish-notice"
+                            style="display: none; background: #e7f3ff; padding: 10px; border-left: 4px solid var(--sky-blue); margin-bottom: 1rem; font-size: 0.85rem;">
+                            <strong>Changes Pending:</strong> Contact details are updated locally, but not yet live.
+                            Click 'Publish' to sync.
                         </div>
 
-                        <div id="contact-status" style="display: none; color: green; margin-bottom: 10px; font-weight: bold;">
-                             ✓ Contact info saved successfully!
+                        <div id="contact-status"
+                            style="display: none; color: green; margin-bottom: 10px; font-weight: bold;">
+                            ✓ Contact info saved successfully!
                         </div>
                         <form id="contact-settings-form">
                             <div class="form-group">
@@ -269,9 +412,12 @@
                     <!-- Tab 2: Monthly Meeting Info -->
                     <div id="tab-meeting" class="tab-content" style="padding-top: 1rem;">
                         <h4 style="margin-bottom: 0.5rem; color: var(--navy-blue);">Monthly Meeting Info</h4>
-                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Set the club’s meeting schedule and location displayed to members and visitors.</p>
-                        
-                        <div id="meeting-status" style="display: none; color: green; margin-bottom: 10px; font-weight: bold;">✓ Meeting details saved successfully!</div>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Set the club’s meeting
+                            schedule and location displayed to members and visitors.</p>
+
+                        <div id="meeting-status"
+                            style="display: none; color: green; margin-bottom: 10px; font-weight: bold;">✓ Meeting
+                            details saved successfully!</div>
                         <form id="meeting-settings-form">
                             <div class="form-group">
                                 <label>Meeting Schedule</label>
@@ -288,11 +434,13 @@
                     <!-- Tab 3: Pilot Resources -->
                     <div id="tab-links" class="tab-content" style="padding-top: 1rem;">
                         <h4 style="margin-bottom: 0.5rem; color: var(--navy-blue);">Pilot Resources</h4>
-                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Manage helpful links for pilots such as FAA resources, AMA info, and training tools.</p>
-                        
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Manage helpful links for
+                            pilots such as FAA resources, AMA info, and training tools.</p>
+
                         <div id="links-list"></div>
                         <hr style="margin: 1.5rem 0;">
-                        <div id="link-edit-indicator" style="display: none; background: #fffcf0; padding: 10px; border-left: 4px solid var(--gold); margin-bottom: 1rem; font-weight: bold;">
+                        <div id="link-edit-indicator"
+                            style="display: none; background: #fffcf0; padding: 10px; border-left: 4px solid var(--gold); margin-bottom: 1rem; font-weight: bold;">
                             Editing Quick Link...
                         </div>
                         <form id="add-link-form">
@@ -306,7 +454,9 @@
                             </div>
                             <div style="display: flex; gap: 10px;">
                                 <button type="submit" id="link-submit-btn" class="btn btn-gold">Add Link</button>
-                                <button type="button" id="link-cancel-btn" class="btn" style="display: none; background: #eee;" onclick="cancelEdit('link')">Cancel Edit</button>
+                                <button type="button" id="link-cancel-btn" class="btn"
+                                    style="display: none; background: #eee;" onclick="cancelEdit('link')">Cancel
+                                    Edit</button>
                             </div>
                         </form>
                     </div>
@@ -318,36 +468,47 @@
                 <div class="admin-card">
                     <div style="margin-bottom: 1.5rem;">
                         <h3>Website Analytics & Info</h3>
-                        <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Manage site performance data and administrative information.</p>
+                        <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Manage site performance data and
+                            administrative information.</p>
                     </div>
 
                     <!-- Tabs Bar -->
                     <div class="tab-bar">
-                        <button class="tab-btn active" onclick="switchAnalyticsTab('tab-overview')">Website Overview</button>
+                        <button class="tab-btn active" onclick="switchAnalyticsTab('tab-overview')">Website
+                            Overview</button>
                         <button class="tab-btn" onclick="switchAnalyticsTab('tab-visitor-stats')">Visitor Stats</button>
-                        <button class="tab-btn" onclick="switchAnalyticsTab('tab-usage-insights')">Usage Insights</button>
+                        <button class="tab-btn" onclick="switchAnalyticsTab('tab-usage-insights')">Usage
+                            Insights</button>
                         <button class="tab-btn" onclick="switchAnalyticsTab('tab-github-sync')">GitHub Sync</button>
                     </div>
 
                     <!-- Tab 1: Website Overview -->
                     <div id="tab-overview" class="tab-content active" style="padding-top: 1rem;">
                         <h4 style="margin-bottom: 0.5rem; color: var(--navy-blue);">Website Overview</h4>
-                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 2rem;">Overview of site hosting, maintenance, and access.</p>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 2rem;">Overview of site hosting,
+                            maintenance, and access.</p>
                         <div style="display: grid; grid-template-columns: 1fr 200px; gap: 2rem; align-items: start;">
                             <div>
                                 <h4 style="margin-bottom: 1rem; color: var(--navy-blue);">Website Overview</h4>
                                 <div class="guide-step"><strong>Hosting:</strong> Netlify (Static Hosting)</div>
-                                <div class="guide-step"><strong>Maintenance:</strong> Designed & maintained by Michael Vaughan</div>
+                                <div class="guide-step"><strong>Maintenance:</strong> Designed & maintained by Michael
+                                    Vaughan</div>
                                 <div class="guide-step"><strong>Support:</strong> mvaughan737@gmail.com</div>
-                                <div class="guide-step"><strong>Status:</strong> Site is LIVE and tracking analytics</div>
-                                
-                                <div style="margin-top: 2rem; padding: 1rem; background: #e7f3ff; border-radius: 8px; border-left: 4px solid #007bff;">
-                                    <p style="font-size: 0.85rem; margin: 0;">Share this QR code at the field for quick access to the website.</p>
+                                <div class="guide-step"><strong>Status:</strong> Site is LIVE and tracking analytics
+                                </div>
+
+                                <div
+                                    style="margin-top: 2rem; padding: 1rem; background: #e7f3ff; border-radius: 8px; border-left: 4px solid #007bff;">
+                                    <p style="font-size: 0.85rem; margin: 0;">Share this QR code at the field for quick
+                                        access to the website.</p>
                                 </div>
                             </div>
-                            <div style="text-align: center; background: #f9f9f9; padding: 1.5rem; border-radius: 10px; border: 1px solid #eee;">
-                                <img src="../images/site-qr-code.png" alt="Site QR Code" style="width: 100%; max-width: 150px; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 10px;">
-                                <div style="font-size: 0.75rem; font-weight: bold; color: var(--navy-blue);">SCAN TO ACCESS WEBSITE</div>
+                            <div
+                                style="text-align: center; background: #f9f9f9; padding: 1.5rem; border-radius: 10px; border: 1px solid #eee;">
+                                <img src="../images/site-qr-code.png" alt="Site QR Code"
+                                    style="width: 100%; max-width: 150px; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 10px;">
+                                <div style="font-size: 0.75rem; font-weight: bold; color: var(--navy-blue);">SCAN TO
+                                    ACCESS WEBSITE</div>
                             </div>
                         </div>
                     </div>
@@ -355,42 +516,61 @@
                     <!-- Tab 2: Visitor Stats -->
                     <div id="tab-visitor-stats" class="tab-content" style="padding-top: 1rem;">
                         <h4 style="margin-bottom: 0.5rem; color: var(--navy-blue);">Website Traffic Overview</h4>
-                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 2rem;">Visitor data is tracked using Google Analytics (GA4).</p>
-                        
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 2rem;">
-                            <div style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee; text-align: center;">
-                                <div style="font-size: 2rem; font-weight: bold; color: var(--gold); margin-bottom: 5px;">--</div>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 2rem;">Visitor data is tracked using
+                            Google Analytics (GA4).</p>
+
+                        <div
+                            style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 2rem;">
+                            <div
+                                style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee; text-align: center;">
+                                <div
+                                    style="font-size: 2rem; font-weight: bold; color: var(--gold); margin-bottom: 5px;">
+                                    --</div>
                                 <div style="font-size: 0.75rem; font-weight: bold; color: #888;">MONTHLY VISITORS</div>
                             </div>
-                            <div style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee; text-align: center;">
-                                <div style="font-size: 2rem; font-weight: bold; color: var(--gold); margin-bottom: 5px;">--</div>
+                            <div
+                                style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee; text-align: center;">
+                                <div
+                                    style="font-size: 2rem; font-weight: bold; color: var(--gold); margin-bottom: 5px;">
+                                    --</div>
                                 <div style="font-size: 0.75rem; font-weight: bold; color: #888;">PAGE VIEWS</div>
                             </div>
-                            <div style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee; text-align: center;">
-                                <div style="font-size: 2rem; font-weight: bold; color: var(--gold); margin-bottom: 5px;">--</div>
+                            <div
+                                style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee; text-align: center;">
+                                <div
+                                    style="font-size: 2rem; font-weight: bold; color: var(--gold); margin-bottom: 5px;">
+                                    --</div>
                                 <div style="font-size: 0.75rem; font-weight: bold; color: #888;">AVG. SESSION TIME</div>
                             </div>
                         </div>
 
-                        <div style="padding: 2rem; background: #f9f9f9; border-radius: 10px; border: 1px dashed #ccc; text-align: center;">
+                        <div
+                            style="padding: 2rem; background: #f9f9f9; border-radius: 10px; border: 1px dashed #ccc; text-align: center;">
                             <h4 style="margin-bottom: 1rem;">Analytics Dashboard</h4>
-                            <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">To view detailed real-time visitor stats, audience behavior, and conversion tracking, please log in to your Google Analytics dashboard.</p>
-                            <a href="https://analytics.google.com/" target="_blank" class="btn btn-gold" style="text-decoration: none;">Open Google Analytics</a>
+                            <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">To view detailed
+                                real-time visitor stats, audience behavior, and conversion tracking, please log in to
+                                your Google Analytics dashboard.</p>
+                            <a href="https://analytics.google.com/" target="_blank" class="btn btn-gold"
+                                style="text-decoration: none;">Open Google Analytics</a>
                         </div>
                     </div>
 
                     <!-- Tab 3: Usage Insights -->
                     <div id="tab-usage-insights" class="tab-content" style="padding-top: 1rem;">
                         <h4 style="margin-bottom: 1rem; color: var(--navy-blue);">Usage & UX Insights</h4>
-                        
+
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                            <div style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee;">
-                                <h5 style="margin-bottom: 1rem; border-bottom: 2px solid #eee; padding-bottom: 5px;">Device Breakdown</h5>
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.85rem;">
+                            <div
+                                style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee;">
+                                <h5 style="margin-bottom: 1rem; border-bottom: 2px solid #eee; padding-bottom: 5px;">
+                                    Device Breakdown</h5>
+                                <div
+                                    style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.85rem;">
                                     <span>Desktop</span>
                                     <strong>Pending Data</strong>
                                 </div>
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.85rem;">
+                                <div
+                                    style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.85rem;">
                                     <span>Mobile</span>
                                     <strong>Pending Data</strong>
                                 </div>
@@ -399,18 +579,25 @@
                                     <strong>Pending Data</strong>
                                 </div>
                             </div>
-                            <div style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee;">
-                                <h5 style="margin-bottom: 1rem; border-bottom: 2px solid #eee; padding-bottom: 5px;">Most Visited Pages</h5>
-                                <div style="font-size: 0.85rem; color: #888; font-style: italic;">Insights will appear once data is collected</div>
+                            <div
+                                style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee;">
+                                <h5 style="margin-bottom: 1rem; border-bottom: 2px solid #eee; padding-bottom: 5px;">
+                                    Most Visited Pages</h5>
+                                <div style="font-size: 0.85rem; color: #888; font-style: italic;">Insights will appear
+                                    once data is collected</div>
                             </div>
                         </div>
 
-                        <div style="margin-top: 2rem; padding: 1.5rem; background: #fffcf0; border-radius: 8px; border: 1px solid var(--gold);">
+                        <div
+                            style="margin-top: 2rem; padding: 1.5rem; background: #fffcf0; border-radius: 8px; border: 1px solid var(--gold);">
                             <h5 style="margin-bottom: 0.5rem;">Improving User Experience</h5>
                             <ul style="font-size: 0.85rem; color: #444; padding-left: 20px;">
-                                <li><strong>Mobile Optimization:</strong> Ensure the hamburger menu and contact forms are easy to use on small screens.</li>
-                                <li><strong>Performance:</strong> Keep image sizes optimized for fast loading at the field.</li>
-                                <li><strong>Fresh Content:</strong> Regularly update the News and Events to keep visitors engaged.</li>
+                                <li><strong>Mobile Optimization:</strong> Ensure the hamburger menu and contact forms
+                                    are easy to use on small screens.</li>
+                                <li><strong>Performance:</strong> Keep image sizes optimized for fast loading at the
+                                    field.</li>
+                                <li><strong>Fresh Content:</strong> Regularly update the News and Events to keep
+                                    visitors engaged.</li>
                             </ul>
                         </div>
                     </div>
@@ -418,9 +605,12 @@
                     <!-- Tab 4: GitHub Sync -->
                     <div id="tab-github-sync" class="tab-content" style="padding-top: 1rem;">
                         <h4 style="margin-bottom: 1rem; color: var(--navy-blue);">GitHub Publishing Configuration</h4>
-                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Configure your GitHub repository and Personal Access Token (PAT) to enable publishing events directly to the website.</p>
-                        
-                        <div id="github-status" style="display: none; background: #e7f3ff; padding: 10px; border-left: 4px solid var(--sky-blue); margin-bottom: 1.5rem; font-size: 0.85rem;">
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Configure your GitHub
+                            repository and Personal Access Token (PAT) to enable publishing events directly to the
+                            website.</p>
+
+                        <div id="github-status"
+                            style="display: none; background: #e7f3ff; padding: 10px; border-left: 4px solid var(--sky-blue); margin-bottom: 1.5rem; font-size: 0.85rem;">
                             ✓ Configuration saved successfully.
                         </div>
 
@@ -443,11 +633,15 @@
                                 <label>Personal Access Token (PAT)</label>
                                 <div style="position: relative;">
                                     <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx">
-                                    <span style="position: absolute; right: 10px; top: 8px; font-size: 0.7rem; color: var(--gold); cursor: pointer;" onclick="togglePassword('gh-token')">Show</span>
+                                    <span
+                                        style="position: absolute; right: 10px; top: 8px; font-size: 0.7rem; color: var(--gold); cursor: pointer;"
+                                        onclick="togglePassword('gh-token')">Show</span>
                                 </div>
-                                <p style="font-size: 0.75rem; color: #888; margin-top: 5px;">Your token is stored locally in this browser and never sent to our servers.</p>
+                                <p style="font-size: 0.75rem; color: #888; margin-top: 5px;">Your token is stored
+                                    locally in this browser and never sent to our servers.</p>
                             </div>
-                            <button type="button" class="btn btn-gold" onclick="saveGithubConfig()">Save Configuration</button>
+                            <button type="button" class="btn btn-gold" onclick="saveGithubConfig()">Save
+                                Configuration</button>
                         </form>
                     </div>
                 </div>
@@ -464,12 +658,12 @@
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const section = link.getAttribute('data-section');
-                
+
                 // UI Updates
                 document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none');
                 document.getElementById(`${section}-section`).style.display = 'block';
                 document.getElementById('section-title').innerText = link.innerText;
-                
+
                 document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
                 link.classList.add('active');
 
@@ -561,7 +755,7 @@
                 document.getElementById('link-title').value = item.title;
                 document.getElementById('link-url').value = item.url;
             }
-            
+
             const formId = (type === 'link') ? 'add-link-form' : `${type}-form`;
             const formEl = document.getElementById(formId);
             if (formEl) formEl.scrollIntoView({ behavior: 'smooth' });
@@ -571,7 +765,7 @@
             editState = { type: null, id: null };
             document.getElementById(`${type}-edit-indicator`).style.display = 'none';
             document.getElementById(`${type}-cancel-btn`).style.display = 'none';
-            
+
             const btn = document.getElementById(`${type}-submit-btn`);
             if (type === 'news') btn.innerText = 'Publish Post';
             else if (type === 'event') btn.innerText = 'Save Event';
@@ -663,7 +857,7 @@
         function previewGallery(id) {
             const g = DataManager.getGalleries().find(gal => gal.id === id);
             if (!g) return;
-            
+
             activeGalleryId = id;
             document.getElementById('current-gallery-title').innerText = g.title;
             // Show preview box
@@ -785,12 +979,12 @@
         async function syncWithCMS() {
             const indicator = document.getElementById('sync-indicator');
             if (indicator) indicator.innerText = 'Refreshing...';
-            
+
             try {
                 // Load Gallery Data
                 const cmsData = await CMSLoader.loadCmsGalleryData();
                 const rawGalleries = cmsData || [];
-                
+
                 const normalizedGalleries = rawGalleries.map((g, index) => {
                     const slug = g.slug || g.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
                     return {
@@ -820,8 +1014,8 @@
                     const settings = DataManager.getSettings();
                     const updatedSettings = {
                         heroImage: cmsBackground.activeBackgroundImage || settings.heroImage,
-                        galleryImages: cmsBackground.backgroundImageOptions ? 
-                            cmsBackground.backgroundImageOptions.map(o => o.image) : 
+                        galleryImages: cmsBackground.backgroundImageOptions ?
+                            cmsBackground.backgroundImageOptions.map(o => o.image) :
                             settings.galleryImages
                     };
                     DataManager.updateSettings(updatedSettings);
@@ -861,7 +1055,7 @@
             const originalText = btn.innerText;
             btn.disabled = true;
             btn.innerText = 'Publishing...';
-            
+
             try {
                 await DataManager.publishEvents();
                 alert('Successfully published! The website will update in 1-2 minutes.');
@@ -893,7 +1087,7 @@
             const originalText = btn.innerText;
             btn.disabled = true;
             btn.innerText = 'Publishing...';
-            
+
             try {
                 await DataManager.publishContact();
                 alert('Contact Info successfully published! The website will update in 1-2 minutes.');
@@ -914,7 +1108,7 @@
                 branch: document.getElementById('gh-branch').value.trim() || 'main',
                 token: document.getElementById('gh-token').value.trim()
             };
-            
+
             if (!settings.owner || !settings.repo || !settings.token) {
                 alert('Please fill in all required fields (Owner, Repo, Token).');
                 return;
@@ -940,7 +1134,7 @@
             const btn = document.querySelector('button[onclick="refreshEvents()"]');
             const originalText = btn.innerText;
             btn.innerText = 'Updating...';
-            
+
             const success = await DataManager.loadEventsFromSource();
             if (success) {
                 alert('Fetched latest events from website.');
@@ -955,7 +1149,7 @@
             const btn = document.querySelector('button[onclick="refreshContact()"]');
             const originalText = btn.innerText;
             btn.innerText = 'Updating...';
-            
+
             const success = await DataManager.loadContactFromSource();
             if (success) {
                 alert('Fetched latest club contact info from website.');
@@ -987,7 +1181,7 @@
 
         // Modification to renderAll to show the publish notice if events/contact changed
         const originalRenderAll = renderAll;
-        renderAll = function() {
+        renderAll = function () {
             originalRenderAll();
             // We show notices to remind users to publish
             // For now, mirroring the events logic
@@ -996,7 +1190,7 @@
 
             const contactNotice = document.getElementById('contact-publish-notice');
             if (contactNotice) contactNotice.style.display = 'block';
-            
+
             initGithubFields();
         };
 
@@ -1008,4 +1202,5 @@
         });
     </script>
 </body>
+
 </html>
