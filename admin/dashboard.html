@@ -118,6 +118,33 @@
         .tab-content.active {
             display: block;
         }
+
+        /* Past event warning styles (admin only) */
+        .past-event-row {
+            background-color: #fff5f5;
+            border-left: 3px solid #e57373 !important;
+        }
+
+        .past-event-badge {
+            display: inline-block;
+            background: #e57373;
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 3px;
+            vertical-align: middle;
+            margin-left: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .past-event-notice {
+            font-size: 0.75rem;
+            color: #c62828;
+            margin-top: 3px;
+            font-style: italic;
+        }
     </style>
 </head>
 
@@ -909,20 +936,30 @@
                 `).join('');
             }
 
-            // Render Events List (Restored)
+            // Render Events List (with past-event warning for admin)
             const eventsListEl = document.getElementById('events-list');
             if (eventsListEl) {
-                eventsListEl.innerHTML = DataManager.getEvents().map(ev => `
-                    <div style="padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+                eventsListEl.innerHTML = DataManager.getEvents().map(ev => {
+                    const isPast = ev.date && ev.date < today;
+                    const rowClass = isPast ? 'past-event-row' : '';
+                    const badge = isPast ? '<span class="past-event-badge">Past Event</span>' : '';
+                    const notice = isPast
+                        ? '<div class="past-event-notice">This event is in the past and can be deleted if no longer needed.</div>'
+                        : '';
+                    return `
+                    <div class="${rowClass}" style="padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
                         <div style="flex: 1;">
-                            <strong>${ev.title}</strong> - ${ev.date}
+                            <div><strong>${ev.title}</strong>${badge} &ndash; ${ev.date}</div>
+                            ${notice}
                         </div>
-                        <div style="display: flex; gap: 5px;">
+                        <div style="display: flex; gap: 5px; flex-shrink: 0; margin-left: 10px;">
                             <button class="btn btn-gold" style="padding: 5px 10px; font-size: 0.8rem;" onclick="setEditMode('event', ${JSON.stringify(ev).replace(/"/g, '&quot;')})">Edit</button>
                             <button class="btn" style="padding: 5px 10px; font-size: 0.8rem; background: #ff6b6b; color: #fff;" onclick="if(confirm('Delete?')){DataManager.deleteEvent(${ev.id}); renderAll();}">Delete</button>
                         </div>
                     </div>
-                `).join('');
+                    `;
+                }).join('');
             }
 
             // Render Links List (Restored)
