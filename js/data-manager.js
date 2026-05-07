@@ -5,6 +5,7 @@
 const DataManager = (() => {
     const STORAGE_KEY = 'flying_eagles_data';
     const GITHUB_KEY = 'flying_eagles_github';
+    const NETLIFY_KEY = 'flying_eagles_netlify';
 
     // Initial default data
     const defaults = {
@@ -55,6 +56,7 @@ const DataManager = (() => {
 
     let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaults;
     let github = JSON.parse(localStorage.getItem(GITHUB_KEY)) || { owner: 'mvaughan737', repo: 'RC-Flyers', branch: 'main', token: '' };
+    let netlify = JSON.parse(localStorage.getItem(NETLIFY_KEY)) || { adminToken: '' };
     
     // Ensure core links are always present
     const coreTitles = defaults.links.map(l => l.title);
@@ -71,6 +73,10 @@ const DataManager = (() => {
 
     const saveGithub = () => {
         localStorage.setItem(GITHUB_KEY, JSON.stringify(github));
+    };
+
+    const saveNetlify = () => {
+        localStorage.setItem(NETLIFY_KEY, JSON.stringify(netlify));
     };
 
     return {
@@ -190,6 +196,55 @@ const DataManager = (() => {
 
             return true;
         },
+        // Netlify Settings
+        getNetlifySettings: () => netlify,
+        updateNetlifySettings: (newSettings) => {
+            netlify = { ...netlify, ...newSettings };
+            saveNetlify();
+        },
+
+        // Publish events via Netlify Function (no GitHub commit, no deploy)
+        publishEventsLive: async () => {
+            if (!netlify.adminToken) throw new Error('Admin token not configured. Enter it in the ⚙️ config panel.');
+
+            const res = await fetch('/.netlify/functions/events-live', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${netlify.adminToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ events: data.events })
+            });
+
+            if (!res.ok) {
+                let errMsg = `HTTP ${res.status}`;
+                try { const e = await res.json(); errMsg = e.error || errMsg; } catch { /* noop */ }
+                throw new Error(errMsg);
+            }
+            return true;
+        },
+
+        // Load live events from Netlify Function (public GET, no auth)
+        // Returns false if the function returns 404 (no blob yet) or errors — caller falls back to static JSON.
+        loadEventsFromBlob: async () => {
+            try {
+                const res = await fetch('/.netlify/functions/events-live?cb=' + Date.now());
+                if (res.ok) {
+                    const remote = await res.json();
+                    if (remote && Array.isArray(remote.events)) {
+                        data.events = remote.events;
+                        data.events.sort((a, b) => new Date(a.date) - new Date(b.date));
+                        save();
+                        return true;
+                    }
+                }
+                // 404 = no blob yet; other errors = fall back to static JSON
+            } catch (err) {
+                console.warn('DataManager: events-live function unavailable, using fallback.', err);
+            }
+            return false;
+        },
+
         loadContactFromSource: async () => {
             try {
                 const response = await fetch('/admin/content/contact.json?cb=' + Date.now());

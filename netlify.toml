@@ -1,0 +1,12 @@
+# netlify.toml — Minimal Netlify configuration
+# Site remains fully static. Functions run on Node 18 for native fetch support.
+
+[build]
+  # No build command needed — static HTML/CSS/JS site.
+  publish = "."
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[functions]
+  directory = "netlify/functions"

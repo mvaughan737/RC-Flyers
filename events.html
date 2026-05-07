@@ -139,8 +139,13 @@
     <script src="js/gallery-controller.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // 1. DATA INITIALIZATION (DataManager is the Source of Truth for text content)
-            await DataManager.loadEventsFromSource();
+            // 1. DATA INITIALIZATION
+            // Try Netlify Blobs first (live data, no deploy required).
+            // Falls back to static /admin/content/events.json on localhost or before first publish.
+            const blobLoaded = await DataManager.loadEventsFromBlob();
+            if (!blobLoaded) {
+                await DataManager.loadEventsFromSource();
+            }
             await DataManager.loadContactFromSource();
             let eventData = DataManager.getEvents();
             let settings = DataManager.getSettings();
