@@ -245,6 +245,47 @@ const DataManager = (() => {
             return false;
         },
 
+        // Publish news via Netlify Function (no GitHub commit, no deploy)
+        publishNewsLive: async () => {
+            if (!netlify.adminToken) throw new Error('Admin token not configured. Enter it in the ⚙️ config panel.');
+
+            const res = await fetch('/.netlify/functions/news-live', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${netlify.adminToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ news: data.news })
+            });
+
+            if (!res.ok) {
+                let errMsg = `HTTP ${res.status}`;
+                try { const e = await res.json(); errMsg = e.error || errMsg; } catch { /* noop */ }
+                throw new Error(errMsg);
+            }
+            return true;
+        },
+
+        // Load live news from Netlify Function (public GET, no auth)
+        // Returns false if the function returns 404 (no blob yet) or errors — caller falls back to localStorage data.
+        loadNewsFromBlob: async () => {
+            try {
+                const res = await fetch('/.netlify/functions/news-live?cb=' + Date.now());
+                if (res.ok) {
+                    const remote = await res.json();
+                    if (remote && Array.isArray(remote.news)) {
+                        data.news = remote.news;
+                        save();
+                        return true;
+                    }
+                }
+                // 404 = no blob yet; other errors = fall back to localStorage data
+            } catch (err) {
+                console.warn('DataManager: news-live function unavailable, using fallback.', err);
+            }
+            return false;
+        },
+
         loadContactFromSource: async () => {
             try {
                 const response = await fetch('/admin/content/contact.json?cb=' + Date.now());

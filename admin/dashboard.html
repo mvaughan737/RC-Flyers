@@ -207,7 +207,13 @@
                     </form>
                 </div>
                 <div class="admin-card">
-                    <h3>Existing News</h3>
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Existing News</h3>
+                        <button id="publish-news-btn" class="btn btn-gold" style="font-size: 0.85rem;" onclick="publishNewsLive()">
+                            &#x2713; Save Data</button>
+                    </div>
+                    <div id="news-publish-status" style="display: none; padding: 10px; border-radius: 5px; margin-bottom: 1rem; font-size: 0.85rem; font-weight: bold;"></div>
                     <div id="news-list"></div>
                 </div>
             </section>
@@ -1112,6 +1118,45 @@
 
         function showPublishStatus(type, msg) {
             const el = document.getElementById('events-publish-status');
+            if (!el) return;
+            const styles = {
+                info:    'background:#e7f3ff; color:#004085; border-left:4px solid var(--sky-blue);',
+                success: 'background:#d4edda; color:#155724; border-left:4px solid #28a745;',
+                warning: 'background:#fff3cd; color:#856404; border-left:4px solid var(--gold);',
+                error:   'background:#f8d7da; color:#721c24; border-left:4px solid #dc3545;'
+            };
+            el.setAttribute('style', `display:block; padding:10px; border-radius:5px; margin-bottom:1rem; font-size:0.85rem; font-weight:bold; ${styles[type] || styles.info}`);
+            el.innerText = msg;
+            if (type === 'success') {
+                setTimeout(() => { el.style.display = 'none'; }, 4000);
+            }
+        }
+
+        // --- NEWS SAVE DATA (Netlify Function → Blobs — no GitHub commit, no deploy) ---
+        async function publishNewsLive() {
+            const n = DataManager.getNetlifySettings();
+            if (!n.adminToken) {
+                showNewsPublishStatus('warning', '⚠️ Admin token not configured. Open the ⚙️ config panel in Events Calendar and save your token first.');
+                return;
+            }
+
+            const btn = document.getElementById('publish-news-btn');
+            btn.disabled = true;
+            showNewsPublishStatus('info', '⏳ Saving news data...');
+
+            try {
+                await DataManager.publishNewsLive();
+                showNewsPublishStatus('success', '✓ News data saved successfully.');
+            } catch (err) {
+                console.error(err);
+                showNewsPublishStatus('error', '⚠ News data could not be saved. Check the Admin Token and Netlify settings.');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function showNewsPublishStatus(type, msg) {
+            const el = document.getElementById('news-publish-status');
             if (!el) return;
             const styles = {
                 info:    'background:#e7f3ff; color:#004085; border-left:4px solid var(--sky-blue);',

@@ -193,7 +193,9 @@
             };
 
             // 1. DATA INITIALIZATION (DataManager is the Source of Truth for text content)
-            await DataManager.loadEventsFromSource();
+            // Load live data from Netlify Blobs; falls back to localStorage data if unavailable
+            await DataManager.loadEventsFromBlob();
+            await DataManager.loadNewsFromBlob();
             await DataManager.loadContactFromSource();
             let newsData = DataManager.getNews();
             let eventData = DataManager.getEvents();
