@@ -221,17 +221,12 @@
                     <div
                         style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3>Scheduled Events</h3>
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn" style="background: #28a745; color: #fff; font-size: 0.8rem;"
-                                onclick="refreshEvents()">↻ Sync Web data</button>
-                            <button id="publish-live-btn" class="btn btn-gold" style="font-size: 0.8rem;" onclick="publishEventsLive()">↑
-                                Publish Live</button>
-                        </div>
+                        <button id="publish-live-btn" class="btn btn-gold" style="font-size: 0.85rem;" onclick="publishEventsLive()">
+                            &#x2713; Save Data</button>
                     </div>
                     <div id="publish-notice"
                         style="display: none; background: #e7f3ff; padding: 10px; border-left: 4px solid var(--sky-blue); margin-bottom: 1rem; font-size: 0.85rem;">
-                        <strong>Changes Pending:</strong> Local events are updated, but not yet live on the website.
-                        Click 'Publish Live' to sync.
+                        Changes are saved locally. Click <strong>Save Data</strong> to update the live website.
                     </div>
                     <div id="events-publish-status" style="display: none; padding: 10px; border-radius: 5px; margin-bottom: 1rem; font-size: 0.85rem; font-weight: bold;"></div>
 
@@ -1054,25 +1049,25 @@
             renderAll();
         }
 
-        // --- EVENTS LIVE PUBLISH (Netlify Blobs — no GitHub commit, no deploy) ---
+        // --- EVENTS SAVE DATA (Netlify Function → Blobs — no GitHub commit, no deploy) ---
         async function publishEventsLive() {
             const n = DataManager.getNetlifySettings();
-            if (!n.token) {
-                showPublishStatus('warning', '⚠️ Netlify token not configured. Open the ⚙️ config panel below and save your token.');
+            if (!n.adminToken) {
+                showPublishStatus('warning', '⚠️ Admin token not configured. Open the ⚙️ config panel and save your token first.');
                 return;
             }
 
             const btn = document.getElementById('publish-live-btn');
             btn.disabled = true;
-            showPublishStatus('info', '⏳ Updating events...');
+            showPublishStatus('info', '⏳ Saving events data...');
 
             try {
                 await DataManager.publishEventsLive();
                 document.getElementById('publish-notice').style.display = 'none';
-                showPublishStatus('success', '✓ Events updated successfully');
+                showPublishStatus('success', '✓ Events data saved successfully.');
             } catch (err) {
                 console.error(err);
-                showPublishStatus('error', '⚠ Publish failed: ' + err.message);
+                showPublishStatus('error', '⚠ Events data could not be saved. Check the Admin Token and Netlify settings.');
             } finally {
                 btn.disabled = false;
             }
