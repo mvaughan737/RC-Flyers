@@ -3,7 +3,7 @@
     {
       "published": true,
       "title": "Converse Flying Eagles RC Club",
-      "slug": "",
+      "slug": "converse-airport",
       "eventFolder": "Converse Airport",
       "images": [
         {
@@ -34,7 +34,7 @@
         {
           "thumbnail": "",
           "image": "/images/gallery/martys_hangar.jpg",
-          "caption": "Marty's Hangar used during Cold Weather.  Small Door access."
+          "caption": "Martys Hangar used during Cold Weather.  Small Door access."
         },
         {
           "thumbnail": "",
@@ -48,36 +48,6 @@
         }
       ],
       "coverImage": "/images/gallery/pavillion.jpg"
-    },
-    {
-      "published": true,
-      "eventFolder": "spring-fun-2024-test",
-      "title": "Spring Fun 2024 TEST",
-      "slug": "spring-fun-2024-test",
-      "coverImage": "/images/gallery/picture1.jpg",
-      "images": [
-        {
-          "image": "/images/gallery/picture2.jpg",
-          "thumbnail": "/images/gallery/picture2.jpg",
-          "caption": "This was Charlie inspecting his plane."
-        },
-        {
-          "image": "/images/gallery/picture3.jpg",
-          "thumbnail": "/images/gallery/picture3.jpg"
-        },
-        {
-          "image": "/images/gallery/picture4.jpg",
-          "thumbnail": "/images/gallery/picture4.jpg"
-        },
-        {
-          "image": "/images/gallery/picture5.jpg",
-          "thumbnail": "/images/gallery/picture5.jpg"
-        },
-        {
-          "image": "/images/gallery/larger-pic.jpg",
-          "caption": "Franks Airplane in a Climbout."
-        }
-      ]
     }
   ]
 }
