@@ -8,6 +8,11 @@
       "images": [
         {
           "thumbnail": "",
+          "image": "/images/gallery/pavillion.jpg",
+          "caption": "Flying Eagles RC Club Pavillion."
+        },
+        {
+          "thumbnail": "",
           "image": "/images/gallery/key_box.jpg",
           "caption": "Club Pavillion to include Key Box, Weather Station, Club Notice Board & sandbags for batteries."
         },
