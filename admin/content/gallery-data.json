@@ -2,6 +2,55 @@
   "galleries": [
     {
       "published": true,
+      "title": "Converse Flying Eagles RC Club",
+      "slug": "",
+      "eventFolder": "Converse Airport",
+      "images": [
+        {
+          "thumbnail": "",
+          "image": "/images/gallery/key_box.jpg",
+          "caption": "Club Pavillion to include Key Box, Weather Station, Club Notice Board & sandbags for batteries."
+        },
+        {
+          "thumbnail": "",
+          "image": "/images/gallery/wx_station.jpg",
+          "caption": "Club Weather Station."
+        },
+        {
+          "thumbnail": "",
+          "image": "/images/gallery/storage.jpg",
+          "caption": "Club Storage Area for events."
+        },
+        {
+          "thumbnail": "",
+          "image": "/images/gallery/portpody.jpg",
+          "caption": "Porta Potty for Club Members.  (must have code to use)"
+        },
+        {
+          "thumbnail": "",
+          "image": "/images/gallery/airplane_racks.jpg",
+          "caption": "RC Aircraft Stands."
+        },
+        {
+          "thumbnail": "",
+          "image": "/images/gallery/martys_hangar.jpg",
+          "caption": "Marty's Hangar used during Cold Weather.  Small Door access."
+        },
+        {
+          "thumbnail": "",
+          "image": "/images/gallery/hard_surface.jpg",
+          "caption": "Hard surface used for small light aircraft.  Hard surface is not really smooth."
+        },
+        {
+          "thumbnail": "",
+          "image": "/images/gallery/rc_training_crash.jpg",
+          "caption": "George Farris providing training to new club members.  Looks like the student had a small accident."
+        }
+      ],
+      "coverImage": "/images/gallery/pavillion.jpg"
+    },
+    {
+      "published": true,
       "eventFolder": "spring-fun-2024-test",
       "title": "Spring Fun 2024 TEST",
       "slug": "spring-fun-2024-test",
