@@ -128,6 +128,10 @@ Events uses:
 
 Admin edits may save locally first so the editor can keep working, but publishing live content requires the Admin Dashboard publish/save-data action and the configured Netlify admin token. Public pages should not fall directly from a failed live News request to old sample/default News while the static JSON fallback is available.
 
+News formatting entered in Admin should be preserved on the public News page. Public rendering should safely escape Admin text, then preserve paragraph breaks, line breaks, bullets, and simple Markdown-style emphasis.
+
+Homepage News cards should show short previews, not full long articles. Longer News items should be visually limited to about four lines and include a `Read more...` link to the full News page or item anchor.
+
 CMSLoader should remain focused on image/media JSON such as backgrounds and gallery data unless a future architecture change explicitly moves text content back to Decap-managed files.
 
 ---

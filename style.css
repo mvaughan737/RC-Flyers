@@ -776,6 +776,53 @@ footer {
     font-size: 1.05rem;
     margin-bottom: 2px;
 }
+
+.news-content p {
+    margin: 0 0 1rem;
+}
+
+.news-content p:last-child,
+.news-content ul:last-child {
+    margin-bottom: 0;
+}
+
+.news-content ul {
+    margin: 0 0 1rem 1.25rem;
+    padding-left: 1rem;
+}
+
+.news-content li {
+    margin-bottom: 0.35rem;
+}
+
+.news-preview {
+    color: #444;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.news-preview-clamped {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.news-read-more {
+    color: var(--sky-blue);
+    display: inline-block;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-top: 0.6rem;
+    text-decoration: none;
+}
+
+.news-read-more:hover {
+    color: var(--navy-blue);
+    text-decoration: underline;
+}
+
 /* Enhanced Gallery Grid with Hover Effects */
 .gallery-grid {
     display: grid;

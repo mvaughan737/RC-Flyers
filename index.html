@@ -181,6 +181,7 @@
     </footer>
     <script src="js/status_final.js?cb=987654321"></script>
     <script src="js/data-manager.js"></script>
+    <script src="js/news-renderer.js"></script>
     <script src="js/cms-loader.js"></script>
     <script src="js/gallery-controller.js"></script>
     <script>
@@ -209,16 +210,21 @@
             const newsList = document.getElementById('latest-news-list');
             const latestNews = newsData.slice(0, 2);
             if (latestNews.length > 0) {
-                newsList.innerHTML = latestNews.map(n => `
+                newsList.innerHTML = latestNews.map(n => {
+                    const isLong = NewsRenderer.isLongContent(n.content);
+                    const articleUrl = `news.html#${NewsRenderer.newsId(n)}`;
+                    return `
                     <div class="news-item">
                         <div class="news-tag">${icons.news} Latest Update</div>
-                        <div class="news-title">${n.title}</div>
+                        <div class="news-title">${NewsRenderer.escapeHtml(n.title)}</div>
                         <div style="font-size: 0.8rem; color: #888; margin-bottom: 8px;">
                             ${new Date(n.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                         </div>
-                        <p style="font-size: 0.9rem; color: #444;">${n.content.substring(0, 80)}${n.content.length > 80 ? '...' : ''}</p>
+                        <p class="${isLong ? 'news-preview news-preview-clamped' : 'news-preview'}">${NewsRenderer.renderPreview(n.content, isLong ? 220 : 180)}</p>
+                        ${isLong ? `<a class="news-read-more" href="${articleUrl}">Read more...</a>` : ''}
                     </div>
-                `).join('');
+                `;
+                }).join('');
             } else {
                 newsList.innerHTML = '<li>No news at this time.</li>';
             }

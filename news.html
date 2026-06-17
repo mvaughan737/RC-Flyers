@@ -92,6 +92,7 @@
     </footer>
     <script src="js/status_final.js?cb=987654321"></script>
     <script src="js/data-manager.js"></script>
+    <script src="js/news-renderer.js"></script>
     <script src="js/cms-loader.js"></script>
     <script src="js/gallery-controller.js"></script>
     <script>
@@ -120,14 +121,14 @@
 
             if (newsData.length > 0) {
                 container.innerHTML = newsData.map(n => `
-                    <article class="news-item" style="padding: 2rem; margin-bottom: 30px;">
+                    <article class="news-item" id="${NewsRenderer.newsId(n)}" style="padding: 2rem; margin-bottom: 30px;">
                         <div class="news-tag">${icons.news} Announcement</div>
-                        <div class="news-title" style="font-size: 1.6rem; margin-bottom: 10px;">${n.title}</div>
+                        <div class="news-title" style="font-size: 1.6rem; margin-bottom: 10px;">${NewsRenderer.escapeHtml(n.title)}</div>
                         <div style="font-size: 0.9rem; color: #888; margin-bottom: 20px;">
                             Posted on ${new Date(n.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} by Admin
                         </div>
                         <div class="news-content" style="font-size: 1.1rem; line-height: 1.8; color: #333;">
-                            ${n.content}
+                            ${NewsRenderer.renderFormattedContent(n.content)}
                         </div>
                     </article>
                 `).join('');
