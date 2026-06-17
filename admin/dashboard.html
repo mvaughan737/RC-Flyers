@@ -243,7 +243,7 @@
                             <input type="text" id="event-location" placeholder="Defaults to Club Field">
                         </div>
                         <div style="display: flex; gap: 10px;">
-                            <button type="submit" id="event-submit-btn" class="btn btn-gold">Save Event</button>
+                            <button type="submit" id="event-submit-btn" class="btn btn-gold">Save Locally</button>
                             <button type="button" id="event-cancel-btn" class="btn"
                                 style="display: none; background: #eee;" onclick="cancelEdit('event')">Cancel
                                 Edit</button>
@@ -255,11 +255,11 @@
                         style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3>Scheduled Events</h3>
                         <button id="publish-live-btn" class="btn btn-gold" style="font-size: 0.85rem;" onclick="publishEventsLive()">
-                            &#x2713; Save Data</button>
+                            &#x2713; Publish Events Live</button>
                     </div>
                     <div id="publish-notice"
                         style="display: none; background: #e7f3ff; padding: 10px; border-left: 4px solid var(--sky-blue); margin-bottom: 1rem; font-size: 0.85rem;">
-                        Changes are saved locally. Click <strong>Save Data</strong> to update the live website.
+                        Changes are saved locally. Click <strong>Publish Events Live</strong> to update the live website.
                     </div>
                     <div id="events-publish-status" style="display: none; padding: 10px; border-radius: 5px; margin-bottom: 1rem; font-size: 0.85rem; font-weight: bold;"></div>
 
@@ -814,7 +814,7 @@
 
             const btn = document.getElementById(`${type}-submit-btn`);
             if (type === 'news') btn.innerText = 'Save Locally';
-            else if (type === 'event') btn.innerText = 'Save Event';
+            else if (type === 'event') btn.innerText = 'Save Locally';
             else if (type === 'link') btn.innerText = 'Add Link';
 
             const formId = (type === 'link') ? 'add-link-form' : `${type}-form`;
@@ -857,6 +857,7 @@
                 e.target.reset();
             }
             renderAll();
+            showPublishStatus('info', 'Events saved locally. Use Publish Events Live to update the public website.');
         });
 
         // Settings Logic
@@ -1103,12 +1104,12 @@
 
             const btn = document.getElementById('publish-live-btn');
             btn.disabled = true;
-            showPublishStatus('info', '⏳ Saving events data...');
+            showPublishStatus('info', 'Publishing events to the public website...');
 
             try {
                 await DataManager.publishEventsLive();
                 document.getElementById('publish-notice').style.display = 'none';
-                showPublishStatus('success', '✓ Events data saved successfully.');
+                showPublishStatus('success', 'Events published live successfully.');
             } catch (err) {
                 console.error(err);
                 showPublishStatus('error', '⚠ Events data could not be saved. Check the Admin Token and Netlify settings.');
@@ -1347,7 +1348,7 @@
         };
 
         window.addEventListener('load', async () => {
-            await DataManager.loadEventsFromSource();
+            await DataManager.loadEventsWithFallback();
             await DataManager.loadNewsWithFallback();
             await DataManager.loadContactFromSource();
             syncWithCMS();

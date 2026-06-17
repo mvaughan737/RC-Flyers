@@ -126,7 +126,7 @@ Events uses:
 - Live endpoint: `/.netlify/functions/events-live`
 - Static fallback: `/admin/content/events.json`
 
-Admin edits may save locally first so the editor can keep working, but publishing live content requires the Admin Dashboard publish/save-data action and the configured Netlify admin token. Public pages should not fall directly from a failed live News request to old sample/default News while the static JSON fallback is available.
+Admin startup for both News and Events should load shared content in the same Blob-first, static JSON fallback, defaults/local fallback order before editing begins. Admin edits may save locally first so the editor can keep working, but publishing live content requires the Admin Dashboard publish/save-data action and the configured Netlify admin token. Public pages should not fall directly from a failed live News request to old sample/default News while the static JSON fallback is available.
 
 News formatting entered in Admin should be preserved on the public News page. Public rendering should safely escape Admin text, then preserve paragraph breaks, line breaks, bullets, and simple Markdown-style emphasis.
 
