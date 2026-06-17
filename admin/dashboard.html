@@ -199,7 +199,7 @@
                             <input type="date" id="news-date" required>
                         </div>
                         <div style="display: flex; gap: 10px;">
-                            <button type="submit" id="news-submit-btn" class="btn btn-gold">Publish Post</button>
+                            <button type="submit" id="news-submit-btn" class="btn btn-gold">Save Locally</button>
                             <button type="button" id="news-cancel-btn" class="btn"
                                 style="display: none; background: #eee;" onclick="cancelEdit('news')">Cancel
                                 Edit</button>
@@ -211,7 +211,7 @@
                         style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3>Existing News</h3>
                         <button id="publish-news-btn" class="btn btn-gold" style="font-size: 0.85rem;" onclick="publishNewsLive()">
-                            &#x2713; Save Data</button>
+                            &#x2713; Publish News Live</button>
                     </div>
                     <div id="news-publish-status" style="display: none; padding: 10px; border-radius: 5px; margin-bottom: 1rem; font-size: 0.85rem; font-weight: bold;"></div>
                     <div id="news-list"></div>
@@ -813,7 +813,7 @@
             document.getElementById(`${type}-cancel-btn`).style.display = 'none';
 
             const btn = document.getElementById(`${type}-submit-btn`);
-            if (type === 'news') btn.innerText = 'Publish Post';
+            if (type === 'news') btn.innerText = 'Save Locally';
             else if (type === 'event') btn.innerText = 'Save Event';
             else if (type === 'link') btn.innerText = 'Add Link';
 
@@ -837,6 +837,7 @@
                 e.target.reset();
             }
             renderAll();
+            showNewsPublishStatus('info', 'News saved locally. Use Publish News Live to update the public website.');
         });
 
         // Event Logic
@@ -1142,11 +1143,11 @@
 
             const btn = document.getElementById('publish-news-btn');
             btn.disabled = true;
-            showNewsPublishStatus('info', '⏳ Saving news data...');
+            showNewsPublishStatus('info', 'Publishing news to the public website...');
 
             try {
                 await DataManager.publishNewsLive();
-                showNewsPublishStatus('success', '✓ News data saved successfully.');
+                showNewsPublishStatus('success', 'News published live successfully.');
             } catch (err) {
                 console.error(err);
                 showNewsPublishStatus('error', '⚠ News data could not be saved. Check the Admin Token and Netlify settings.');
@@ -1347,6 +1348,7 @@
 
         window.addEventListener('load', async () => {
             await DataManager.loadEventsFromSource();
+            await DataManager.loadNewsWithFallback();
             await DataManager.loadContactFromSource();
             syncWithCMS();
             initGithubFields();

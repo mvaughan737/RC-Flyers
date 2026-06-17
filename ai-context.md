@@ -110,6 +110,28 @@ Admin should be:
 
 ---
 
+## News and Events Data Ownership
+
+News and Events are managed through the custom Admin Dashboard with the same source order:
+
+1. Netlify Blobs live data, read through the matching Netlify Function
+2. Static JSON fallback in `/admin/content/`
+3. Built-in/browser local fallback only if both shared sources are unavailable
+
+News uses:
+- Live endpoint: `/.netlify/functions/news-live`
+- Static fallback: `/admin/content/news.json`
+
+Events uses:
+- Live endpoint: `/.netlify/functions/events-live`
+- Static fallback: `/admin/content/events.json`
+
+Admin edits may save locally first so the editor can keep working, but publishing live content requires the Admin Dashboard publish/save-data action and the configured Netlify admin token. Public pages should not fall directly from a failed live News request to old sample/default News while the static JSON fallback is available.
+
+CMSLoader should remain focused on image/media JSON such as backgrounds and gallery data unless a future architecture change explicitly moves text content back to Decap-managed files.
+
+---
+
 ## Workflow
 
 1. Make changes using Antigravity (AG)

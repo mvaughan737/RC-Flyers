@@ -98,8 +98,8 @@
         document.addEventListener('DOMContentLoaded', async () => {
             // 1. DATA INITIALIZATION (DataManager is the Source of Truth for text content)
             await DataManager.loadContactFromSource();
-            // Fetch live news from Netlify Blobs; falls back to localStorage data if unavailable
-            await DataManager.loadNewsFromBlob();
+            // Fetch live news from Netlify Blobs; falls back to static JSON, then local defaults.
+            await DataManager.loadNewsWithFallback();
             let newsData = DataManager.getNews();
             let settings = DataManager.getSettings();
             let links = DataManager.getLinks();

@@ -108,6 +108,13 @@ const DataManager = (() => {
 
         // Events
         getEvents: () => data.events,
+        loadEventsWithFallback: async () => {
+            const blobLoaded = await DataManager.loadEventsFromBlob();
+            if (!blobLoaded) {
+                return await DataManager.loadEventsFromSource();
+            }
+            return true;
+        },
         loadEventsFromSource: async () => {
             try {
                 // Fetch from the shared published source
@@ -267,7 +274,7 @@ const DataManager = (() => {
         },
 
         // Load live news from Netlify Function (public GET, no auth)
-        // Returns false if the function returns 404 (no blob yet) or errors — caller falls back to localStorage data.
+        // Returns false if the function returns 404 (no blob yet) or errors; caller falls back to static JSON.
         loadNewsFromBlob: async () => {
             try {
                 const res = await fetch('/.netlify/functions/news-live?cb=' + Date.now());
@@ -284,6 +291,29 @@ const DataManager = (() => {
                 console.warn('DataManager: news-live function unavailable, using fallback.', err);
             }
             return false;
+        },
+        loadNewsFromSource: async () => {
+            try {
+                const response = await fetch('/admin/content/news.json?cb=' + Date.now());
+                if (response.ok) {
+                    const remote = await response.json();
+                    if (remote && Array.isArray(remote.news)) {
+                        data.news = remote.news;
+                        save();
+                        return true;
+                    }
+                }
+            } catch (err) {
+                console.warn('DataManager: Failed to load remote news', err);
+            }
+            return false;
+        },
+        loadNewsWithFallback: async () => {
+            const blobLoaded = await DataManager.loadNewsFromBlob();
+            if (!blobLoaded) {
+                return await DataManager.loadNewsFromSource();
+            }
+            return true;
         },
 
         loadContactFromSource: async () => {
