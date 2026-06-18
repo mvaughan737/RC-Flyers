@@ -17,7 +17,8 @@ const StatusManager = {
         station: localStorage.getItem('metar_station') || 'KOKK',
         manualStatus: JSON.parse(localStorage.getItem('field_status_manual')) || null,
         weatherData: {}, // Store live METAR data
-        lastSync: null
+        lastSync: null,
+        weatherError: null
     },
 
     getCompassDirection: function(deg) {
@@ -145,22 +146,24 @@ const StatusManager = {
 
     fetchWeather: async function() {
         try {
-            const cacheBuster = Date.now();
-            const stations = Object.keys(METAR_STATIONS).join(',');
-            const targetUrl = `https://aviationweather.gov/api/data/metar?ids=${stations}&format=json&_=${cacheBuster}`;
+            const response = await fetch(`/.netlify/functions/metar-live?_=${Date.now()}`);
             
-            // Try codetabs first, then fall back to allorigins
-            let response;
-            try {
-                response = await fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`);
-                if (!response.ok) throw new Error();
-            } catch (e) {
-                response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`);
+            if (!response.ok) {
+                let message = 'Weather data is temporarily unavailable. Please try again later.';
+                try {
+                    const errorData = await response.json();
+                    message = errorData.error || message;
+                } catch {
+                    // Keep the friendly fallback message if the error response is not JSON.
+                }
+                throw new Error(message);
             }
             
-            if (!response.ok) throw new Error('Weather API mismatch');
-            
             const data = await response.json();
+
+            if (!Array.isArray(data)) {
+                throw new Error('Unexpected weather data format.');
+            }
             
             // Map the array to our state object by station ID
             this.state.weatherData = {};
@@ -169,10 +172,13 @@ const StatusManager = {
             });
             
             this.state.lastSync = new Date();
+            this.state.weatherError = null;
             this.updateUI();
             return true;
         } catch (error) {
             console.error('METAR Fetch Error:', error);
+            this.state.weatherError = 'Weather data is temporarily unavailable. Please try again later.';
+            this.updateUI();
             return false;
         }
     },
@@ -426,7 +432,11 @@ const StatusManager = {
         }
 
         const syncTimeEl = document.getElementById('metar-sync-time');
-        if (syncTimeEl && this.state.lastSync) {
+        if (syncTimeEl && this.state.weatherError) {
+            syncTimeEl.innerText = this.state.weatherError;
+            syncTimeEl.style.color = '#dc3545';
+            syncTimeEl.style.fontWeight = 'bold';
+        } else if (syncTimeEl && this.state.lastSync) {
             syncTimeEl.innerText = `Data Refreshed: ${this.state.lastSync.toLocaleTimeString()}`;
             syncTimeEl.style.color = '#28a745';
             syncTimeEl.style.fontWeight = 'bold';
