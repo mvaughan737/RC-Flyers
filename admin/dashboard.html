@@ -914,11 +914,18 @@
             document.getElementById('gallery-images-manager').scrollIntoView({ behavior: 'smooth' });
         }
 
+        function normalizeAdminPreviewPath(path) {
+            if (!path) return '';
+            if (/^(https?:)?\/\//i.test(path) || path.startsWith('data:')) return path;
+            const cleanPath = path.replace(/^\.?\//, '');
+            return cleanPath.startsWith('images/') ? `../${cleanPath}` : `../${cleanPath.replace(/^\/+/, '')}`;
+        }
+
         function renderGalleryImages(g) {
             const list = document.getElementById('gallery-images-list');
             list.innerHTML = (g.images || []).map((img, idx) => `
                 <div style="background: #f9f9f9; border-radius: 5px; overflow: hidden; border: 1px solid #eee;">
-                    <div style="height: 100px; background: url('../${img.thumb || img.src}') center/cover no-repeat; background-color: #eee;"></div>
+                    <div style="height: 100px; background: url('${normalizeAdminPreviewPath(img.thumb || img.src)}') center/cover no-repeat; background-color: #eee;"></div>
                     <div style="padding: 5px; font-size: 0.65rem; color: #444;">
                         <div style="font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${img.alt || 'No alt text'}</div>
                     </div>

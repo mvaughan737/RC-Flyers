@@ -176,10 +176,10 @@ collections:
               - {label: "Event Title", name: "title", widget: "string", required: true, hint: "Example: Spring Fun Fly 2025"}
               - {label: "Event Slug", name: "slug", widget: "string", required: true, pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', 'Must be lowercase with dashes'], hint: "Auto-generated from title - you can edit if needed (e.g., spring-fun-fly-2025)"}
               - {label: "Published", name: "published", widget: "boolean", default: true, hint: "Turn this ON to make the gallery visible on your website"}
-              - {label: "Event Folder", name: "eventFolder", widget: "string", required: true, hint: "Folder name where photos are stored. Should match the slug above."}
-              - {label: "Cover Image (Optional)", name: "coverImage", widget: "image", required: false, media_folder: "/images/gallery", public_folder: "/images/gallery", hint: "Optional thumbnail for this event shown in the gallery list."}
+              - {label: "Event Folder", name: "eventFolder", widget: "string", required: true, hint: "Folder label for this gallery event. Use the event slug for consistency; current photo uploads are selected from the shared gallery media folder."}
+              - {label: "Cover Image (Optional)", name: "coverImage", widget: "image", required: false, media_folder: "images/gallery", public_folder: "/images/gallery", hint: "Optional thumbnail for this event shown in the gallery list."}
               - {label: "Event Photos", name: "images", widget: "list", required: true, summary: "{{fields.image}}", hint: "Click 'Add' then select multiple photos by holding Ctrl (Windows) or Cmd (Mac).", fields: [
-                  {label: "Image", name: "image", widget: "image", media_folder: "/images/gallery", public_folder: "/images/gallery", required: true},
+                  {label: "Image", name: "image", widget: "image", media_folder: "images/gallery", public_folder: "/images/gallery", required: true},
                   {label: "Thumbnail (Optional)", name: "thumbnail", widget: "hidden", default: "", required: false, hint: "Auto-handled by the system."},
                   {label: "Caption (Optional)", name: "caption", widget: "string", required: false, hint: "Optional text describing this specific photo."}
                 ]}
