@@ -4,13 +4,13 @@
       "published": true,
       "title": "Egg Drop Competition 2026",
       "slug": "egg-drop-2026",
-      "coverImage": "/images/gallery/drop1-scores.jpg",
       "eventFolder": "egg-drop-2026",
+      "coverImage": "/images/gallery/drop1-scores.jpg",
       "images": [
         {
           "thumbnail": "",
           "image": "/images/gallery/two.jpg",
-          "caption": "Getting ready for Competition."
+          "caption": "Getting ready for competition."
         }
       ]
     },
