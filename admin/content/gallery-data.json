@@ -2,6 +2,20 @@
   "galleries": [
     {
       "published": true,
+      "title": "Egg Drop Competition 2026",
+      "slug": "egg-drop-2026",
+      "coverImage": "/images/gallery/drop1-scores.jpg",
+      "eventFolder": "egg-drop-2026",
+      "images": [
+        {
+          "thumbnail": "",
+          "image": "/images/gallery/two.jpg",
+          "caption": "Getting ready for Competition."
+        }
+      ]
+    },
+    {
+      "published": true,
       "title": "Converse Flying Eagles RC Club",
       "slug": "converse-airport",
       "eventFolder": "Converse Airport",
