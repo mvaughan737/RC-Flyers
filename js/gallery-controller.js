@@ -29,13 +29,13 @@ const GalleryController = (() => {
         
         if (currentGallery) {
             renderGallery(currentGallery);
+        } else if (!eventSlug) {
+            renderGalleryLanding(galleries);
         } else {
-            // Show latest event or default view
-            if (galleries.length > 0) {
-                renderGallery(galleries[0]);
-            } else {
-                const contentEl = document.getElementById('gallery-content');
-                if (contentEl) contentEl.innerHTML = '<p class="no-data">No gallery events found.</p>';
+            const gridEl = document.getElementById('gallery-grid');
+            if (gridEl) {
+                gridEl.className = 'gallery-grid';
+                gridEl.innerHTML = '<p class="no-data">Gallery event not found.</p>';
             }
         }
     };
@@ -102,6 +102,44 @@ const GalleryController = (() => {
         `).join('');
     };
 
+    const renderGalleryLanding = (galleries) => {
+        currentGallery = null;
+        const titleEl = document.getElementById('gallery-title');
+        const gridEl = document.getElementById('gallery-grid');
+
+        if (titleEl) titleEl.innerText = 'Photo Gallery';
+        if (!gridEl) return;
+
+        if (!galleries || galleries.length === 0) {
+            gridEl.className = 'gallery-grid';
+            gridEl.innerHTML = '<p class="no-data">No gallery events found.</p>';
+            return;
+        }
+
+        gridEl.className = 'gallery-card-grid';
+        gridEl.innerHTML = galleries.map(gallery => {
+            const firstImage = gallery.images && gallery.images.length > 0 ? gallery.images[0] : null;
+            const previewImage = gallery.coverImage || (firstImage && (firstImage.thumb || firstImage.src));
+            const photoCount = gallery.images ? gallery.images.length : 0;
+            const photoLabel = `${photoCount} ${photoCount === 1 ? 'photo' : 'photos'}`;
+
+            return `
+                <a href="gallery.html?event=${gallery.slug}" class="gallery-event-card">
+                    ${previewImage ? `
+                        <img src="${previewImage}" alt="${gallery.title}" loading="lazy">
+                    ` : `
+                        <div class="gallery-card-placeholder" aria-hidden="true">Photo Gallery</div>
+                    `}
+                    <div class="gallery-card-content">
+                        <h3>${gallery.title}</h3>
+                        <p>${photoLabel}</p>
+                        <span class="gallery-card-link">View Gallery</span>
+                    </div>
+                </a>
+            `;
+        }).join('');
+    };
+
     const renderGallery = (gallery) => {
         currentGallery = gallery;
         const titleEl = document.getElementById('gallery-title');
@@ -110,6 +148,8 @@ const GalleryController = (() => {
         if (titleEl) titleEl.innerText = gallery.title;
         if (!gridEl) return;
         
+        gridEl.className = 'gallery-grid';
+
         if (!gallery.images || gallery.images.length === 0) {
             gridEl.innerHTML = '<p class="no-data">This gallery is empty.</p>';
             return;
