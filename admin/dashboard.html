@@ -145,6 +145,65 @@
             margin-top: 3px;
             font-style: italic;
         }
+
+        .gallery-editor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .gallery-photo-row {
+            background: #fdfdfd;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            padding: 12px;
+        }
+
+        .gallery-photo-row-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .gallery-admin-row {
+            background: #fdfdfd;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            display: flex;
+            gap: 12px;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 14px;
+        }
+
+        .gallery-admin-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 768px) {
+            .admin-main {
+                grid-template-columns: 1fr;
+            }
+
+            .content {
+                padding: 1.25rem;
+            }
+
+            .gallery-photo-row-grid,
+            .gallery-admin-row {
+                display: block;
+            }
+
+            .gallery-admin-actions {
+                justify-content: flex-start;
+                margin-top: 10px;
+            }
+        }
     </style>
 </head>
 
@@ -306,7 +365,7 @@
                     <div class="tab-bar">
                         <button class="tab-btn active" onclick="switchGalleryTab('tab-backgrounds')">Background
                             Images</button>
-                        <button class="tab-btn" onclick="switchGalleryTab('tab-create')">Create Gallery Folders</button>
+                        <button class="tab-btn" onclick="switchGalleryTab('tab-create')">Gallery Manager</button>
                         <button class="tab-btn" onclick="switchGalleryTab('tab-show')">Current Gallery Folders</button>
                     </div>
 
@@ -341,28 +400,77 @@
                         </div>
                     </div>
 
-                    <!-- Tab 2: Create Gallery Folders -->
+                    <!-- Tab 2: Gallery Manager -->
                     <div id="tab-create" class="tab-content" style="padding-top: 1rem;">
-                        <h4 style="margin-bottom: 0.5rem; color: var(--navy-blue);">Create Gallery Folders</h4>
-                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Use the website editor to
-                            create folders, upload photos, and save gallery updates.</p>
+                        <div style="display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 1rem;">
+                            <div>
+                                <h4 style="margin-bottom: 0.5rem; color: var(--navy-blue);">Gallery Manager</h4>
+                                <p style="font-size: 0.85rem; color: #666; margin-bottom: 0;">Create and edit gallery event metadata. Media files are referenced by URL in this phase.</p>
+                            </div>
+                            <button id="publish-gallery-btn" class="btn btn-gold" style="font-size: 0.85rem;" onclick="publishGalleryLive()">
+                                &#x2713; Publish Gallery Live</button>
+                        </div>
 
-                        <div class="guide-step"><b>Step 1:</b> Click <a
-                                href="/admin/#/collections/gallery_content/entries/gallery_data" target="_blank">Open
-                                Website Editor</a> to add photos or change the background.</div>
-                        <div class="guide-step"><b>Step 2:</b> Upload your images, save your changes, and wait a moment
-                            (Netlify build).</div>
-                        <div class="guide-step"><b>Step 3:</b> Return to this page and click <b>Refresh from Website</b>
-                            above to see the results.</div>
+                        <div id="gallery-publish-status" style="display: none; padding: 10px; border-radius: 5px; margin-bottom: 1rem; font-size: 0.85rem; font-weight: bold;"></div>
+                        <div id="gallery-dirty-notice"
+                            style="display: none; background: #e7f3ff; padding: 10px; border-left: 4px solid var(--sky-blue); margin-bottom: 1rem; font-size: 0.85rem;">
+                            Gallery changes are saved locally. Click <strong>Publish Gallery Live</strong> to update the public website.
+                        </div>
+
+                        <div id="gallery-edit-indicator"
+                            style="display: none; background: #fffcf0; padding: 10px; border-left: 4px solid var(--gold); margin-bottom: 1rem; font-weight: bold;">
+                            Editing Gallery Event...
+                        </div>
+
+                        <form id="gallery-form">
+                            <div class="gallery-editor-grid">
+                                <div class="form-group">
+                                    <label>Title</label>
+                                    <input type="text" id="gallery-title-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Slug</label>
+                                    <input type="text" id="gallery-slug-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Event Folder</label>
+                                    <input type="text" id="gallery-folder-input" placeholder="Legacy field, usually the slug">
+                                </div>
+                                <div class="form-group">
+                                    <label>Cover Image URL</label>
+                                    <input type="text" id="gallery-cover-input" placeholder="/images/gallery/photo.jpg">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Event Description (Optional)</label>
+                                <textarea id="gallery-description-input" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label style="display: inline-flex; gap: 8px; align-items: center; font-weight: bold;">
+                                    <input type="checkbox" id="gallery-published-input" style="width: auto;" checked>
+                                    Published
+                                </label>
+                            </div>
+
+                            <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin: 1.25rem 0 0.75rem;">
+                                <h4 style="margin: 0; color: var(--navy-blue);">Event Photos</h4>
+                                <button type="button" class="btn btn-gold" style="font-size: 0.8rem;" onclick="addGalleryPhotoRow()">Add Photo URL</button>
+                            </div>
+                            <div id="gallery-photo-editor-list"></div>
+
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 1rem;">
+                                <button type="submit" id="gallery-submit-btn" class="btn btn-gold">Save Gallery Locally</button>
+                                <button type="button" id="gallery-cancel-btn" class="btn"
+                                    style="display: none; background: #eee;" onclick="cancelGalleryEdit()">Cancel Edit</button>
+                            </div>
+                        </form>
 
                         <div
-                            style="margin-top: 2rem; padding: 1.5rem; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee;">
-                            <h4 style="margin-bottom: 0.5rem;">Ready to manage folders?</h4>
-                            <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">Use the editor to create
-                                new gallery events, set slugs, and upload photo batches.</p>
+                            style="margin-top: 2rem; padding: 1rem; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee;">
+                            <h4 style="margin-bottom: 0.5rem;">Legacy Website Editor</h4>
+                            <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">Decap Gallery editing remains available for now, but this Gallery Manager is the preferred metadata workflow.</p>
                             <a href="/admin/#/collections/gallery_content/entries/gallery_data" target="_blank"
-                                class="btn btn-gold" style="font-size: 0.85rem; text-decoration: none;">Manage Folders
-                                in Editor</a>
+                                class="btn" style="font-size: 0.85rem; text-decoration: none; background: #eee;">Open Legacy Gallery Editor</a>
                         </div>
                     </div>
 
@@ -391,9 +499,7 @@
 
                             <p style="font-size: 0.85rem; color: #444; margin: 0;">
                                 <b>Want to add or remove photos?</b><br>
-                                Please use the <a href="/admin/#/collections/gallery_content/entries/gallery_data"
-                                    target="_blank" style="font-weight: bold; color: var(--navy-blue);">Website Content
-                                    Editor</a> to make changes.
+                                Use the <b>Gallery Manager</b> tab to edit photo URLs, captions, cover images, and event metadata.
                             </p>
                         </div>
                     </div>
@@ -899,8 +1005,38 @@
             renderAll();
         });
 
+        document.getElementById('gallery-title-input').addEventListener('input', () => {
+            if (editState.type !== 'gallery') {
+                document.getElementById('gallery-slug-input').value = slugifyGalleryTitle(document.getElementById('gallery-title-input').value);
+            }
+        });
+
+        document.getElementById('gallery-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const galleryData = collectGalleryFormData();
+
+            if (!galleryData.title || !galleryData.slug) {
+                showGalleryPublishStatus('warning', 'Gallery title and slug are required.');
+                return;
+            }
+
+            if (editState.type === 'gallery') {
+                DataManager.updateGallery(editState.id, galleryData);
+                cancelGalleryEdit();
+            } else {
+                DataManager.addGallery(galleryData);
+                resetGalleryForm();
+            }
+
+            setGalleryDirty(true);
+            renderAll();
+            showGalleryPublishStatus('info', 'Gallery saved locally. Use Publish Gallery Live to update the public website.');
+        });
+
         // Photo Manager Guided Logic
         let activeGalleryId = null;
+        let galleryPhotoDraft = [];
+        let galleryDirty = false;
 
         function previewGallery(id) {
             const g = DataManager.getGalleries().find(gal => gal.id === id);
@@ -925,12 +1061,205 @@
             const list = document.getElementById('gallery-images-list');
             list.innerHTML = (g.images || []).map((img, idx) => `
                 <div style="background: #f9f9f9; border-radius: 5px; overflow: hidden; border: 1px solid #eee;">
-                    <div style="height: 100px; background: url('${normalizeAdminPreviewPath(img.thumb || img.src)}') center/cover no-repeat; background-color: #eee;"></div>
+                    <div style="height: 100px; background: url('${normalizeAdminPreviewPath(img.thumb || img.thumbnail || img.src || img.image)}') center/cover no-repeat; background-color: #eee;"></div>
                     <div style="padding: 5px; font-size: 0.65rem; color: #444;">
-                        <div style="font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${img.alt || 'No alt text'}</div>
+                        <div style="font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${img.alt || img.caption || 'No caption'}</div>
                     </div>
                 </div>
             `).join('') || '<p style="grid-column: 1/-1; color: #999; font-style: italic;">No photos found in this folder.</p>';
+        }
+
+        function slugifyGalleryTitle(title) {
+            return (title || '')
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)/g, '');
+        }
+
+        function getManagedGalleries() {
+            const galleries = DataManager.getGalleries();
+            let changed = false;
+            const normalized = galleries.map((g, index) => {
+                if (g.id) return g;
+                changed = true;
+                return { ...g, id: Date.now() + index };
+            });
+            if (changed) DataManager.updateGalleries(normalized);
+            return normalized;
+        }
+
+        function setGalleryDirty(isDirty = true) {
+            galleryDirty = isDirty;
+            const notice = document.getElementById('gallery-dirty-notice');
+            if (notice) notice.style.display = galleryDirty ? 'block' : 'none';
+        }
+
+        function normalizeGalleryPhotoForEditor(img = {}) {
+            return {
+                image: img.image || img.src || '',
+                thumbnail: img.thumbnail || img.thumb || '',
+                caption: img.caption || img.alt || ''
+            };
+        }
+
+        function renderGalleryPhotoEditor() {
+            const list = document.getElementById('gallery-photo-editor-list');
+            if (!list) return;
+
+            if (!galleryPhotoDraft.length) {
+                list.innerHTML = '<p style="color: #888; font-size: 0.85rem; font-style: italic;">No photos yet. Add image URLs from /images/gallery/ or a full public URL.</p>';
+                return;
+            }
+
+            list.innerHTML = galleryPhotoDraft.map((photo, index) => `
+                <div class="gallery-photo-row" data-photo-index="${index}">
+                    <div class="gallery-photo-row-grid">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Image URL</label>
+                            <input type="text" class="gallery-photo-image" value="${(photo.image || '').replace(/"/g, '&quot;')}" placeholder="/images/gallery/photo.jpg">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Thumbnail URL</label>
+                            <input type="text" class="gallery-photo-thumbnail" value="${(photo.thumbnail || '').replace(/"/g, '&quot;')}" placeholder="Optional">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Caption</label>
+                            <input type="text" class="gallery-photo-caption" value="${(photo.caption || '').replace(/"/g, '&quot;')}" placeholder="Optional caption">
+                        </div>
+                        <button type="button" class="btn" style="background: #ff6b6b; color: #fff; font-size: 0.8rem;" onclick="removeGalleryPhotoRow(${index})">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addGalleryPhotoRow(photo = {}) {
+            galleryPhotoDraft.push(normalizeGalleryPhotoForEditor(photo));
+            renderGalleryPhotoEditor();
+        }
+
+        function removeGalleryPhotoRow(index) {
+            galleryPhotoDraft.splice(index, 1);
+            renderGalleryPhotoEditor();
+        }
+
+        function readGalleryPhotoRows() {
+            return Array.from(document.querySelectorAll('#gallery-photo-editor-list .gallery-photo-row'))
+                .map(row => ({
+                    image: row.querySelector('.gallery-photo-image').value.trim(),
+                    thumbnail: row.querySelector('.gallery-photo-thumbnail').value.trim(),
+                    caption: row.querySelector('.gallery-photo-caption').value.trim()
+                }))
+                .filter(photo => photo.image);
+        }
+
+        function resetGalleryForm() {
+            document.getElementById('gallery-form').reset();
+            document.getElementById('gallery-published-input').checked = true;
+            galleryPhotoDraft = [];
+            renderGalleryPhotoEditor();
+        }
+
+        function setGalleryEditMode(id) {
+            const gallery = getManagedGalleries().find(g => g.id === id);
+            if (!gallery) return;
+
+            editState = { type: 'gallery', id };
+            document.getElementById('gallery-edit-indicator').style.display = 'block';
+            document.getElementById('gallery-cancel-btn').style.display = 'inline-block';
+            document.getElementById('gallery-submit-btn').innerText = 'Save Gallery Changes';
+            document.getElementById('gallery-title-input').value = gallery.title || '';
+            document.getElementById('gallery-slug-input').value = gallery.slug || slugifyGalleryTitle(gallery.title);
+            document.getElementById('gallery-folder-input').value = gallery.eventFolder || gallery.slug || '';
+            document.getElementById('gallery-cover-input').value = gallery.coverImage || '';
+            document.getElementById('gallery-description-input').value = gallery.description || '';
+            document.getElementById('gallery-published-input').checked = gallery.published !== false;
+            galleryPhotoDraft = (gallery.images || []).map(normalizeGalleryPhotoForEditor);
+            renderGalleryPhotoEditor();
+            document.getElementById('gallery-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelGalleryEdit() {
+            editState = { type: null, id: null };
+            document.getElementById('gallery-edit-indicator').style.display = 'none';
+            document.getElementById('gallery-cancel-btn').style.display = 'none';
+            document.getElementById('gallery-submit-btn').innerText = 'Save Gallery Locally';
+            resetGalleryForm();
+        }
+
+        function collectGalleryFormData() {
+            const title = document.getElementById('gallery-title-input').value.trim();
+            const slug = document.getElementById('gallery-slug-input').value.trim() || slugifyGalleryTitle(title);
+            return {
+                title,
+                slug,
+                published: document.getElementById('gallery-published-input').checked,
+                coverImage: document.getElementById('gallery-cover-input').value.trim(),
+                description: document.getElementById('gallery-description-input').value.trim(),
+                eventFolder: document.getElementById('gallery-folder-input').value.trim() || slug,
+                images: readGalleryPhotoRows()
+            };
+        }
+
+        function deleteGalleryEvent(id) {
+            if (!confirm('Delete this gallery event?')) return;
+            DataManager.deleteGallery(id);
+            if (editState.type === 'gallery' && editState.id === id) cancelGalleryEdit();
+            setGalleryDirty(true);
+            renderAll();
+            showGalleryPublishStatus('info', 'Gallery deleted locally. Use Publish Gallery Live to update the public website.');
+        }
+
+        function moveGalleryEvent(id, direction) {
+            const galleries = [...getManagedGalleries()];
+            const index = galleries.findIndex(g => g.id === id);
+            const target = index + direction;
+            if (index < 0 || target < 0 || target >= galleries.length) return;
+            const [item] = galleries.splice(index, 1);
+            galleries.splice(target, 0, item);
+            DataManager.updateGalleries(galleries);
+            setGalleryDirty(true);
+            renderAll();
+            showGalleryPublishStatus('info', 'Gallery order saved locally. Use Publish Gallery Live to update the public website.');
+        }
+
+        async function publishGalleryLive() {
+            const n = DataManager.getNetlifySettings();
+            if (!n.adminToken) {
+                showGalleryPublishStatus('warning', 'Admin token not configured. Open the Netlify config panel in Events Calendar and save your token first.');
+                return;
+            }
+
+            const btn = document.getElementById('publish-gallery-btn');
+            btn.disabled = true;
+            showGalleryPublishStatus('info', 'Publishing gallery metadata to the public website...');
+
+            try {
+                await DataManager.publishGalleryLive();
+                setGalleryDirty(false);
+                showGalleryPublishStatus('success', 'Gallery metadata published live successfully.');
+            } catch (err) {
+                console.error(err);
+                showGalleryPublishStatus('error', 'Gallery metadata could not be saved. Check the Admin Token and Netlify settings.');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function showGalleryPublishStatus(type, msg) {
+            const el = document.getElementById('gallery-publish-status');
+            if (!el) return;
+            const styles = {
+                info:    'background:#e7f3ff; color:#004085; border-left:4px solid var(--sky-blue);',
+                success: 'background:#d4edda; color:#155724; border-left:4px solid #28a745;',
+                warning: 'background:#fff3cd; color:#856404; border-left:4px solid var(--gold);',
+                error:   'background:#f8d7da; color:#721c24; border-left:4px solid #dc3545;'
+            };
+            el.setAttribute('style', `display:block; padding:10px; border-radius:5px; margin-bottom:1rem; font-size:0.85rem; font-weight:bold; ${styles[type] || styles.info}`);
+            el.innerText = msg;
+            if (type === 'success') {
+                setTimeout(() => { el.style.display = 'none'; }, 4000);
+            }
         }
 
         // Render Functions
@@ -1018,14 +1347,23 @@
 
             const galleryList = document.getElementById('gallery-events-list');
             if (galleryList) {
-                galleryList.innerHTML = DataManager.getGalleries().map(g => `
-                    <div style="padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fdfdfd; margin-bottom: 5px; border-radius: 5px;">
-                        <div>
-                            <strong style="color: var(--navy-blue);">${g.title}</strong>
-                            <div style="font-size: 0.75rem; color: #666;">${g.date || 'No date'} | ${g.images ? g.images.length : 0} Photos</div>
+                const galleries = getManagedGalleries();
+                galleryList.innerHTML = galleries.map((g, index) => `
+                    <div class="gallery-admin-row">
+                        <div style="display: flex; gap: 12px; align-items: center; min-width: 0;">
+                            <div style="width: 78px; height: 58px; border-radius: 6px; background: #eee url('${normalizeAdminPreviewPath(g.coverImage || (g.images && g.images[0] && (g.images[0].thumbnail || g.images[0].thumb || g.images[0].image || g.images[0].src)) || '')}') center/cover no-repeat; flex-shrink: 0; border: 1px solid #ddd;"></div>
+                            <div style="min-width: 0;">
+                                <strong style="color: var(--navy-blue);">${g.title || 'Untitled Gallery'}</strong>
+                                <div style="font-size: 0.75rem; color: #666;">${g.slug || 'no-slug'} | ${g.published === false ? 'Draft' : 'Published'} | ${g.images ? g.images.length : 0} Photos</div>
+                                <div style="font-size: 0.7rem; color: #888; word-break: break-all;">${g.eventFolder || ''}</div>
+                            </div>
                         </div>
-                        <div style="display: flex; gap: 5px;">
-                            <button class="btn btn-gold" style="padding: 5px 12px; font-size: 0.8rem;" onclick="previewGallery(${g.id})">Preview Photos</button>
+                        <div class="gallery-admin-actions">
+                            <button class="btn" style="padding: 5px 10px; font-size: 0.8rem; background: #eee;" onclick="moveGalleryEvent(${g.id}, -1)" ${index === 0 ? 'disabled' : ''}>Up</button>
+                            <button class="btn" style="padding: 5px 10px; font-size: 0.8rem; background: #eee;" onclick="moveGalleryEvent(${g.id}, 1)" ${index === galleries.length - 1 ? 'disabled' : ''}>Down</button>
+                            <button class="btn btn-gold" style="padding: 5px 12px; font-size: 0.8rem;" onclick="previewGallery(${g.id})">Preview</button>
+                            <button class="btn btn-gold" style="padding: 5px 12px; font-size: 0.8rem;" onclick="setGalleryEditMode(${g.id}); switchGalleryTab('tab-create')">Edit</button>
+                            <button class="btn" style="padding: 5px 10px; font-size: 0.8rem; background: #ff6b6b; color: #fff;" onclick="deleteGalleryEvent(${g.id})">Delete</button>
                         </div>
                     </div>
                 `).join('') || '<p style="color: #888; font-style: italic;">No gallery folders found.</p>';
@@ -1046,32 +1384,9 @@
             if (indicator) indicator.innerText = 'Refreshing...';
 
             try {
-                // Load Gallery Data
-                const cmsData = await CMSLoader.loadCmsGalleryData();
-                const rawGalleries = cmsData || [];
-
-                const normalizedGalleries = rawGalleries.map((g, index) => {
-                    const slug = g.slug || g.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-                    return {
-                        id: g.id || (index + 1),
-                        title: g.title || 'Untitled Event',
-                        slug: slug,
-                        date: g.date || '',
-                        description: g.description || '',
-                        eventFolder: g.eventFolder || slug,
-                        published: g.published !== undefined ? g.published : true,
-                        coverImage: g.coverImage || '',
-                        images: (g.images || []).map(img => ({
-                            src: img.image || img.src || '',
-                            thumb: img.thumbnail || img.thumb || img.image || img.src || '',
-                            alt: img.caption || g.title || 'Gallery Image'
-                        }))
-                    };
-                });
-
-                if (normalizedGalleries.length > 0) {
-                    DataManager.updateGalleries(normalizedGalleries);
-                }
+                // Load Gallery Metadata: live Blob first, static JSON fallback
+                await DataManager.loadGalleryWithFallback();
+                getManagedGalleries();
 
                 // Load Background Settings
                 const cmsBackground = await CMSLoader.loadCmsBackgroundSettings();

@@ -292,6 +292,31 @@ const DataManager = (() => {
             return false;
         },
 
+        loadGalleryFromSource: async () => {
+            try {
+                const response = await fetch('/admin/content/gallery-data.json?cb=' + Date.now());
+                if (response.ok) {
+                    const remote = await response.json();
+                    if (remote && Array.isArray(remote.galleries)) {
+                        data.galleries = remote.galleries;
+                        save();
+                        return true;
+                    }
+                }
+            } catch (err) {
+                console.warn('DataManager: Failed to load static gallery data', err);
+            }
+            return false;
+        },
+
+        loadGalleryWithFallback: async () => {
+            const liveLoaded = await DataManager.loadGalleryLive();
+            if (!liveLoaded) {
+                return await DataManager.loadGalleryFromSource();
+            }
+            return true;
+        },
+
         // Publish news via Netlify Function (no GitHub commit, no deploy)
         publishNewsLive: async () => {
             if (!netlify.adminToken) throw new Error('Admin token not configured. Enter it in the ⚙️ config panel.');

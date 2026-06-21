@@ -135,6 +135,8 @@ Gallery metadata uses:
 - Gallery media binaries are not stored in Netlify Blobs in this phase.
 - Existing local media URLs such as `/images/gallery/file.jpg` remain supported.
 - Cloudinary-based image uploads, bulk upload, and video/MP4 support are planned for a later gallery media phase.
+- The custom Admin Dashboard Gallery Manager is the preferred gallery metadata editor.
+- Decap Gallery editing remains available as a legacy/static fallback workflow for now and should not be removed until a later approved phase.
 
 Admin startup for News, Events, and Gallery metadata should load shared content in the same Blob-first, static JSON fallback, defaults/local fallback order before editing begins. Admin edits may save locally first so the editor can keep working, but publishing live content requires the Admin Dashboard publish/save-data action and the configured Netlify admin token. Public pages should not fall directly from a failed live News request to old sample/default News while the static JSON fallback is available.
 
