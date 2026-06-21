@@ -56,7 +56,12 @@ const DataManager = (() => {
 
     let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaults;
     let github = JSON.parse(localStorage.getItem(GITHUB_KEY)) || { owner: 'mvaughan737', repo: 'RC-Flyers', branch: 'main', token: '' };
-    let netlify = JSON.parse(localStorage.getItem(NETLIFY_KEY)) || { adminToken: '', cloudinaryCloudName: '', cloudinaryUploadPreset: '' };
+    const CLOUDINARY_DEFAULTS = {
+        cloudName: 'dufydks9p',
+        uploadPreset: 'flying_eagles_unsigned'
+    };
+
+    let netlify = JSON.parse(localStorage.getItem(NETLIFY_KEY)) || { adminToken: '', cloudinaryCloudName: CLOUDINARY_DEFAULTS.cloudName, cloudinaryUploadPreset: CLOUDINARY_DEFAULTS.uploadPreset };
     
     // Ensure core links are always present
     const coreTitles = defaults.links.map(l => l.title);
@@ -211,8 +216,8 @@ const DataManager = (() => {
         },
 
         getCloudinarySettings: () => ({
-            cloudName: netlify.cloudinaryCloudName || '',
-            uploadPreset: netlify.cloudinaryUploadPreset || ''
+            cloudName: netlify.cloudinaryCloudName || CLOUDINARY_DEFAULTS.cloudName,
+            uploadPreset: netlify.cloudinaryUploadPreset || CLOUDINARY_DEFAULTS.uploadPreset
         }),
         updateCloudinarySettings: (newSettings) => {
             netlify = {

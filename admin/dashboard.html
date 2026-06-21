@@ -162,9 +162,41 @@
 
         .gallery-photo-row-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr auto;
+            grid-template-columns: 120px 1fr 1fr 1fr auto;
             gap: 10px;
             align-items: end;
+        }
+
+        .gallery-media-badge {
+            background: var(--navy-blue);
+            border-radius: 4px;
+            color: var(--gold);
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            padding: 3px 7px;
+            text-transform: uppercase;
+        }
+
+        .gallery-video-preview {
+            align-items: center;
+            background: #111;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            color: var(--gold);
+            display: flex;
+            font-weight: 700;
+            height: 120px;
+            justify-content: center;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .gallery-video-preview video {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
         }
 
         .gallery-admin-row {
@@ -460,10 +492,12 @@
                                 <h4 style="margin: 0; color: var(--navy-blue);">Event Photos</h4>
                                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                                     <button type="button" class="btn btn-gold" style="font-size: 0.8rem;" onclick="triggerCloudinaryPhotoUpload()">Upload Image</button>
+                                    <button type="button" class="btn btn-gold" style="font-size: 0.8rem;" onclick="triggerCloudinaryVideoUpload()">Upload Video</button>
                                     <button type="button" class="btn btn-gold" style="font-size: 0.8rem;" onclick="addGalleryPhotoRow()">Add Photo URL</button>
                                 </div>
                             </div>
                             <input type="file" id="gallery-photo-upload-input" accept="image/*" multiple style="display: none;" onchange="handleCloudinaryPhotoUpload(this.files)">
+                            <input type="file" id="gallery-video-upload-input" accept="video/mp4" style="display: none;" onchange="handleCloudinaryVideoUpload(this.files)">
                             <div id="gallery-upload-status" style="display: none; padding: 10px; border-radius: 5px; margin-bottom: 1rem; font-size: 0.85rem; font-weight: bold;"></div>
                             <div id="gallery-photo-editor-list"></div>
 
@@ -482,16 +516,16 @@
                                     <div class="gallery-editor-grid">
                                         <div class="form-group">
                                             <label>Cloudinary Cloud Name</label>
-                                            <input type="text" id="cloudinary-cloud-name" placeholder="your-cloud-name">
+                                            <input type="text" id="cloudinary-cloud-name" placeholder="dufydks9p">
                                         </div>
                                         <div class="form-group">
                                             <label>Unsigned Upload Preset</label>
-                                            <input type="text" id="cloudinary-upload-preset" placeholder="gallery-upload-preset">
+                                            <input type="text" id="cloudinary-upload-preset" placeholder="flying_eagles_unsigned">
                                         </div>
                                     </div>
                                     <button type="button" class="btn btn-gold" style="font-size: 0.8rem;" onclick="saveCloudinaryConfig()">Save Cloudinary Config</button>
                                     <span id="cloudinary-config-status" style="margin-left: 10px; font-size: 0.75rem; color: green; display: none;">Saved</span>
-                                    <p style="font-size: 0.75rem; color: #888; margin-top: 8px; margin-bottom: 0;">Use an unsigned image upload preset. Uploads save Cloudinary secure URLs into gallery metadata.</p>
+                                    <p style="font-size: 0.75rem; color: #888; margin-top: 8px; margin-bottom: 0;">Use an unsigned Cloudinary preset that allows image uploads and MP4 video uploads. Uploads save Cloudinary secure URLs into gallery metadata.</p>
                                 </div>
                             </details>
                             <h4 style="margin-bottom: 0.5rem;">Legacy Website Editor</h4>
@@ -1058,6 +1092,7 @@
             setGalleryDirty(true);
             renderAll();
             showGalleryPublishStatus('info', 'Gallery saved locally. Use Publish Gallery Live to update the public website.');
+            scrollToGalleryStatus();
         });
 
         // Photo Manager Guided Logic
@@ -1124,10 +1159,37 @@
 
         function normalizeGalleryPhotoForEditor(img = {}) {
             return {
+                type: img.type || 'image',
                 image: img.image || img.src || '',
                 thumbnail: img.thumbnail || img.thumb || '',
                 caption: img.caption || img.alt || ''
             };
+        }
+
+        function renderGalleryMediaPreview(photo) {
+            const mediaType = photo.type || 'image';
+            const previewSource = photo.thumbnail || photo.image;
+            if (mediaType === 'video') {
+                return `
+                    <div>
+                        <span class="gallery-media-badge">Video</span>
+                        <div class="gallery-video-preview">
+                            ${photo.thumbnail ? `
+                                <div style="height: 100%; width: 100%; background: url('${normalizeAdminPreviewPath(photo.thumbnail)}') center/cover no-repeat;"></div>
+                            ` : `
+                                <video src="${normalizeAdminPreviewPath(photo.image)}" muted preload="metadata"></video>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div>
+                    <span class="gallery-media-badge">Image</span>
+                    <div style="height: 120px; background: #eee url('${normalizeAdminPreviewPath(previewSource)}') center/cover no-repeat; border-radius: 6px; border: 1px solid #ddd;"></div>
+                </div>
+            `;
         }
 
         function renderGalleryPhotoEditor() {
@@ -1141,10 +1203,11 @@
 
             list.innerHTML = galleryPhotoDraft.map((photo, index) => `
                 <div class="gallery-photo-row" data-photo-index="${index}">
-                    <div style="height: 120px; background: #eee url('${normalizeAdminPreviewPath(photo.thumbnail || photo.image)}') center/cover no-repeat; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 10px;"></div>
                     <div class="gallery-photo-row-grid">
+                        ${renderGalleryMediaPreview(photo)}
+                        <input type="hidden" class="gallery-photo-type" value="${photo.type || 'image'}">
                         <div class="form-group" style="margin-bottom: 0;">
-                            <label>Image URL</label>
+                            <label>${(photo.type || 'image') === 'video' ? 'Video URL' : 'Image URL'}</label>
                             <input type="text" class="gallery-photo-image" value="${(photo.image || '').replace(/"/g, '&quot;')}" placeholder="/images/gallery/photo.jpg">
                         </div>
                         <div class="form-group" style="margin-bottom: 0;">
@@ -1174,6 +1237,7 @@
         function readGalleryPhotoRows() {
             return Array.from(document.querySelectorAll('#gallery-photo-editor-list .gallery-photo-row'))
                 .map(row => ({
+                    type: row.querySelector('.gallery-photo-type').value || 'image',
                     image: row.querySelector('.gallery-photo-image').value.trim(),
                     thumbnail: row.querySelector('.gallery-photo-thumbnail').value.trim(),
                     caption: row.querySelector('.gallery-photo-caption').value.trim()
@@ -1266,6 +1330,7 @@
                 await DataManager.publishGalleryLive();
                 setGalleryDirty(false);
                 showGalleryPublishStatus('success', 'Gallery metadata published live successfully.');
+                scrollToGalleryStatus();
             } catch (err) {
                 console.error(err);
                 showGalleryPublishStatus('error', 'Gallery metadata could not be saved. Check the Admin Token and Netlify settings.');
@@ -1288,6 +1353,12 @@
             if (type === 'success') {
                 setTimeout(() => { el.style.display = 'none'; }, 4000);
             }
+        }
+
+        function scrollToGalleryStatus() {
+            const target = document.getElementById('gallery-publish-status') || document.getElementById('tab-create');
+            if (!target) return;
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function getCloudinaryConfig() {
@@ -1331,7 +1402,11 @@
             document.getElementById('gallery-photo-upload-input').click();
         }
 
-        async function uploadImageToCloudinary(file) {
+        function triggerCloudinaryVideoUpload() {
+            document.getElementById('gallery-video-upload-input').click();
+        }
+
+        async function uploadMediaToCloudinary(file, resourceType = 'image') {
             const config = getCloudinaryConfig();
             if (!config.cloudName || !config.uploadPreset) {
                 throw new Error('Cloudinary config is missing. Save cloud name and unsigned upload preset first.');
@@ -1341,7 +1416,7 @@
             formData.append('file', file);
             formData.append('upload_preset', config.uploadPreset);
 
-            const response = await fetch(`https://api.cloudinary.com/v1_1/${encodeURIComponent(config.cloudName)}/image/upload`, {
+            const response = await fetch(`https://api.cloudinary.com/v1_1/${encodeURIComponent(config.cloudName)}/${resourceType}/upload`, {
                 method: 'POST',
                 body: formData
             });
@@ -1360,6 +1435,21 @@
                 throw new Error('Cloudinary upload response did not include a secure URL.');
             }
             return result;
+        }
+
+        async function uploadImageToCloudinary(file) {
+            return await uploadMediaToCloudinary(file, 'image');
+        }
+
+        async function uploadVideoToCloudinary(file) {
+            return await uploadMediaToCloudinary(file, 'video');
+        }
+
+        function deriveCloudinaryVideoPoster(videoUrl) {
+            if (!videoUrl || !videoUrl.includes('/video/upload/')) return '';
+            return videoUrl
+                .replace('/video/upload/', '/video/upload/so_0/')
+                .replace(/\.(mp4|mov|m4v|webm)(\?.*)?$/i, '.jpg');
         }
 
         async function handleCloudinaryCoverUpload(fileList) {
@@ -1390,6 +1480,7 @@
                 for (const file of files) {
                     const result = await uploadImageToCloudinary(file);
                     uploaded.push({
+                        type: 'image',
                         image: result.secure_url,
                         thumbnail: '',
                         caption: file.name ? file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ') : ''
@@ -1408,6 +1499,40 @@
                 showGalleryUploadStatus('error', err.message || 'Image upload failed.');
             } finally {
                 document.getElementById('gallery-photo-upload-input').value = '';
+            }
+        }
+
+        async function handleCloudinaryVideoUpload(fileList) {
+            const files = Array.from(fileList || []);
+            if (!files.length) return;
+
+            const file = files[0];
+            if (!/\.mp4$/i.test(file.name || '') && file.type !== 'video/mp4') {
+                showGalleryUploadStatus('warning', 'Only MP4 video files are supported in this phase.');
+                document.getElementById('gallery-video-upload-input').value = '';
+                return;
+            }
+
+            showGalleryUploadStatus('info', 'Uploading MP4 video to Cloudinary...');
+            try {
+                const result = await uploadVideoToCloudinary(file);
+                const videoUrl = result.secure_url;
+                const posterUrl = result.thumbnail_url || deriveCloudinaryVideoPoster(videoUrl);
+                const uploaded = {
+                    type: 'video',
+                    image: videoUrl,
+                    thumbnail: posterUrl,
+                    caption: file.name ? file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ') : ''
+                };
+
+                galleryPhotoDraft = readGalleryPhotoRows().concat(uploaded);
+                renderGalleryPhotoEditor();
+                showGalleryUploadStatus('success', 'Video uploaded. Save the gallery to keep this URL.');
+            } catch (err) {
+                console.error(err);
+                showGalleryUploadStatus('error', err.message || 'Video upload failed.');
+            } finally {
+                document.getElementById('gallery-video-upload-input').value = '';
             }
         }
 

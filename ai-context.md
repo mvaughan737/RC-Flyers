@@ -132,11 +132,14 @@ Gallery metadata uses:
 - Live endpoint: `/.netlify/functions/gallery-live`
 - Static fallback: `/admin/content/gallery-data.json`
 - Netlify Blobs stores gallery metadata only, such as event titles, slugs, cover image URLs, image URL references, captions, and published state.
-- Gallery media binaries are not stored in Netlify Blobs in this phase.
+- Gallery media binaries are not stored in Netlify Blobs.
 - Existing local media URLs such as `/images/gallery/file.jpg` remain supported.
-- Cloudinary-based image uploads are available in the custom Admin Dashboard Gallery Manager using a Cloudinary cloud name and unsigned image upload preset stored in the browser's local Admin settings.
-- Cloudinary uploads save returned secure URLs into gallery metadata. Public gallery rendering supports both Cloudinary image URLs and existing local image URLs.
-- Bulk upload beyond Cloudinary multi-file image selection and video/MP4 support are planned for later gallery media phases.
+- Gallery media entries may use `type: "image"` or `type: "video"`. Missing `type` defaults to image for backward compatibility.
+- Cloudinary-based image and MP4 video uploads are available in the custom Admin Dashboard Gallery Manager using a Cloudinary cloud name and unsigned upload preset stored in the browser's local Admin settings.
+- Default Cloudinary settings are cloud name `dufydks9p` and unsigned preset `flying_eagles_unsigned`.
+- Cloudinary uploads save returned secure URLs into gallery metadata. Public gallery rendering supports Cloudinary image URLs, Cloudinary MP4 video URLs, and existing local image URLs.
+- The unsigned Cloudinary preset must allow the resource types being uploaded. If MP4 upload fails while image upload works, confirm the preset allows unsigned video uploads or create a separate approved unsigned video-capable preset in a later phase.
+- Bulk upload beyond Cloudinary multi-file image selection is planned for a later gallery media phase.
 - The custom Admin Dashboard Gallery Manager is the preferred gallery metadata editor.
 - Decap Gallery editing remains available as a legacy/static fallback workflow for now and should not be removed until a later approved phase.
 

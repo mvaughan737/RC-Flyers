@@ -43,11 +43,16 @@ const GalleryController = (() => {
     const normalizeGalleries = (galleries) => {
         return (galleries || []).map(g => ({
             ...g,
-            images: (g.images || []).map(img => ({
-                src: img.src || img.image,
-                thumb: img.thumb || img.thumbnail || img.src || img.image,
-                alt: img.alt || img.caption || g.title
-            }))
+            images: (g.images || []).map(img => {
+                const type = img.type || 'image';
+                const src = img.src || img.image;
+                return {
+                    type,
+                    src,
+                    thumb: type === 'video' ? (img.thumb || img.thumbnail || '') : (img.thumb || img.thumbnail || src),
+                    alt: img.alt || img.caption || g.title
+                };
+            })
         }));
     };
 
@@ -125,7 +130,7 @@ const GalleryController = (() => {
 
         gridEl.className = 'gallery-card-grid';
         gridEl.innerHTML = galleries.map(gallery => {
-            const firstImage = gallery.images && gallery.images.length > 0 ? gallery.images[0] : null;
+            const firstImage = gallery.images && gallery.images.length > 0 ? gallery.images.find(img => (img.type || 'image') === 'image') : null;
             const previewImage = gallery.coverImage || (firstImage && (firstImage.thumb || firstImage.src));
             const photoCount = gallery.images ? gallery.images.length : 0;
             const photoLabel = `${photoCount} ${photoCount === 1 ? 'photo' : 'photos'}`;
@@ -162,14 +167,36 @@ const GalleryController = (() => {
             return;
         }
 
-        gridEl.innerHTML = gallery.images.map((img, index) => `
-            <a href="${img.src}" class="glightbox gallery-item" 
-               data-gallery="gallery-${gallery.slug}" 
-               data-description='<span class="caption-text">${img.alt || ''}</span><span class="caption-counter">${index + 1} of ${gallery.images.length}</span>'>
-                <img src="${img.thumb}" alt="${img.alt}" loading="lazy">
-                <div class="overlay">${img.alt || ''}</div>
-            </a>
-        `).join('');
+        gridEl.innerHTML = gallery.images.map((img, index) => {
+            const mediaType = img.type || 'image';
+            const caption = img.alt || '';
+            const description = `<span class="caption-text">${caption}</span><span class="caption-counter">${index + 1} of ${gallery.images.length}</span>`;
+
+            if (mediaType === 'video') {
+                return `
+                    <a href="${img.src}" class="glightbox gallery-item"
+                       data-gallery="gallery-${gallery.slug}"
+                       data-type="video"
+                       data-description='${description}'>
+                        ${img.thumb ? `
+                            <img src="${img.thumb}" alt="${caption}" loading="lazy">
+                        ` : `
+                            <video src="${img.src}" muted preload="metadata"></video>
+                        `}
+                        <div class="overlay">${caption || 'Video'}</div>
+                    </a>
+                `;
+            }
+
+            return `
+                <a href="${img.src}" class="glightbox gallery-item"
+                   data-gallery="gallery-${gallery.slug}"
+                   data-description='${description}'>
+                    <img src="${img.thumb}" alt="${caption}" loading="lazy">
+                    <div class="overlay">${caption}</div>
+                </a>
+            `;
+        }).join('');
         
         // Initialize GLightbox after rendering
         if (typeof window.initGLightbox === 'function') {
