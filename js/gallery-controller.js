@@ -40,56 +40,63 @@ const GalleryController = (() => {
         }
     };
 
+    const normalizeGalleries = (galleries) => {
+        return (galleries || []).map(g => ({
+            ...g,
+            images: (g.images || []).map(img => ({
+                src: img.src || img.image,
+                thumb: img.thumb || img.thumbnail || img.src || img.image,
+                alt: img.alt || img.caption || g.title
+            }))
+        }));
+    };
+
     const loadGalleries = async () => {
         try {
-            // Priority 1: CMS Data
+            // Priority 1: Live metadata from Netlify Blobs
+            if (
+                typeof DataManager !== 'undefined' &&
+                typeof DataManager.loadGalleryLive === 'function' &&
+                typeof DataManager.getGalleries === 'function'
+            ) {
+                const liveLoaded = await DataManager.loadGalleryLive();
+                if (liveLoaded) {
+                    const liveGalleries = DataManager.getGalleries();
+                    if (liveGalleries) {
+                        return normalizeGalleries(liveGalleries);
+                    }
+                }
+            }
+        } catch (error) {
+            console.warn('GalleryController: Live gallery metadata unavailable, using static fallback.', error);
+        }
+
+        try {
+            // Priority 2: CMS/static gallery data
             if (typeof CMSLoader !== 'undefined') {
                 const cmsGalleries = await CMSLoader.loadCmsGalleryData();
                 if (cmsGalleries && cmsGalleries.length > 0) {
-                    // Normalize CMS structure: mapping 'image' to 'src' and handling thumbnails
-                    return cmsGalleries.map(g => ({
-                        ...g,
-                        images: (g.images || []).map(img => ({
-                            src: img.image,
-                            thumb: img.thumbnail || img.image,
-                            alt: img.caption || g.title
-                        }))
-                    }));
+                    return normalizeGalleries(cmsGalleries);
                 }
             }
 
-            // Priority 2: Local data/gallery.json
+            // Priority 3: Local data/gallery.json
             const response = await fetch('/data/gallery.json');
             if (response.ok) {
                 const data = await response.json();
                 if (data.galleries) {
-                    // Normalize local file format (it might use src/alt already)
-                    return data.galleries.map(g => ({
-                        ...g,
-                        images: (g.images || []).map(img => ({
-                            src: img.src || img.image,
-                            thumb: img.thumb || img.thumbnail || img.src || img.image,
-                            alt: img.alt || img.caption || g.title
-                        }))
-                    }));
+                    return normalizeGalleries(data.galleries);
                 }
             }
             
             throw new Error('No file-based data found');
         } catch (error) {
             console.warn('CMS/File data loading failed, falling back to local storage.', error);
-            // Priority 3: localStorage (DataManager)
+            // Priority 4: localStorage (DataManager)
             const localGalleries = (typeof DataManager !== 'undefined' && typeof DataManager.getGalleries === 'function')
                 ? DataManager.getGalleries()
                 : [];
-            return localGalleries.map(g => ({
-                ...g,
-                images: (g.images || []).map(img => ({
-                    src: img.src || img.image,
-                    thumb: img.thumb || img.thumbnail || img.src || img.image,
-                    alt: img.alt || img.caption || g.title
-                }))
-            }));
+            return normalizeGalleries(localGalleries);
         }
     };
 

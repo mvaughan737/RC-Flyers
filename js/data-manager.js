@@ -252,6 +252,46 @@ const DataManager = (() => {
             return false;
         },
 
+        // Publish gallery metadata via Netlify Function (metadata only; no media binaries)
+        publishGalleryLive: async () => {
+            if (!netlify.adminToken) throw new Error('Admin token not configured. Enter it in the config panel.');
+
+            const res = await fetch('/.netlify/functions/gallery-live', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${netlify.adminToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ galleries: data.galleries || [] })
+            });
+
+            if (!res.ok) {
+                let errMsg = `HTTP ${res.status}`;
+                try { const e = await res.json(); errMsg = e.error || errMsg; } catch { /* noop */ }
+                throw new Error(errMsg);
+            }
+            return true;
+        },
+
+        // Load live gallery metadata from Netlify Function (public GET, no auth)
+        // Returns false if no live blob exists or the function is unavailable; caller falls back to static JSON.
+        loadGalleryLive: async () => {
+            try {
+                const res = await fetch('/.netlify/functions/gallery-live?cb=' + Date.now());
+                if (res.ok) {
+                    const remote = await res.json();
+                    if (remote && Array.isArray(remote.galleries)) {
+                        data.galleries = remote.galleries;
+                        save();
+                        return true;
+                    }
+                }
+            } catch (err) {
+                console.warn('DataManager: gallery-live function unavailable, using fallback.', err);
+            }
+            return false;
+        },
+
         // Publish news via Netlify Function (no GitHub commit, no deploy)
         publishNewsLive: async () => {
             if (!netlify.adminToken) throw new Error('Admin token not configured. Enter it in the ⚙️ config panel.');
