@@ -215,15 +215,18 @@ const DataManager = (() => {
             saveNetlify();
         },
 
-        getCloudinarySettings: () => ({
-            cloudName: netlify.cloudinaryCloudName || CLOUDINARY_DEFAULTS.cloudName,
-            uploadPreset: netlify.cloudinaryUploadPreset || CLOUDINARY_DEFAULTS.uploadPreset
-        }),
+        getCloudinarySettings: () => {
+            const cloudName = String(netlify.cloudinaryCloudName || '').trim() || CLOUDINARY_DEFAULTS.cloudName;
+            const uploadPreset = String(netlify.cloudinaryUploadPreset || '').trim() || CLOUDINARY_DEFAULTS.uploadPreset;
+            return { cloudName, uploadPreset };
+        },
         updateCloudinarySettings: (newSettings) => {
+            const cloudName = String(newSettings.cloudName || '').trim();
+            const uploadPreset = String(newSettings.uploadPreset || '').trim();
             netlify = {
                 ...netlify,
-                cloudinaryCloudName: newSettings.cloudName || '',
-                cloudinaryUploadPreset: newSettings.uploadPreset || ''
+                cloudinaryCloudName: cloudName || CLOUDINARY_DEFAULTS.cloudName,
+                cloudinaryUploadPreset: uploadPreset || CLOUDINARY_DEFAULTS.uploadPreset
             };
             saveNetlify();
         },

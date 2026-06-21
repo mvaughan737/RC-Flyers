@@ -1363,9 +1363,13 @@
 
         function getCloudinaryConfig() {
             const settings = DataManager.getCloudinarySettings ? DataManager.getCloudinarySettings() : {};
+            const defaults = {
+                cloudName: 'dufydks9p',
+                uploadPreset: 'flying_eagles_unsigned'
+            };
             return {
-                cloudName: (settings.cloudName || '').trim(),
-                uploadPreset: (settings.uploadPreset || '').trim()
+                cloudName: String(settings.cloudName || '').trim() || defaults.cloudName,
+                uploadPreset: String(settings.uploadPreset || '').trim() || defaults.uploadPreset
             };
         }
 
