@@ -56,7 +56,7 @@ const DataManager = (() => {
 
     let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaults;
     let github = JSON.parse(localStorage.getItem(GITHUB_KEY)) || { owner: 'mvaughan737', repo: 'RC-Flyers', branch: 'main', token: '' };
-    let netlify = JSON.parse(localStorage.getItem(NETLIFY_KEY)) || { adminToken: '' };
+    let netlify = JSON.parse(localStorage.getItem(NETLIFY_KEY)) || { adminToken: '', cloudinaryCloudName: '', cloudinaryUploadPreset: '' };
     
     // Ensure core links are always present
     const coreTitles = defaults.links.map(l => l.title);
@@ -207,6 +207,19 @@ const DataManager = (() => {
         getNetlifySettings: () => netlify,
         updateNetlifySettings: (newSettings) => {
             netlify = { ...netlify, ...newSettings };
+            saveNetlify();
+        },
+
+        getCloudinarySettings: () => ({
+            cloudName: netlify.cloudinaryCloudName || '',
+            uploadPreset: netlify.cloudinaryUploadPreset || ''
+        }),
+        updateCloudinarySettings: (newSettings) => {
+            netlify = {
+                ...netlify,
+                cloudinaryCloudName: newSettings.cloudName || '',
+                cloudinaryUploadPreset: newSettings.uploadPreset || ''
+            };
             saveNetlify();
         },
 

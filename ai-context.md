@@ -134,7 +134,9 @@ Gallery metadata uses:
 - Netlify Blobs stores gallery metadata only, such as event titles, slugs, cover image URLs, image URL references, captions, and published state.
 - Gallery media binaries are not stored in Netlify Blobs in this phase.
 - Existing local media URLs such as `/images/gallery/file.jpg` remain supported.
-- Cloudinary-based image uploads, bulk upload, and video/MP4 support are planned for a later gallery media phase.
+- Cloudinary-based image uploads are available in the custom Admin Dashboard Gallery Manager using a Cloudinary cloud name and unsigned image upload preset stored in the browser's local Admin settings.
+- Cloudinary uploads save returned secure URLs into gallery metadata. Public gallery rendering supports both Cloudinary image URLs and existing local image URLs.
+- Bulk upload beyond Cloudinary multi-file image selection and video/MP4 support are planned for later gallery media phases.
 - The custom Admin Dashboard Gallery Manager is the preferred gallery metadata editor.
 - Decap Gallery editing remains available as a legacy/static fallback workflow for now and should not be removed until a later approved phase.
 
