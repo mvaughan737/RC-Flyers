@@ -1517,6 +1517,13 @@
                 return;
             }
 
+            const maxVideoUploadBytes = 100 * 1024 * 1024;
+            if (file.size > maxVideoUploadBytes) {
+                showGalleryUploadStatus('warning', 'This MP4 is too large for browser upload. Please compress it below 100 MB and try again.');
+                document.getElementById('gallery-video-upload-input').value = '';
+                return;
+            }
+
             showGalleryUploadStatus('info', 'Uploading MP4 video to Cloudinary...');
             try {
                 const result = await uploadVideoToCloudinary(file);
