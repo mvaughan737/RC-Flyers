@@ -199,6 +199,30 @@
             object-fit: cover;
         }
 
+        .gallery-photo-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .gallery-order-controls {
+            display: grid;
+            gap: 6px;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .gallery-order-btn {
+            background: #eee;
+            color: var(--navy-blue);
+            font-size: 0.75rem;
+            padding: 7px 9px;
+        }
+
+        .gallery-order-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.45;
+        }
+
         .gallery-admin-row {
             background: #fdfdfd;
             border: 1px solid #eee;
@@ -233,6 +257,10 @@
 
             .gallery-admin-actions {
                 justify-content: flex-start;
+                margin-top: 10px;
+            }
+
+            .gallery-photo-actions {
                 margin-top: 10px;
             }
         }
@@ -1218,7 +1246,13 @@
                             <label>Caption</label>
                             <input type="text" class="gallery-photo-caption" value="${(photo.caption || '').replace(/"/g, '&quot;')}" placeholder="Optional caption">
                         </div>
-                        <button type="button" class="btn" style="background: #ff6b6b; color: #fff; font-size: 0.8rem;" onclick="removeGalleryPhotoRow(${index})">Remove</button>
+                        <div class="gallery-photo-actions">
+                            <div class="gallery-order-controls" aria-label="Reorder media item">
+                                <button type="button" class="btn gallery-order-btn" onclick="moveGalleryPhotoRow(${index}, -1)" ${index === 0 ? 'disabled' : ''}>Up</button>
+                                <button type="button" class="btn gallery-order-btn" onclick="moveGalleryPhotoRow(${index}, 1)" ${index === galleryPhotoDraft.length - 1 ? 'disabled' : ''}>Down</button>
+                            </div>
+                            <button type="button" class="btn" style="background: #ff6b6b; color: #fff; font-size: 0.8rem;" onclick="removeGalleryPhotoRow(${index})">Remove</button>
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -1234,15 +1268,28 @@
             renderGalleryPhotoEditor();
         }
 
-        function readGalleryPhotoRows() {
-            return Array.from(document.querySelectorAll('#gallery-photo-editor-list .gallery-photo-row'))
+        function moveGalleryPhotoRow(index, direction) {
+            const rows = readGalleryPhotoRows({ includeEmpty: true });
+            const target = index + direction;
+            if (index < 0 || target < 0 || target >= rows.length) return;
+
+            const [item] = rows.splice(index, 1);
+            rows.splice(target, 0, item);
+            galleryPhotoDraft = rows;
+            renderGalleryPhotoEditor();
+        }
+
+        function readGalleryPhotoRows(options = {}) {
+            const includeEmpty = options.includeEmpty === true;
+            const photos = Array.from(document.querySelectorAll('#gallery-photo-editor-list .gallery-photo-row'))
                 .map(row => ({
                     type: row.querySelector('.gallery-photo-type').value || 'image',
                     image: row.querySelector('.gallery-photo-image').value.trim(),
                     thumbnail: row.querySelector('.gallery-photo-thumbnail').value.trim(),
                     caption: row.querySelector('.gallery-photo-caption').value.trim()
-                }))
-                .filter(photo => photo.image);
+                }));
+
+            return includeEmpty ? photos : photos.filter(photo => photo.image);
         }
 
         function resetGalleryForm() {
