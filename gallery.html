@@ -105,16 +105,13 @@
         <section>
             <main>
                 <section>
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
-                        <h2 class="section-title" id="gallery-title" style="margin-bottom: 0; text-align: left;">Photo
-                            Gallery</h2>
-                        <div class="gallery-selector" style="display: flex; gap: 10px; align-items: center;">
-                            <span style="font-weight: bold; color: var(--navy-blue);">Switch Event:</span>
-                            <ul id="gallery-nav-list"
-                                style="list-style: none; display: flex; gap: 15px; font-size: 0.9rem;">
-                                <!-- Dynamic event list -->
-                            </ul>
+                    <div class="gallery-heading-row">
+                        <h2 class="section-title" id="gallery-title">Photo Gallery</h2>
+                        <div class="gallery-selector">
+                            <label for="gallery-event-select">Switch Event:</label>
+                            <select id="gallery-event-select" class="gallery-event-select" aria-label="Switch gallery event">
+                                <!-- Dynamic event selector -->
+                            </select>
                         </div>
                     </div>
 

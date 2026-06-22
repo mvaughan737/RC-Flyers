@@ -105,13 +105,30 @@ const GalleryController = (() => {
         }
     };
 
-    const renderGalleryList = (galleries) => {
-        const listEl = document.getElementById('gallery-nav-list');
-        if (!listEl) return;
+    const setGallerySelectorVisible = (isVisible) => {
+        const selectorEl = document.querySelector('.gallery-selector');
+        if (selectorEl) {
+            selectorEl.hidden = !isVisible;
+        }
+    };
 
-        listEl.innerHTML = galleries.map(g => `
-            <li><a href="gallery.html?event=${g.slug}" class="${currentGallery && currentGallery.slug === g.slug ? 'active' : ''}">${g.title}</a></li>
+    const renderGalleryList = (galleries) => {
+        const selectEl = document.getElementById('gallery-event-select');
+        if (!selectEl) return;
+
+        const selectorGalleries = galleries.filter(gallery =>
+            gallery.published !== false || (currentGallery && currentGallery.slug === gallery.slug)
+        );
+
+        selectEl.innerHTML = selectorGalleries.map(gallery => `
+            <option value="${gallery.slug}" ${currentGallery && currentGallery.slug === gallery.slug ? 'selected' : ''}>${gallery.title}</option>
         `).join('');
+
+        selectEl.onchange = () => {
+            if (selectEl.value) {
+                window.location.href = `gallery.html?event=${encodeURIComponent(selectEl.value)}`;
+            }
+        };
     };
 
     const renderGalleryLanding = (galleries) => {
@@ -120,6 +137,7 @@ const GalleryController = (() => {
         const gridEl = document.getElementById('gallery-grid');
 
         if (titleEl) titleEl.innerText = 'Photo Gallery';
+        setGallerySelectorVisible(false);
         if (!gridEl) return;
 
         if (!galleries || galleries.length === 0) {
@@ -158,6 +176,7 @@ const GalleryController = (() => {
         const gridEl = document.getElementById('gallery-grid');
         
         if (titleEl) titleEl.innerText = gallery.title;
+        setGallerySelectorVisible(true);
         if (!gridEl) return;
         
         gridEl.className = 'gallery-grid';
