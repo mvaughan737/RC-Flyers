@@ -6,12 +6,17 @@ const GalleryController = (() => {
     let currentGallery = null;
     let currentIndex = 0;
 
+    const escapeHtml = (value = '') => String(value).replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    }[char]));
+
     const init = async () => {
         const galleries = await loadGalleries();
         
-        // Always update navigation dropdowns globally
-        updateNavigationDropdown(galleries);
-
         // Gallery-specific rendering: only proceed if we are on the gallery page or have gallery elements
         const isGalleryPage = window.location.pathname.includes('gallery.html');
         const gridEl = document.getElementById('gallery-grid');
@@ -121,7 +126,7 @@ const GalleryController = (() => {
         );
 
         selectEl.innerHTML = selectorGalleries.map(gallery => `
-            <option value="${gallery.slug}" ${currentGallery && currentGallery.slug === gallery.slug ? 'selected' : ''}>${gallery.title}</option>
+            <option value="${escapeHtml(gallery.slug)}" ${currentGallery && currentGallery.slug === gallery.slug ? 'selected' : ''}>${escapeHtml(gallery.title)}</option>
         `).join('');
 
         selectEl.onchange = () => {
@@ -156,12 +161,12 @@ const GalleryController = (() => {
             return `
                 <a href="gallery.html?event=${gallery.slug}" class="gallery-event-card">
                     ${previewImage ? `
-                        <img src="${previewImage}" alt="${gallery.title}" loading="lazy">
+                        <img src="${previewImage}" alt="${escapeHtml(gallery.title)}" loading="lazy">
                     ` : `
                         <div class="gallery-card-placeholder" aria-hidden="true">Photo Gallery</div>
                     `}
                     <div class="gallery-card-content">
-                        <h3>${gallery.title}</h3>
+                        <h3>${escapeHtml(gallery.title)}</h3>
                         <p>${photoLabel}</p>
                         <span class="gallery-card-link">View Gallery</span>
                     </div>
@@ -188,21 +193,23 @@ const GalleryController = (() => {
 
         gridEl.innerHTML = gallery.images.map((img, index) => {
             const mediaType = img.type || 'image';
-            const caption = img.alt || '';
-            const description = `<span class="caption-text">${caption}</span><span class="caption-counter">${index + 1} of ${gallery.images.length}</span>`;
+            const captionText = img.alt || '';
+            const caption = escapeHtml(captionText);
+            const descriptionHtml = `<span class="caption-text">${caption}</span><span class="caption-counter">${index + 1} of ${gallery.images.length}</span>`;
+            const descriptionAttr = escapeHtml(descriptionHtml);
 
             if (mediaType === 'video') {
                 return `
                     <a href="${img.src}" class="glightbox gallery-item"
                        data-gallery="gallery-${gallery.slug}"
                        data-type="video"
-                       data-description='${description}'>
+                       data-description="${descriptionAttr}">
                         ${img.thumb ? `
                             <img src="${img.thumb}" alt="${caption}" loading="lazy">
                         ` : `
                             <video src="${img.src}" muted preload="metadata"></video>
                         `}
-                        <div class="overlay">${caption || 'Video'}</div>
+                        <div class="overlay">${captionText ? caption : 'Video'}</div>
                     </a>
                 `;
             }
@@ -210,7 +217,7 @@ const GalleryController = (() => {
             return `
                 <a href="${img.src}" class="glightbox gallery-item"
                    data-gallery="gallery-${gallery.slug}"
-                   data-description='${description}'>
+                   data-description="${descriptionAttr}">
                     <img src="${img.thumb}" alt="${caption}" loading="lazy">
                     <div class="overlay">${caption}</div>
                 </a>
@@ -221,16 +228,6 @@ const GalleryController = (() => {
         if (typeof window.initGLightbox === 'function') {
             setTimeout(() => window.initGLightbox(), 100);
         }
-    };
-
-    const updateNavigationDropdown = (galleries) => {
-        // This will be called on all pages to populate the dropdown
-        const dropdowns = document.querySelectorAll('.gallery-dropdown-content');
-        dropdowns.forEach(dropdown => {
-            dropdown.innerHTML = galleries.map(g => `
-                <a href="gallery.html?event=${g.slug}">${g.title}</a>
-            `).join('') + '<a href="gallery.html" style="border-top: 1px solid rgba(255,255,255,0.1); font-weight: bold;">View All Galleries</a>';
-        });
     };
 
     return {
