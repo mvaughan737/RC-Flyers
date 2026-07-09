@@ -608,6 +608,21 @@
                             meeting schedule, and pilot resources.</p>
                     </div>
 
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                        <div id="contact-publish-notice"
+                            style="display: none; flex: 1 1 280px; background: #e7f3ff; padding: 10px; border-left: 4px solid var(--sky-blue); font-size: 0.85rem;">
+                            <strong>Changes Pending:</strong> Contact & Meetings updates are saved locally, but not yet live.
+                            Click Publish to sync contact info, meeting info, and pilot resources.
+                        </div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-left: auto;">
+                            <button class="btn" style="background: #28a745; color: #fff; font-size: 0.75rem;"
+                                onclick="refreshContact()">Sync Web Data</button>
+                            <button class="btn btn-gold" style="font-size: 0.75rem;"
+                                onclick="openPublishContactModal()">Publish to Website</button>
+                        </div>
+                    </div>
+
                     <!-- Tabs Bar -->
                     <div class="tab-bar">
                         <button class="tab-btn active" onclick="switchSettingsTab('tab-contact')">Club Contact
@@ -618,24 +633,9 @@
 
                     <!-- Tab 1: Club Contact Info -->
                     <div id="tab-contact" class="tab-content active" style="padding-top: 1rem;">
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                            <h4 style="color: var(--navy-blue); margin: 0;">Club Contact Info</h4>
-                            <div style="display: flex; gap: 10px;">
-                                <button class="btn" style="background: #28a745; color: #fff; font-size: 0.75rem;"
-                                    onclick="refreshContact()">↻ Sync Web data</button>
-                                <button class="btn btn-gold" style="font-size: 0.75rem;"
-                                    onclick="openPublishContactModal()">↑ Publish to Website</button>
-                            </div>
-                        </div>
+                        <h4 style="color: var(--navy-blue); margin: 0 0 0.5rem;">Club Contact Info</h4>
                         <p style="font-size: 0.85rem; color: #666; margin-bottom: 1.5rem;">Update the club’s public
                             contact details shown on the website.</p>
-
-                        <div id="contact-publish-notice"
-                            style="display: none; background: #e7f3ff; padding: 10px; border-left: 4px solid var(--sky-blue); margin-bottom: 1rem; font-size: 0.85rem;">
-                            <strong>Changes Pending:</strong> Contact details are updated locally, but not yet live.
-                            Click 'Publish' to sync.
-                        </div>
 
                         <div id="contact-status"
                             style="display: none; color: green; margin-bottom: 10px; font-weight: bold;">
@@ -1063,6 +1063,16 @@
         });
 
         // Settings Logic
+        function markContactPending() {
+            const notice = document.getElementById('contact-publish-notice');
+            if (notice) notice.style.display = 'block';
+        }
+
+        function clearContactPending() {
+            const notice = document.getElementById('contact-publish-notice');
+            if (notice) notice.style.display = 'none';
+        }
+
         document.getElementById('contact-settings-form').addEventListener('submit', (e) => {
             e.preventDefault();
             DataManager.updateSettings({
@@ -1070,8 +1080,7 @@
                 phone: document.getElementById('set-phone').value
             });
             showSuccess('contact-status');
-            // Show the pending changes notice
-            document.getElementById('contact-publish-notice').style.display = 'block';
+            markContactPending();
             renderAll();
         });
 
@@ -1082,7 +1091,7 @@
                 meetingPlace: document.getElementById('set-meeting-place').value
             });
             showSuccess('meeting-status');
-            document.getElementById('contact-publish-notice').style.display = 'block';
+            markContactPending();
             renderAll();
         });
 
@@ -1099,7 +1108,7 @@
                 DataManager.addLink(linkData);
                 e.target.reset();
             }
-            document.getElementById('contact-publish-notice').style.display = 'block';
+            markContactPending();
             renderAll();
         });
 
@@ -1672,7 +1681,7 @@
                         <div style="flex: 1;"><strong>${l.title}</strong></div>
                         <div style="display: flex; gap: 5px;">
                             <button class="btn btn-gold" style="padding: 5px 10px; font-size: 0.8rem;" onclick="setEditMode('link', ${JSON.stringify(l).replace(/"/g, '&quot;')})">Edit</button>
-                            <button class="btn" style="padding: 5px 10px; font-size: 0.8rem; background: #ff6b6b; color: #fff;" onclick="if(confirm('Delete?')){DataManager.deleteLink(${l.id}); document.getElementById('contact-publish-notice').style.display = 'block'; renderAll();}">Delete</button>
+                            <button class="btn" style="padding: 5px 10px; font-size: 0.8rem; background: #ff6b6b; color: #fff;" onclick="if(confirm('Delete?')){DataManager.deleteLink(${l.id}); markContactPending(); renderAll();}">Delete</button>
                         </div>
                     </div>
                 `).join('');
@@ -1916,20 +1925,24 @@
 
         async function publishContactToWebsite() {
             const btn = document.querySelector('button[onclick="openPublishContactModal()"]');
-            const originalText = btn.innerText;
-            btn.disabled = true;
-            btn.innerText = 'Publishing...';
+            const originalText = btn ? btn.innerText : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerText = 'Publishing...';
+            }
 
             try {
                 await DataManager.publishContact();
                 alert('Contact & Meetings data published live successfully.');
-                document.getElementById('contact-publish-notice').style.display = 'none';
+                clearContactPending();
             } catch (err) {
                 console.error(err);
                 alert('Publish failed: ' + err.message);
             } finally {
-                btn.disabled = false;
-                btn.innerText = originalText;
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                }
             }
         }
 
@@ -1979,17 +1992,18 @@
 
         async function refreshContact() {
             const btn = document.querySelector('button[onclick="refreshContact()"]');
-            const originalText = btn.innerText;
-            btn.innerText = 'Updating...';
+            const originalText = btn ? btn.innerText : '';
+            if (btn) btn.innerText = 'Updating...';
 
             const success = await DataManager.loadContactFromSource();
             if (success) {
                 alert('Fetched latest Contact & Meetings data from the website.');
+                clearContactPending();
                 renderAll();
             } else {
                 alert('No live Contact & Meetings data was found. Local/default data remains active.');
             }
-            btn.innerText = originalText;
+            if (btn) btn.innerText = originalText;
         }
 
         function switchSection(section) {
@@ -2019,9 +2033,6 @@
             // For now, mirroring the events logic
             const eventNotice = document.getElementById('publish-notice');
             if (eventNotice) eventNotice.style.display = 'block';
-
-            const contactNotice = document.getElementById('contact-publish-notice');
-            if (contactNotice) contactNotice.style.display = 'block';
 
             initGithubFields();
         };
