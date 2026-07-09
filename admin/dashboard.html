@@ -760,12 +760,12 @@
                     <div id="tab-visitor-stats" class="tab-content" style="padding-top: 1rem;">
                         <h4 style="margin-bottom: 0.5rem; color: var(--navy-blue);">Website Traffic Overview</h4>
                         <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">Visitor data is tracked using
-                            Google Analytics (GA4), but live reporting is not connected inside Admin yet.</p>
+                            Google Analytics (GA4). Admin reports show the last 30 days when the GA4 Data API is connected.</p>
 
-                        <div
+                        <div id="analytics-status-panel"
                             style="padding: 1.5rem; background: #e7f3ff; border-left: 4px solid var(--sky-blue); border-radius: 8px; margin-bottom: 1.5rem;">
                             <h4 style="margin: 0 0 0.5rem; color: var(--navy-blue);">Live Analytics Reporting</h4>
-                            <p style="font-size: 0.9rem; color: #444; margin: 0 0 1rem; line-height: 1.5;">Live analytics reporting is not connected in Admin. Open Google Analytics to view current visitor stats.</p>
+                            <p id="analytics-status-message" style="font-size: 0.9rem; color: #444; margin: 0 0 1rem; line-height: 1.5;">Loading live analytics...</p>
                             <a href="https://analytics.google.com/" target="_blank" class="btn btn-gold"
                                 style="text-decoration: none; display: inline-block;">Open Google Analytics</a>
                         </div>
@@ -774,23 +774,23 @@
                             style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 2rem;">
                             <div
                                 style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee; text-align: center;">
-                                <div
+                                <div id="analytics-monthly-visitors"
                                     style="font-size: 0.95rem; font-weight: bold; color: #666; margin-bottom: 5px;">
-                                    Not connected in Admin</div>
+                                    Loading...</div>
                                 <div style="font-size: 0.75rem; font-weight: bold; color: #888;">MONTHLY VISITORS</div>
                             </div>
                             <div
                                 style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee; text-align: center;">
-                                <div
+                                <div id="analytics-page-views"
                                     style="font-size: 0.95rem; font-weight: bold; color: #666; margin-bottom: 5px;">
-                                    Not connected in Admin</div>
+                                    Loading...</div>
                                 <div style="font-size: 0.75rem; font-weight: bold; color: #888;">PAGE VIEWS</div>
                             </div>
                             <div
                                 style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee; text-align: center;">
-                                <div
+                                <div id="analytics-session-time"
                                     style="font-size: 0.95rem; font-weight: bold; color: #666; margin-bottom: 5px;">
-                                    Not connected in Admin</div>
+                                    Loading...</div>
                                 <div style="font-size: 0.75rem; font-weight: bold; color: #888;">AVG. SESSION TIME</div>
                             </div>
                         </div>
@@ -805,19 +805,19 @@
                                 style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee;">
                                 <h5 style="margin-bottom: 1rem; border-bottom: 2px solid #eee; padding-bottom: 5px;">
                                     Device Breakdown</h5>
-                                <p style="font-size: 0.85rem; color: #666; line-height: 1.5; margin: 0;">Live analytics reporting is not connected in Admin. Open Google Analytics to view desktop, mobile, and tablet traffic.</p>
+                                <div id="analytics-device-breakdown" style="font-size: 0.85rem; color: #666; line-height: 1.5;">Loading...</div>
                             </div>
                             <div
                                 style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee;">
                                 <h5 style="margin-bottom: 1rem; border-bottom: 2px solid #eee; padding-bottom: 5px;">
                                     Most Visited Pages</h5>
-                                <p style="font-size: 0.85rem; color: #666; line-height: 1.5; margin: 0;">Live analytics reporting is not connected in Admin. Open Google Analytics to view current page traffic.</p>
+                                <div id="analytics-top-pages" style="font-size: 0.85rem; color: #666; line-height: 1.5;">Loading...</div>
                             </div>
                         </div>
 
-                        <div
+                        <div id="analytics-insights-status"
                             style="margin-top: 1.5rem; padding: 1.5rem; background: #e7f3ff; border-left: 4px solid var(--sky-blue); border-radius: 8px;">
-                            <p style="font-size: 0.9rem; color: #444; margin: 0 0 1rem; line-height: 1.5;">Live analytics reporting is not connected in Admin. Open Google Analytics to view current visitor stats.</p>
+                            <p id="analytics-insights-message" style="font-size: 0.9rem; color: #444; margin: 0 0 1rem; line-height: 1.5;">Loading live analytics...</p>
                             <a href="https://analytics.google.com/" target="_blank" class="btn btn-gold"
                                 style="text-decoration: none; display: inline-block;">Open Google Analytics</a>
                         </div>
@@ -955,6 +955,103 @@
                 }
             });
             document.getElementById(tabId).classList.add('active');
+        }
+
+        function formatAnalyticsNumber(value) {
+            return Number(value || 0).toLocaleString();
+        }
+
+        function formatAnalyticsDuration(seconds) {
+            const totalSeconds = Math.round(Number(seconds || 0));
+            const minutes = Math.floor(totalSeconds / 60);
+            const remainingSeconds = totalSeconds % 60;
+            if (minutes === 0) return `${remainingSeconds}s`;
+            return `${minutes}m ${remainingSeconds}s`;
+        }
+
+        function escapeAnalyticsHtml(value) {
+            return String(value || '').replace(/[&<>"']/g, char => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[char]));
+        }
+
+        function setAnalyticsFallback() {
+            const message = 'Live analytics reporting is not connected. Open Google Analytics to view current stats.';
+            const statusMessage = document.getElementById('analytics-status-message');
+            const insightsMessage = document.getElementById('analytics-insights-message');
+            if (statusMessage) statusMessage.innerText = message;
+            if (insightsMessage) insightsMessage.innerText = message;
+
+            ['analytics-monthly-visitors', 'analytics-page-views', 'analytics-session-time'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = 'Not connected in Admin';
+            });
+
+            const deviceEl = document.getElementById('analytics-device-breakdown');
+            if (deviceEl) deviceEl.innerHTML = '<p style="margin: 0;">Live analytics reporting is not connected in Admin. Open Google Analytics to view desktop, mobile, and tablet traffic.</p>';
+
+            const pagesEl = document.getElementById('analytics-top-pages');
+            if (pagesEl) pagesEl.innerHTML = '<p style="margin: 0;">Live analytics reporting is not connected in Admin. Open Google Analytics to view current page traffic.</p>';
+        }
+
+        function renderAnalyticsReport(data) {
+            if (!data || data.connected !== true) {
+                setAnalyticsFallback();
+                return;
+            }
+
+            const statusMessage = document.getElementById('analytics-status-message');
+            const insightsMessage = document.getElementById('analytics-insights-message');
+            if (statusMessage) statusMessage.innerText = 'Showing live GA4 reporting for the last 30 days.';
+            if (insightsMessage) insightsMessage.innerText = 'Showing live GA4 usage insights for the last 30 days.';
+
+            const monthlyVisitors = document.getElementById('analytics-monthly-visitors');
+            const pageViews = document.getElementById('analytics-page-views');
+            const sessionTime = document.getElementById('analytics-session-time');
+            if (monthlyVisitors) monthlyVisitors.innerText = formatAnalyticsNumber(data.summary?.monthlyVisitors);
+            if (pageViews) pageViews.innerText = formatAnalyticsNumber(data.summary?.pageViews);
+            if (sessionTime) sessionTime.innerText = formatAnalyticsDuration(data.summary?.averageSessionSeconds);
+
+            const deviceEl = document.getElementById('analytics-device-breakdown');
+            if (deviceEl) {
+                const devices = data.devices || [];
+                deviceEl.innerHTML = devices.length ? devices.map(item => `
+                    <div style="display: flex; justify-content: space-between; gap: 1rem; margin-bottom: 10px;">
+                        <span>${escapeAnalyticsHtml(item.category || 'Unknown')}</span>
+                        <strong>${formatAnalyticsNumber(item.activeUsers)}</strong>
+                    </div>
+                `).join('') : '<p style="margin: 0;">No device data returned for the last 30 days.</p>';
+            }
+
+            const pagesEl = document.getElementById('analytics-top-pages');
+            if (pagesEl) {
+                const pages = data.pages || [];
+                pagesEl.innerHTML = pages.length ? pages.map(item => `
+                    <div style="display: flex; justify-content: space-between; gap: 1rem; margin-bottom: 10px;">
+                        <span title="${escapeAnalyticsHtml(item.path || '')}">${escapeAnalyticsHtml(item.title || item.path || 'Untitled page')}</span>
+                        <strong>${formatAnalyticsNumber(item.views)}</strong>
+                    </div>
+                `).join('') : '<p style="margin: 0;">No page view data returned for the last 30 days.</p>';
+            }
+        }
+
+        async function loadAnalyticsReport() {
+            try {
+                const res = await fetch('/.netlify/functions/analytics-live?cb=' + Date.now());
+                if (!res.ok) {
+                    setAnalyticsFallback();
+                    return;
+                }
+                const data = await res.json();
+                renderAnalyticsReport(data);
+            } catch (err) {
+                console.warn('Analytics reporting unavailable:', err);
+                setAnalyticsFallback();
+            }
         }
 
         function showSuccess(id) {
@@ -2019,6 +2116,7 @@
             await DataManager.loadEventsWithFallback();
             await DataManager.loadNewsWithFallback();
             await DataManager.loadContactLive();
+            await loadAnalyticsReport();
             syncWithCMS();
             initGithubFields();
             initNetlifyFields();
