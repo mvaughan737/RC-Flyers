@@ -84,6 +84,41 @@ const DataManager = (() => {
         localStorage.setItem(NETLIFY_KEY, JSON.stringify(netlify));
     };
 
+    const buildContactPayload = () => ({
+        contact: {
+            email: data.settings.email,
+            phone: data.settings.phone
+        },
+        settings: {
+            meetingTime: data.settings.meetingTime,
+            meetingPlace: data.settings.meetingPlace,
+            address: data.settings.address,
+            coordinates: data.settings.coordinates
+        },
+        links: data.links || []
+    });
+
+    const applyContactPayload = (payload = {}) => {
+        const contact = payload.contact || payload;
+        const settings = payload.settings || payload;
+
+        data.settings = {
+            ...data.settings,
+            email: contact.email || settings.email || data.settings.email,
+            phone: contact.phone || settings.phone || data.settings.phone,
+            meetingTime: settings.meetingTime || data.settings.meetingTime,
+            meetingPlace: settings.meetingPlace || data.settings.meetingPlace,
+            address: settings.address || data.settings.address,
+            coordinates: settings.coordinates || data.settings.coordinates
+        };
+
+        if (Array.isArray(payload.links)) {
+            data.links = payload.links;
+        }
+
+        save();
+    };
+
     return {
         // Settings
         getSettings: () => data.settings,
@@ -402,66 +437,75 @@ const DataManager = (() => {
             return true;
         },
 
+        loadContactLive: async () => {
+            try {
+                const res = await fetch('/.netlify/functions/contact-live?cb=' + Date.now());
+                if (res.ok) {
+                    const remote = await res.json();
+                    if (remote && (remote.contact || remote.settings || Array.isArray(remote.links))) {
+                        applyContactPayload(remote);
+                        return true;
+                    }
+                }
+            } catch (err) {
+                console.warn('DataManager: contact-live function unavailable, using fallback.', err);
+            }
+            return false;
+        },
         loadContactFromSource: async () => {
+            const liveLoaded = await DataManager.loadContactLive();
+            if (liveLoaded) return true;
+
+            let loaded = false;
             try {
                 const response = await fetch('/admin/content/contact.json?cb=' + Date.now());
                 if (response.ok) {
                     const remote = await response.json();
                     if (remote && remote.contact) {
-                        data.settings.email = remote.contact.email || data.settings.email;
-                        data.settings.phone = remote.contact.phone || data.settings.phone;
-                        save();
-                        return true;
+                        applyContactPayload(remote);
+                        loaded = true;
                     }
                 }
             } catch (err) {
-                console.warn('DataManager: Failed to load remote contact info', err);
+                console.warn('DataManager: Failed to load static contact info', err);
             }
-            return false;
+
+            try {
+                if (typeof CMSLoader !== 'undefined') {
+                    const clubInfo = await CMSLoader.loadCmsClubInfo();
+                    if (clubInfo) {
+                        applyContactPayload({ settings: clubInfo });
+                        loaded = true;
+                    }
+
+                    const quickLinks = await CMSLoader.loadCmsQuickLinks();
+                    if (quickLinks && quickLinks.length) {
+                        applyContactPayload({ links: quickLinks });
+                        loaded = true;
+                    }
+                }
+            } catch (err) {
+                console.warn('DataManager: Failed to load static meeting/link info', err);
+            }
+
+            return loaded;
         },
         publishContact: async () => {
-            if (!github.token) throw new Error('GitHub Token not found.');
-            
-            const path = 'admin/content/contact.json';
-            const url = `https://api.github.com/repos/${github.owner}/${github.repo}/contents/${path}`;
-            
-            // 1. Get current file data (to get SHA)
-            const getRes = await fetch(url, {
-                headers: { 'Authorization': `token ${github.token}` }
-            });
-            
-            let sha = null;
-            if (getRes.ok) {
-                const fileData = await getRes.json();
-                sha = fileData.sha;
-            }
+            if (!netlify.adminToken) throw new Error('Admin token not configured. Enter it in the config panel.');
 
-            // 2. Prepare content (Only Email and Phone for this phase)
-            const content = btoa(JSON.stringify({ 
-                contact: {
-                    email: data.settings.email,
-                    phone: data.settings.phone
-                }
-            }, null, 2));
-            
-            // 3. Commit change
-            const putRes = await fetch(url, {
-                method: 'PUT',
+            const res = await fetch('/.netlify/functions/contact-live', {
+                method: 'POST',
                 headers: {
-                    'Authorization': `token ${github.token}`,
+                    'Authorization': `Bearer ${netlify.adminToken}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    message: `Update club contact info via Admin Dashboard [${new Date().toLocaleString()}]`,
-                    content: content,
-                    sha: sha,
-                    branch: github.branch
-                })
+                body: JSON.stringify(buildContactPayload())
             });
 
-            if (!putRes.ok) {
-                const err = await putRes.json();
-                throw new Error(err.message || 'Failed to publish to GitHub.');
+            if (!res.ok) {
+                let errMsg = `HTTP ${res.status}`;
+                try { const e = await res.json(); errMsg = e.error || errMsg; } catch { /* noop */ }
+                throw new Error(errMsg);
             }
 
             return true;

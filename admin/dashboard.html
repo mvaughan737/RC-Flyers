@@ -1082,6 +1082,7 @@
                 meetingPlace: document.getElementById('set-meeting-place').value
             });
             showSuccess('meeting-status');
+            document.getElementById('contact-publish-notice').style.display = 'block';
             renderAll();
         });
 
@@ -1098,6 +1099,7 @@
                 DataManager.addLink(linkData);
                 e.target.reset();
             }
+            document.getElementById('contact-publish-notice').style.display = 'block';
             renderAll();
         });
 
@@ -1670,7 +1672,7 @@
                         <div style="flex: 1;"><strong>${l.title}</strong></div>
                         <div style="display: flex; gap: 5px;">
                             <button class="btn btn-gold" style="padding: 5px 10px; font-size: 0.8rem;" onclick="setEditMode('link', ${JSON.stringify(l).replace(/"/g, '&quot;')})">Edit</button>
-                            <button class="btn" style="padding: 5px 10px; font-size: 0.8rem; background: #ff6b6b; color: #fff;" onclick="if(confirm('Delete?')){DataManager.deleteLink(${l.id}); renderAll();}">Delete</button>
+                            <button class="btn" style="padding: 5px 10px; font-size: 0.8rem; background: #ff6b6b; color: #fff;" onclick="if(confirm('Delete?')){DataManager.deleteLink(${l.id}); document.getElementById('contact-publish-notice').style.display = 'block'; renderAll();}">Delete</button>
                         </div>
                     </div>
                 `).join('');
@@ -1901,14 +1903,13 @@
         }
 
         function openPublishContactModal() {
-            const github = DataManager.getGithubSettings();
-            if (!github.token || !github.owner || !github.repo) {
-                alert('Please configure your GitHub settings first in the Analytics > GitHub Sync tab.');
-                switchSection('analytics');
-                switchAnalyticsTab('tab-github-sync');
+            const n = DataManager.getNetlifySettings();
+            if (!n.adminToken) {
+                alert('Admin token not configured. Open the Netlify config panel in Events Calendar and save your token first.');
+                switchSection('events');
                 return;
             }
-            if (confirm('Deploying Contact Info to website now. This will:\n1. Update the shared contact.json file on GitHub\n2. Trigger a Netlify redeploy\n\nContinue?')) {
+            if (confirm('Publish Contact & Meetings data to the live website now? This will update contact info, meeting info, and pilot resources for all visitors.')) {
                 publishContactToWebsite();
             }
         }
@@ -1921,7 +1922,7 @@
 
             try {
                 await DataManager.publishContact();
-                alert('Contact Info successfully published! The website will update in 1-2 minutes.');
+                alert('Contact & Meetings data published live successfully.');
                 document.getElementById('contact-publish-notice').style.display = 'none';
             } catch (err) {
                 console.error(err);
@@ -1983,10 +1984,10 @@
 
             const success = await DataManager.loadContactFromSource();
             if (success) {
-                alert('Fetched latest club contact info from website.');
+                alert('Fetched latest Contact & Meetings data from the website.');
                 renderAll();
             } else {
-                alert('Failed to fetch remote contact info. You may be offline.');
+                alert('No live Contact & Meetings data was found. Local/default data remains active.');
             }
             btn.innerText = originalText;
         }

@@ -128,6 +128,12 @@ Events uses:
 - Live endpoint: `/.netlify/functions/events-live`
 - Static fallback: `/admin/content/events.json`
 
+Contact & Meetings uses:
+- Live endpoint: `/.netlify/functions/contact-live`
+- Static fallbacks: `/admin/content/contact.json`, `/admin/content/site-settings/club-info.json`, and `/admin/content/site-settings/quick-links.json`
+- Netlify Blobs stores the shared contact email, contact phone, meeting schedule, meeting location, club address/coordinates, and pilot resource links.
+- Admin Contact & Meetings edits may save locally first, then publish live through the custom Admin Dashboard using the configured Netlify admin token.
+
 Gallery metadata uses:
 - Live endpoint: `/.netlify/functions/gallery-live`
 - Static fallback: `/admin/content/gallery-data.json`
