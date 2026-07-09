@@ -2027,7 +2027,7 @@
 
             await DataManager.loadEventsWithFallback();
             await DataManager.loadNewsWithFallback();
-            await DataManager.loadContactFromSource();
+            await DataManager.loadContactLive();
             syncWithCMS();
             initGithubFields();
             initNetlifyFields();
