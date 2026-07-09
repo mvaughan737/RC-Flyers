@@ -187,6 +187,14 @@ const StatusManager = {
         return this.state.weatherData[this.state.station];
     },
 
+    getWindSafetyMessage: function(windKt, gustKt) {
+        if (gustKt > 0) return 'Gusty winds are reported. Use extra caution before flying.';
+        if (windKt === 0) return 'Winds are calm. Perfect for flying!';
+        if (windKt <= 10) return 'Winds are light. Perfect for flying!';
+        if (windKt <= 15) return 'Winds are moderate. Use normal caution.';
+        return 'Winds are elevated. Use caution before flying.';
+    },
+
     getCalculatedStatus: function() {
         const weather = this.getWeather();
         if (!weather) return { state: 'caution', label: 'FETCHING...', reason: 'Updating live weather data...' };
@@ -194,10 +202,11 @@ const StatusManager = {
         const windKt = weather.wspd || 0;
         const gustKt = weather.wgst || 0;
         const maxWind = Math.max(windKt, gustKt);
+        const windReason = this.getWindSafetyMessage(windKt, gustKt);
         
-        if (maxWind > 20) return { state: 'closed', label: 'WINDS', reason: `High Winds (${maxWind} kt). Hazardous for flight.` };
-        if (maxWind >= 15) return { state: 'caution', label: 'CAUTION', reason: `Gusty Winds (${maxWind} kt). Use extra care.` };
-        return { state: 'open', label: 'OPEN', reason: 'Winds are calm. Perfect for flying!' };
+        if (maxWind > 20) return { state: 'closed', label: 'WINDS', reason: windReason };
+        if (maxWind >= 15) return { state: 'caution', label: 'CAUTION', reason: windReason };
+        return { state: 'open', label: 'OPEN', reason: windReason };
     },
 
     getStatus: function() {
