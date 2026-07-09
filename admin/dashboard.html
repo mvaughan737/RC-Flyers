@@ -616,8 +616,6 @@
                             Click Publish to sync contact info, meeting info, and pilot resources.
                         </div>
                         <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-left: auto;">
-                            <button class="btn" style="background: #28a745; color: #fff; font-size: 0.75rem;"
-                                onclick="refreshContact()">Sync Web Data</button>
                             <button class="btn btn-gold" style="font-size: 0.75rem;"
                                 onclick="openPublishContactModal()">Publish to Website</button>
                         </div>
@@ -1988,22 +1986,6 @@
                 alert('Failed to fetch remote events. You may be offline.');
             }
             btn.innerText = originalText;
-        }
-
-        async function refreshContact() {
-            const btn = document.querySelector('button[onclick="refreshContact()"]');
-            const originalText = btn ? btn.innerText : '';
-            if (btn) btn.innerText = 'Updating...';
-
-            const success = await DataManager.loadContactFromSource();
-            if (success) {
-                alert('Fetched latest Contact & Meetings data from the website.');
-                clearContactPending();
-                renderAll();
-            } else {
-                alert('No live Contact & Meetings data was found. Local/default data remains active.');
-            }
-            if (btn) btn.innerText = originalText;
         }
 
         function switchSection(section) {
