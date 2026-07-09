@@ -306,6 +306,10 @@
                     </div>
                     <form id="news-form">
                         <div class="form-group">
+                            <label>Announcement Type</label>
+                            <select id="news-announcement-type" required></select>
+                        </div>
+                        <div class="form-group">
                             <label>Post Title</label>
                             <input type="text" id="news-title" required>
                         </div>
@@ -892,6 +896,7 @@
 
     <script src="../js/status_final.js?cb=987654321"></script>
     <script src="../js/data-manager.js"></script>
+    <script src="../js/news-renderer.js"></script>
     <script src="../js/cms-loader.js"></script>
     <script>
         // Section Switching
@@ -984,6 +989,7 @@
             document.getElementById(`${type}-submit-btn`).innerText = 'Save Changes';
 
             if (type === 'news') {
+                document.getElementById('news-announcement-type').value = NewsRenderer.getAnnouncementType(item).key;
                 document.getElementById('news-title').value = item.title;
                 document.getElementById('news-content').value = item.content;
                 document.getElementById('news-date').value = item.date;
@@ -1020,6 +1026,7 @@
         document.getElementById('news-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const newsData = {
+                announcementType: document.getElementById('news-announcement-type').value,
                 title: document.getElementById('news-title').value,
                 content: document.getElementById('news-content').value,
                 date: document.getElementById('news-date').value
@@ -1618,7 +1625,8 @@
                 newsListEl.innerHTML = DataManager.getNews().map(n => `
                     <div style="padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
                         <div style="flex: 1;">
-                            <strong>${n.title}</strong> (${n.date})
+                            ${NewsRenderer.renderAnnouncementBadge(n)}
+                            <div><strong>${NewsRenderer.escapeHtml(n.title)}</strong> (${NewsRenderer.escapeHtml(n.date)})</div>
                         </div>
                         <div style="display: flex; gap: 5px;">
                             <button class="btn btn-gold" style="padding: 5px 10px; font-size: 0.8rem;" onclick="setEditMode('news', ${JSON.stringify(n).replace(/"/g, '&quot;')})">Edit</button>
@@ -2018,6 +2026,11 @@
         };
 
         window.addEventListener('load', async () => {
+            const announcementTypeSelect = document.getElementById('news-announcement-type');
+            if (announcementTypeSelect) {
+                announcementTypeSelect.innerHTML = NewsRenderer.renderAnnouncementOptions();
+            }
+
             await DataManager.loadEventsWithFallback();
             await DataManager.loadNewsWithFallback();
             await DataManager.loadContactFromSource();

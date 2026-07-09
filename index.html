@@ -261,7 +261,7 @@
                     const articleUrl = `news.html#${NewsRenderer.newsId(n)}`;
                     return `
                     <div class="news-item">
-                        <div class="news-tag">${icons.news} Latest Update</div>
+                        ${NewsRenderer.renderAnnouncementBadge(n)}
                         <div class="news-title">${NewsRenderer.escapeHtml(n.title)}</div>
                         <div style="font-size: 0.8rem; color: #888; margin-bottom: 8px;">
                             ${new Date(n.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}

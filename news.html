@@ -170,7 +170,7 @@
             if (newsData.length > 0) {
                 container.innerHTML = newsData.map(n => `
                     <article class="news-item" id="${NewsRenderer.newsId(n)}" style="padding: 2rem; margin-bottom: 30px;">
-                        <div class="news-tag">${icons.news} Announcement</div>
+                        ${NewsRenderer.renderAnnouncementBadge(n)}
                         <div class="news-title" style="font-size: 1.6rem; margin-bottom: 10px;">${NewsRenderer.escapeHtml(n.title)}</div>
                         <div style="font-size: 0.9rem; color: #888; margin-bottom: 20px;">
                             Posted on ${new Date(n.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} by Admin
