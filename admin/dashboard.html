@@ -758,65 +758,72 @@
 
                     <!-- Tab 2: Visitor Stats -->
                     <div id="tab-visitor-stats" class="tab-content" style="padding-top: 1rem;">
-                        <h4 style="margin-bottom: 0.5rem; color: var(--navy-blue);">Website Traffic Overview</h4>
-                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">Visitor data is tracked using
-                            Google Analytics (GA4). Admin reports show the last 30 days when the GA4 Data API is connected.</p>
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                            <div>
+                                <h4 style="margin: 0 0 0.35rem; color: var(--navy-blue); font-size: 1.35rem;">Website Analytics Dashboard</h4>
+                                <p id="analytics-status-message" style="font-size: 0.9rem; color: #444; margin: 0; line-height: 1.5;">Loading live analytics...</p>
+                                <p style="font-size: 0.78rem; color: #777; margin: 0.35rem 0 0;">Last Updated: <span id="analytics-updated-at">Loading...</span></p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                <span id="analytics-connected-badge"
+                                    style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; background: #d4edda; color: #155724; font-size: 0.75rem; font-weight: bold;">
+                                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #28a745; display: inline-block;"></span>
+                                    Live Connected
+                                </span>
+                                <a href="https://analytics.google.com/" target="_blank" class="btn btn-gold"
+                                    style="text-decoration: none; display: inline-block;">Open Google Analytics</a>
+                            </div>
+                        </div>
 
                         <div id="analytics-status-panel"
-                            style="padding: 1.5rem; background: #e7f3ff; border-left: 4px solid var(--sky-blue); border-radius: 8px; margin-bottom: 1.5rem;">
-                            <h4 style="margin: 0 0 0.5rem; color: var(--navy-blue);">Live Analytics Reporting</h4>
-                            <p id="analytics-status-message" style="font-size: 0.9rem; color: #444; margin: 0 0 1rem; line-height: 1.5;">Loading live analytics...</p>
-                            <a href="https://analytics.google.com/" target="_blank" class="btn btn-gold"
-                                style="text-decoration: none; display: inline-block;">Open Google Analytics</a>
+                            style="display: none; padding: 1rem; background: #e7f3ff; border-left: 4px solid var(--sky-blue); border-radius: 8px; margin-bottom: 1.5rem;">
                         </div>
 
                         <div
-                            style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 2rem;">
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 1.5rem;">
                             <div
-                                style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee; text-align: center;">
+                                style="background: #fff; padding: 1.25rem; border-radius: 8px; border: 1px solid #e7eaf0; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
+                                <div style="font-size: 0.72rem; font-weight: bold; color: #777; text-transform: uppercase; letter-spacing: 0;">Monthly Visitors</div>
                                 <div id="analytics-monthly-visitors"
-                                    style="font-size: 0.95rem; font-weight: bold; color: #666; margin-bottom: 5px;">
+                                    style="font-size: 1.85rem; font-weight: bold; color: var(--navy-blue); margin-top: 8px; line-height: 1;">
                                     Loading...</div>
-                                <div style="font-size: 0.75rem; font-weight: bold; color: #888;">MONTHLY VISITORS</div>
                             </div>
                             <div
-                                style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee; text-align: center;">
+                                style="background: #fff; padding: 1.25rem; border-radius: 8px; border: 1px solid #e7eaf0; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
+                                <div style="font-size: 0.72rem; font-weight: bold; color: #777; text-transform: uppercase; letter-spacing: 0;">Page Views</div>
                                 <div id="analytics-page-views"
-                                    style="font-size: 0.95rem; font-weight: bold; color: #666; margin-bottom: 5px;">
+                                    style="font-size: 1.85rem; font-weight: bold; color: var(--navy-blue); margin-top: 8px; line-height: 1;">
                                     Loading...</div>
-                                <div style="font-size: 0.75rem; font-weight: bold; color: #888;">PAGE VIEWS</div>
                             </div>
                             <div
-                                style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee; text-align: center;">
+                                style="background: #fff; padding: 1.25rem; border-radius: 8px; border: 1px solid #e7eaf0; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
+                                <div style="font-size: 0.72rem; font-weight: bold; color: #777; text-transform: uppercase; letter-spacing: 0;">Average Session Time</div>
                                 <div id="analytics-session-time"
-                                    style="font-size: 0.95rem; font-weight: bold; color: #666; margin-bottom: 5px;">
+                                    style="font-size: 1.85rem; font-weight: bold; color: var(--navy-blue); margin-top: 8px; line-height: 1;">
                                     Loading...</div>
-                                <div style="font-size: 0.75rem; font-weight: bold; color: #888;">AVG. SESSION TIME</div>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;">
+                            <div
+                                style="background: #fff; padding: 1.5rem; border-radius: 8px; border: 1px solid #e7eaf0; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
+                                <h5 style="margin: 0 0 1rem; color: var(--navy-blue); font-size: 1rem;">Visitor Devices</h5>
+                                <div id="analytics-device-breakdown" style="font-size: 0.9rem; color: #444; line-height: 1.5;">Loading...</div>
+                            </div>
+                            <div
+                                style="background: #fff; padding: 1.5rem; border-radius: 8px; border: 1px solid #e7eaf0; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
+                                <h5 style="margin: 0 0 1rem; color: var(--navy-blue); font-size: 1rem;">Most Visited Pages</h5>
+                                <div id="analytics-top-pages" style="font-size: 0.9rem; color: #444; line-height: 1.5;">Loading...</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Tab 3: Usage Insights -->
                     <div id="tab-usage-insights" class="tab-content" style="padding-top: 1rem;">
-                        <h4 style="margin-bottom: 1rem; color: var(--navy-blue);">Usage & UX Insights</h4>
-
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                            <div
-                                style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee;">
-                                <h5 style="margin-bottom: 1rem; border-bottom: 2px solid #eee; padding-bottom: 5px;">
-                                    Device Breakdown</h5>
-                                <div id="analytics-device-breakdown" style="font-size: 0.85rem; color: #666; line-height: 1.5;">Loading...</div>
-                            </div>
-                            <div
-                                style="background: #fdfdfd; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee;">
-                                <h5 style="margin-bottom: 1rem; border-bottom: 2px solid #eee; padding-bottom: 5px;">
-                                    Most Visited Pages</h5>
-                                <div id="analytics-top-pages" style="font-size: 0.85rem; color: #666; line-height: 1.5;">Loading...</div>
-                            </div>
-                        </div>
-
                         <div id="analytics-insights-status"
-                            style="margin-top: 1.5rem; padding: 1.5rem; background: #e7f3ff; border-left: 4px solid var(--sky-blue); border-radius: 8px;">
+                            style="padding: 1.5rem; background: #e7f3ff; border-left: 4px solid var(--sky-blue); border-radius: 8px;">
+                            <h4 style="margin: 0 0 0.5rem; color: var(--navy-blue);">Usage Insights</h4>
                             <p id="analytics-insights-message" style="font-size: 0.9rem; color: #444; margin: 0 0 1rem; line-height: 1.5;">Loading live analytics...</p>
                             <a href="https://analytics.google.com/" target="_blank" class="btn btn-gold"
                                 style="text-decoration: none; display: inline-block;">Open Google Analytics</a>
@@ -990,8 +997,16 @@
             const message = 'Live analytics reporting is not connected. Open Google Analytics to view current stats.';
             const statusMessage = document.getElementById('analytics-status-message');
             const insightsMessage = document.getElementById('analytics-insights-message');
+            const updatedAt = document.getElementById('analytics-updated-at');
+            const connectedBadge = document.getElementById('analytics-connected-badge');
             if (statusMessage) statusMessage.innerText = message;
             if (insightsMessage) insightsMessage.innerText = message;
+            if (updatedAt) updatedAt.innerText = 'Unavailable';
+            if (connectedBadge) {
+                connectedBadge.style.background = '#fff3cd';
+                connectedBadge.style.color = '#856404';
+                connectedBadge.innerHTML = '<span style="width: 8px; height: 8px; border-radius: 50%; background: #d39e00; display: inline-block;"></span> Connection Issue';
+            }
 
             ['analytics-monthly-visitors', 'analytics-page-views', 'analytics-session-time'].forEach(id => {
                 const el = document.getElementById(id);
@@ -1020,9 +1035,17 @@
 
             const statusMessage = document.getElementById('analytics-status-message');
             const insightsMessage = document.getElementById('analytics-insights-message');
-            const updatedText = data.updatedAt ? ` Updated ${new Date(data.updatedAt).toLocaleString()}.` : '';
-            if (statusMessage) statusMessage.innerText = `Showing live GA4 reporting for the last 30 days.${updatedText}`;
-            if (insightsMessage) insightsMessage.innerText = `Showing live GA4 usage insights for the last 30 days.${updatedText}`;
+            const updatedAt = document.getElementById('analytics-updated-at');
+            const connectedBadge = document.getElementById('analytics-connected-badge');
+            const updatedText = data.updatedAt ? new Date(data.updatedAt).toLocaleString() : 'Just now';
+            if (statusMessage) statusMessage.innerText = 'Showing live GA4 reporting for the last 30 days.';
+            if (insightsMessage) insightsMessage.innerText = `Showing live GA4 usage insights for the last 30 days. Updated ${updatedText}.`;
+            if (updatedAt) updatedAt.innerText = updatedText;
+            if (connectedBadge) {
+                connectedBadge.style.background = '#d4edda';
+                connectedBadge.style.color = '#155724';
+                connectedBadge.innerHTML = '<span style="width: 8px; height: 8px; border-radius: 50%; background: #28a745; display: inline-block;"></span> Live Connected';
+            }
 
             const monthlyVisitors = document.getElementById('analytics-monthly-visitors');
             const pageViews = document.getElementById('analytics-page-views');
