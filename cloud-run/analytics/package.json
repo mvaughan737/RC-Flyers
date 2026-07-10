@@ -1,0 +1,16 @@
+{
+  "name": "rc-flyers-ga4-analytics",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cloud Run GA4 reporting service for Converse Flying Eagles Admin",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@google-analytics/data": "^4.12.0"
+  }
+}

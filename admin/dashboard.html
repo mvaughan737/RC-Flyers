@@ -979,6 +979,8 @@
             }[char]));
         }
 
+        const ANALYTICS_API_URL = 'https://REPLACE-WITH-CLOUD-RUN-URL';
+
         function setAnalyticsFallback() {
             const message = 'Live analytics reporting is not connected. Open Google Analytics to view current stats.';
             const statusMessage = document.getElementById('analytics-status-message');
@@ -1041,7 +1043,13 @@
 
         async function loadAnalyticsReport() {
             try {
-                const res = await fetch('/.netlify/functions/analytics-live?cb=' + Date.now());
+                if (ANALYTICS_API_URL.includes('REPLACE-WITH-CLOUD-RUN-URL')) {
+                    setAnalyticsFallback();
+                    return;
+                }
+
+                const separator = ANALYTICS_API_URL.includes('?') ? '&' : '?';
+                const res = await fetch(ANALYTICS_API_URL + separator + 'cb=' + Date.now());
                 if (!res.ok) {
                     setAnalyticsFallback();
                     return;
