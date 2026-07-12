@@ -214,3 +214,16 @@ CMSLoader should remain focused on image/media JSON such as backgrounds and gall
 - Make incremental changes
 - Explain all file modifications clearly
 - Do not assume missing features—build them step-by-step
+
+---
+
+## Home Page FAQ Phase
+
+- Placement: Home Page FAQ appears directly after the “New to RC Aviation?” section and immediately before the footer.
+- Content: Includes all 15 approved membership, FAA, AMA, field-use, visitor, and beginner questions and answers.
+- Design: Uses a centered, light-theme accordion with a 900px maximum width, a visible outer border, dividers between items, and responsive tablet/mobile sizing.
+- Initial state: All answers are closed when the Home Page loads.
+- Interaction: Opening a question closes any previously open question; selecting the open question closes it, and the icon changes between `+` and `−`.
+- Accessibility: Questions are native buttons with full-row click targets, keyboard operation, visible focus styles, `aria-expanded`, `aria-controls`, matching answer IDs, labelled regions, and hidden closed panels.
+- Files changed: `index.html`, `style.css`, `js/faq-accordion.js`, and `ai-context.md`.
+- Validation: Reviewed the final diff, ran `git status`, `git diff --check`, and `node --check js/faq-accordion.js`; verified initial state, single-open behavior, toggle behavior, icons, ARIA state, links, responsive layout, and browser console behavior in a local browser.
