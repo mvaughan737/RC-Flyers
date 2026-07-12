@@ -425,9 +425,12 @@ section {
     width: 100%;
 }
 
-.faq-question:hover,
-.faq-item.is-open .faq-question {
+.faq-question:hover {
     background-color: var(--light-grey);
+}
+
+.faq-item.is-open .faq-question {
+    background-color: #f5f9ff;
 }
 
 .faq-question:focus-visible {
@@ -526,6 +529,7 @@ section {
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .faq-question,
     .faq-answer {
         transition: none;
     }
