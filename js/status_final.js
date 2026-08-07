@@ -15,6 +15,7 @@ const StatusManager = {
     // Current state
     state: {
         station: localStorage.getItem('metar_station') || 'KOKK',
+        manualStationSelection: localStorage.getItem('metar_station') !== null,
         manualStatus: JSON.parse(localStorage.getItem('field_status_manual')) || null,
         weatherData: {}, // Store live METAR data
         lastSync: null,
@@ -144,6 +145,24 @@ const StatusManager = {
         return icons.clear;
     },
 
+    hasRequiredWeatherData: function(weather) {
+        if (!weather || !weather.icaoId) return false;
+
+        const hasNumber = value => value !== null && value !== undefined && value !== '' && Number.isFinite(Number(value));
+        const requiredNumericFields = ['temp', 'wspd', 'visib', 'altim'];
+        if (!requiredNumericFields.every(field => hasNumber(weather[field]))) return false;
+        if (Number(weather.wspd) > 0 && !hasNumber(weather.wdir)) return false;
+        if (!Array.isArray(weather.clouds)) return false;
+        if (!weather.reportTime || Number.isNaN(Date.parse(weather.reportTime))) return false;
+
+        return true;
+    },
+
+    selectAutomaticStation: function() {
+        const fallbackOrder = ['KOKK', 'KMZZ', 'KGUS'];
+        return fallbackOrder.find(stationID => this.hasRequiredWeatherData(this.state.weatherData[stationID])) || 'KOKK';
+    },
+
     fetchWeather: async function() {
         try {
             const response = await fetch(`/.netlify/functions/metar-live?_=${Date.now()}`);
@@ -170,7 +189,11 @@ const StatusManager = {
             data.forEach(m => {
                 this.state.weatherData[m.icaoId] = m;
             });
-            
+
+            if (!this.state.manualStationSelection) {
+                this.state.station = this.selectAutomaticStation();
+            }
+
             this.state.lastSync = new Date();
             this.state.weatherError = null;
             this.updateUI();
@@ -216,6 +239,7 @@ const StatusManager = {
     setStation: function(stationID) {
         if (METAR_STATIONS[stationID]) {
             this.state.station = stationID;
+            this.state.manualStationSelection = true;
             localStorage.setItem('metar_station', stationID);
             this.updateUI();
         }
