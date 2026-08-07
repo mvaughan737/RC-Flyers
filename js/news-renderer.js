@@ -33,7 +33,97 @@ const NewsRenderer = (() => {
         .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
         .replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
 
-    const renderFormattedContent = (content = '') => {
+    const isHtmlContent = (content = '') => /<\/?(?:p|br|strong|b|em|i|u|span|h[1-6]|ul|ol|li|a|img)(?:\s[^>]*)?>/i.test(String(content));
+
+    const sanitizeUrl = (value = '', allowImages = false) => {
+        const url = String(value).trim();
+        if (!url) return '';
+        if (url.startsWith('#') || url.startsWith('/') || url.startsWith('./') || url.startsWith('../')) return url;
+        if (allowImages && /^data:image\/(?:png|jpeg|gif|webp);base64,[a-z0-9+/=\s]+$/i.test(url)) return url;
+
+        try {
+            const parsed = new URL(url, window.location.href);
+            const allowedProtocols = allowImages ? ['http:', 'https:'] : ['http:', 'https:', 'mailto:', 'tel:'];
+            return allowedProtocols.includes(parsed.protocol) ? url : '';
+        } catch {
+            return '';
+        }
+    };
+
+    const sanitizeStyle = (value = '') => String(value).split(';').reduce((safe, declaration) => {
+        const separator = declaration.indexOf(':');
+        if (separator === -1) return safe;
+
+        const property = declaration.slice(0, separator).trim().toLowerCase();
+        const propertyValue = declaration.slice(separator + 1).trim();
+        if (!propertyValue || /url\s*\(|expression\s*\(|javascript:/i.test(propertyValue)) return safe;
+
+        if (property === 'text-align' && /^(?:left|center|right)$/.test(propertyValue)) {
+            safe.push(`${property}: ${propertyValue}`);
+        } else if (property === 'text-decoration' && /^underline$/.test(propertyValue)) {
+            safe.push(`${property}: ${propertyValue}`);
+        } else if ((property === 'color' || property === 'background-color') && /^[#(),.%\sa-z0-9-]+$/i.test(propertyValue)) {
+            safe.push(`${property}: ${propertyValue}`);
+        }
+        return safe;
+    }, []).join('; ');
+
+    const sanitizeHtml = (content = '') => {
+        if (typeof DOMParser === 'undefined') return escapeHtml(content);
+
+        const documentNode = new DOMParser().parseFromString(String(content), 'text/html');
+        const allowedTags = new Set(['P', 'BR', 'STRONG', 'B', 'EM', 'I', 'U', 'SPAN', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'UL', 'OL', 'LI', 'A', 'IMG']);
+        const blockedTags = new Set(['SCRIPT', 'STYLE', 'IFRAME', 'OBJECT', 'EMBED', 'FORM', 'INPUT', 'BUTTON', 'SVG', 'MATH']);
+
+        Array.from(documentNode.body.querySelectorAll('*')).forEach(element => {
+            if (blockedTags.has(element.tagName)) {
+                element.remove();
+                return;
+            }
+            if (!allowedTags.has(element.tagName)) {
+                element.replaceWith(...element.childNodes);
+                return;
+            }
+
+            const originalAttributes = Array.from(element.attributes);
+            originalAttributes.forEach(attribute => element.removeAttribute(attribute.name));
+
+            const styleAttribute = originalAttributes.find(attribute => attribute.name.toLowerCase() === 'style');
+            const safeStyle = styleAttribute ? sanitizeStyle(styleAttribute.value) : '';
+            if (safeStyle) element.setAttribute('style', safeStyle);
+
+            if (element.tagName === 'A') {
+                const hrefAttribute = originalAttributes.find(attribute => attribute.name.toLowerCase() === 'href');
+                const titleAttribute = originalAttributes.find(attribute => attribute.name.toLowerCase() === 'title');
+                const targetAttribute = originalAttributes.find(attribute => attribute.name.toLowerCase() === 'target');
+                const href = sanitizeUrl(hrefAttribute ? hrefAttribute.value : '');
+                if (href) element.setAttribute('href', href);
+                if (titleAttribute) element.setAttribute('title', titleAttribute.value);
+                if (targetAttribute && targetAttribute.value === '_blank') {
+                    element.setAttribute('target', '_blank');
+                    element.setAttribute('rel', 'noopener noreferrer');
+                }
+            }
+
+            if (element.tagName === 'IMG') {
+                const attributeMap = Object.fromEntries(originalAttributes.map(attribute => [attribute.name.toLowerCase(), attribute.value]));
+                const src = sanitizeUrl(attributeMap.src, true);
+                if (!src) {
+                    element.remove();
+                    return;
+                }
+                element.setAttribute('src', src);
+                if (attributeMap.alt) element.setAttribute('alt', attributeMap.alt);
+                if (attributeMap.title) element.setAttribute('title', attributeMap.title);
+                if (/^\d+$/.test(attributeMap.width || '')) element.setAttribute('width', attributeMap.width);
+                if (/^\d+$/.test(attributeMap.height || '')) element.setAttribute('height', attributeMap.height);
+            }
+        });
+
+        return documentNode.body.innerHTML;
+    };
+
+    const renderMarkdownContent = (content = '') => {
         const lines = String(content).replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
         const blocks = [];
         let paragraph = [];
@@ -73,12 +163,25 @@ const NewsRenderer = (() => {
         return blocks.join('');
     };
 
-    const getPlainText = (content = '') => String(content)
+    const renderFormattedContent = (content = '') => isHtmlContent(content)
+        ? sanitizeHtml(content)
+        : renderMarkdownContent(content);
+
+    const getPlainText = (content = '') => {
+        let text = String(content);
+        if (isHtmlContent(text) && typeof DOMParser !== 'undefined') {
+            const documentNode = new DOMParser().parseFromString(sanitizeHtml(text), 'text/html');
+            documentNode.body.querySelectorAll('br, p, h1, h2, h3, h4, h5, h6, li').forEach(element => element.append(' '));
+            text = documentNode.body.textContent || '';
+        }
+
+        return text
         .replace(/\*\*([^*]+)\*\*/g, '$1')
         .replace(/\*([^*\n]+)\*/g, '$1')
         .replace(/^\s*(?:[-*+]|\d+\.)\s+/gm, '')
         .replace(/\s+/g, ' ')
         .trim();
+    };
 
     const isLongContent = (content = '') => {
         const text = getPlainText(content);
@@ -127,6 +230,8 @@ const NewsRenderer = (() => {
 
     return {
         escapeHtml,
+        isHtmlContent,
+        sanitizeHtml,
         renderFormattedContent,
         renderPreview,
         isLongContent,

@@ -950,13 +950,28 @@ footer {
 }
 
 .news-content p:last-child,
-.news-content ul:last-child {
+.news-content ul:last-child,
+.news-content ol:last-child {
     margin-bottom: 0;
 }
 
 .news-content ul {
     margin: 0 0 1rem 1.25rem;
     padding-left: 1rem;
+}
+
+.news-content ol {
+    margin: 0 0 1rem 1.25rem;
+    padding-left: 1rem;
+}
+
+.news-content img {
+    max-width: 100%;
+    height: auto;
+}
+
+.news-content a {
+    overflow-wrap: anywhere;
 }
 
 .news-content li {

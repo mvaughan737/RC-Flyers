@@ -894,6 +894,7 @@
     <script src="../js/data-manager.js"></script>
     <script src="../js/news-renderer.js"></script>
     <script src="../js/cms-loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tinymce@7/tinymce.min.js"></script>
     <script>
         // Section Switching
         document.querySelectorAll('.nav-link').forEach(link => {
@@ -1110,6 +1111,10 @@
             id: null
         };
 
+        function getNewsEditor() {
+            return typeof tinymce !== 'undefined' ? tinymce.get('news-content') : null;
+        }
+
         function setEditMode(type, item) {
             editState = { type, id: item.id };
             document.getElementById(`${type}-edit-indicator`).style.display = 'block';
@@ -1119,7 +1124,15 @@
             if (type === 'news') {
                 document.getElementById('news-announcement-type').value = NewsRenderer.getAnnouncementType(item).key;
                 document.getElementById('news-title').value = item.title;
-                document.getElementById('news-content').value = item.content;
+                const newsEditor = getNewsEditor();
+                if (newsEditor) {
+                    const editorContent = NewsRenderer.isHtmlContent(item.content)
+                        ? item.content
+                        : NewsRenderer.escapeHtml(item.content).replace(/\r\n|\r|\n/g, '<br>');
+                    newsEditor.setContent(editorContent);
+                } else {
+                    document.getElementById('news-content').value = item.content;
+                }
                 document.getElementById('news-date').value = item.date;
             } else if (type === 'event') {
                 document.getElementById('event-title').value = item.title;
@@ -1148,15 +1161,20 @@
 
             const formId = (type === 'link') ? 'add-link-form' : `${type}-form`;
             document.getElementById(formId).reset();
+            if (type === 'news') {
+                const newsEditor = getNewsEditor();
+                if (newsEditor) newsEditor.setContent('');
+            }
         }
 
         // News Logic
         document.getElementById('news-form').addEventListener('submit', (e) => {
             e.preventDefault();
+            const newsEditor = getNewsEditor();
             const newsData = {
                 announcementType: document.getElementById('news-announcement-type').value,
                 title: document.getElementById('news-title').value,
-                content: document.getElementById('news-content').value,
+                content: newsEditor ? newsEditor.getContent() : document.getElementById('news-content').value,
                 date: document.getElementById('news-date').value
             };
             if (editState.type === 'news') {
@@ -1165,10 +1183,61 @@
             } else {
                 DataManager.addNews(newsData);
                 e.target.reset();
+                if (newsEditor) newsEditor.setContent('');
             }
             renderAll();
             showNewsPublishStatus('info', 'News saved locally. Use Publish News Live to update the public website.');
         });
+
+        function initNewsEditor() {
+            if (typeof tinymce === 'undefined') {
+                console.warn('TinyMCE could not be loaded. The News content field will remain a textarea.');
+                return;
+            }
+
+            tinymce.init({
+                selector: '#news-content',
+                height: 360,
+                menubar: false,
+                promotion: false,
+                plugins: 'lists link image',
+                toolbar: 'bold italic underline forecolor backcolor | alignleft aligncenter alignright | blocks | bullist numlist | link image | removeformat',
+                block_formats: 'Paragraph=p; Heading 2=h2; Heading 3=h3; Heading 4=h4',
+                file_picker_types: 'image',
+                automatic_uploads: true,
+                images_upload_handler: async (blobInfo) => {
+                    const uploaded = await uploadImageToCloudinary(blobInfo.blob());
+                    return uploaded.secure_url;
+                },
+                file_picker_callback: (callback, value, meta) => {
+                    if (meta.filetype !== 'image') return;
+
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.addEventListener('change', async () => {
+                        const file = input.files && input.files[0];
+                        if (!file) return;
+
+                        try {
+                            const uploaded = await uploadImageToCloudinary(file);
+                            callback(uploaded.secure_url, { alt: file.name, title: file.name });
+                        } catch (err) {
+                            console.error(err);
+                            tinymce.activeEditor.notificationManager.open({
+                                text: 'Image upload failed. Check the Cloudinary configuration.',
+                                type: 'error'
+                            });
+                        }
+                    });
+                    input.click();
+                },
+                content_style: 'img { max-width: 100%; height: auto; }',
+                setup: (editor) => {
+                    editor.on('change input undo redo', () => editor.save());
+                }
+            });
+        }
 
         // Event Logic
         document.getElementById('event-form').addEventListener('submit', (e) => {
@@ -2150,6 +2219,7 @@
         };
 
         window.addEventListener('load', async () => {
+            initNewsEditor();
             const announcementTypeSelect = document.getElementById('news-announcement-type');
             if (announcementTypeSelect) {
                 announcementTypeSelect.innerHTML = NewsRenderer.renderAnnouncementOptions();
