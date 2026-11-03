@@ -273,6 +273,11 @@ header :is(a, button):focus-visible {
     margin-top: 1rem;
 }
 
+.membership-mailing-address {
+    font-style: normal;
+    margin-top: 1rem;
+}
+
 .membership-document-version {
     color: #4b5563;
     font-size: 1rem;

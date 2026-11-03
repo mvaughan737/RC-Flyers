@@ -57,8 +57,11 @@ PDF documents are served directly from the existing lowercase `/documents/` fold
 - `documents/Converse Flying Eagles Application (Nov 2026).pdf`
 - `documents/Converse Flying Eagles Bylaws (Nov 2026).pdf`
 - `documents/Field Rules (Nov 2026).pdf`
+- `documents/Converse Flying Eagles Website (Nov 2026).pdf`
 
-Membership links use these actual filenames with URL-encoded spaces and parentheses. Each opens a PDF in a new tab with `target="_blank" rel="noopener"` and no `download` attribute. The application is printed and completed by hand. The additional Website reference PDF is preserved locally and excluded from the release; it is not a fourth membership document.
+Membership links use these actual filenames with URL-encoded spaces and parentheses. All four open in a new tab with `target="_blank" rel="noopener"` and no `download` attribute. The application is printed and completed by hand. The Website PDF is publicly linked as Membership Information and Dues.
+
+The owner has designated the November 2026 documents as the authority over older documents and website wording. Apply all clear November information; only contradictions within those November documents require clarification. Preserve each PDF unchanged. The change table and exact unresolved passages are recorded in MEMBERSHIP-REVIEW.md.
 
 The superseded Word copies were preserved unchanged in the sibling folder `../RC-Flyers-editable-originals/`, outside the published repository root. SHA-256 hashes were checked before removing the public copies. Original Word sources also remain in the external Club Updates folder. Keep editable originals outside this website.
 
@@ -67,7 +70,7 @@ To replace a PDF:
 1. Export the approved editable source to PDF. Place the PDF in `documents/`, preserving the folder's actual lowercase spelling. Keep Word sources and private member records outside the public folder.
 2. If its name or version changes, update its URL-encoded `href`, accessible description, and visible version in `membership.html`, plus the list above. Keep the View / Print labels, `target="_blank"`, `rel="noopener"`, and no `download` attribute.
 3. Open each PDF through the local server. Confirm HTTP 200, `Content-Type: application/pdf`, and actual PDF content rather than an HTML fallback. Check that it opens in a new browser tab with print/save controls, and inspect every page for legibility.
-4. Review desktop/mobile navigation, keyboard focus, and layout at 200% zoom before approving a later commit and deployment. Policy changes require separate club approval; this PDF update does not change dues or resolve policy questions.
+4. Review desktop/mobile navigation, keyboard focus, and layout at 200% zoom. Compare public summaries with the complete approved documents and search related pages and shared content for obsolete wording. Record substantive additions, removals, and remaining internal contradictions in MEMBERSHIP-REVIEW.md before local review. Commit and deployment require the owner's authorization for that update.
 
 Keep the preview server running while reviewing. Run `npm start` from the repository root, or run the preview script directly:
 
