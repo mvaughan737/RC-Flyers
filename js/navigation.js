@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.querySelector('.nav-links');
     
     if (hamburger && navLinks) {
+        if (!navLinks.id) navLinks.id = 'primary-navigation';
+        hamburger.setAttribute('aria-controls', navLinks.id);
+
         hamburger.addEventListener('click', (e) => {
             e.stopPropagation();
             const isOpen = navLinks.classList.contains('open');
@@ -32,6 +35,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (navLinks.classList.contains('open') && !navLinks.contains(e.target) && !hamburger.contains(e.target)) {
                 navLinks.classList.remove('open');
                 hamburger.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // Let keyboard users dismiss the mobile menu and return to its toggle.
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && navLinks.classList.contains('open')) {
+                navLinks.classList.remove('open');
+                hamburger.setAttribute('aria-expanded', 'false');
+                hamburger.focus();
             }
         });
     }

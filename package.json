@@ -4,7 +4,8 @@
   "description": "RC-Flyers website",
   "main": "index.html",
   "scripts": {
-    "start": "npx -y serve ."
+    "start": "python scripts/preview.py",
+    "test": "node --test tests/weather.test.js && python -B -m unittest discover -s tests -p test_preview.py"
   },
   "keywords": [],
   "author": "",

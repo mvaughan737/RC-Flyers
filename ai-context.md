@@ -32,6 +32,8 @@ No traditional backend server is currently used; the site remains static with ta
 
 Weather METAR data is fetched through the site's Netlify Function at `/.netlify/functions/metar-live`, which retrieves JSON server-side from AviationWeather for KOKK, KMZZ, and KGUS. Third-party browser CORS proxies are not used for active METAR fetching. The Windy radar remains an embedded client-side iframe on the Weather page.
 
+Local preview uses `npm start` or `python scripts/preview.py`, listening on `http://127.0.0.1:4173/`. The preview always serves this repository root and forwards only the public read-only METAR endpoint to the deployed site. Other Netlify Functions use existing static fallbacks. A plain static server does not supply METAR data. Weather request failures show UNAVAILABLE rather than remaining FETCHING, and complete station selection accepts AviationWeather visibility values such as `10+`. `npm test` covers weather failure/recovery, station fallback, and the local preview route.
+
 ---
 
 ## Folder Structure Rules

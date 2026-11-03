@@ -149,8 +149,10 @@ const StatusManager = {
         if (!weather || !weather.icaoId) return false;
 
         const hasNumber = value => value !== null && value !== undefined && value !== '' && Number.isFinite(Number(value));
-        const requiredNumericFields = ['temp', 'wspd', 'visib', 'altim'];
+        const requiredNumericFields = ['temp', 'wspd', 'altim'];
         if (!requiredNumericFields.every(field => hasNumber(weather[field]))) return false;
+        // AviationWeather reports unrestricted visibility as "10+".
+        if (!/^\d+(?:\.\d+)?\+?$/.test(String(weather.visib ?? '').trim())) return false;
         if (Number(weather.wspd) > 0 && !hasNumber(weather.wdir)) return false;
         if (!Array.isArray(weather.clouds)) return false;
         if (!weather.reportTime || Number.isNaN(Date.parse(weather.reportTime))) return false;
@@ -183,11 +185,14 @@ const StatusManager = {
             if (!Array.isArray(data)) {
                 throw new Error('Unexpected weather data format.');
             }
+            if (!data.some(report => report && METAR_STATIONS[report.icaoId])) {
+                throw new Error('No weather reports are available.');
+            }
             
             // Map the array to our state object by station ID
             this.state.weatherData = {};
             data.forEach(m => {
-                this.state.weatherData[m.icaoId] = m;
+                if (m && METAR_STATIONS[m.icaoId]) this.state.weatherData[m.icaoId] = m;
             });
 
             if (!this.state.manualStationSelection) {
@@ -219,8 +224,14 @@ const StatusManager = {
     },
 
     getCalculatedStatus: function() {
+        if (this.state.weatherError) {
+            return { state: 'caution', label: 'UNAVAILABLE', reason: this.state.weatherError };
+        }
         const weather = this.getWeather();
         if (!weather) return { state: 'caution', label: 'FETCHING...', reason: 'Updating live weather data...' };
+        if (!this.hasRequiredWeatherData(weather)) {
+            return { state: 'caution', label: 'UNAVAILABLE', reason: 'A complete weather report is not available for this station.' };
+        }
 
         const windKt = weather.wspd || 0;
         const gustKt = weather.wgst || 0;
