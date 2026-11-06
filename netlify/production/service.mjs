@@ -3,6 +3,11 @@ import {validateApplicantHeader} from '../pilot/domain.mjs';
 export const STORE_NAME='cfe-membership-production-v1';
 export const ROUTING=Object.freeze({from:'Converse Flying Eagles Membership <membership@converseflyingeagles.org>',to:'jlsouth5963@gmail.com',bcc:'mvaughan737@gmail.com'});
 export function productionHeaders(data){return {from:ROUTING.from,to:[ROUTING.to],bcc:[ROUTING.bcc],reply_to:validateApplicantHeader(data)};}
+export function productionSubject(data){
+  validateApplicantHeader(data);
+  if(/[\p{Cc}\p{Zl}\p{Zp}]/u.test(data.name))throw new HTTPError(400,'Enter a valid applicant name.');
+  return `Membership Application for ${data.name.trim()}`;
+}
 export const CLOSED_PAGE='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Online applications not yet open | Converse Flying Eagles</title><link rel="stylesheet" href="/style.css"></head><body class="membership-page"><main class="membership-content" style="padding:3rem 1.5rem;margin:auto"><h1>Online applications are not yet open</h1><p>Public application submission and membership email sending are disabled. Please use the current membership documents and contact form while online applications are being prepared.</p><p><a href="/membership.html">Membership</a> &middot; <a href="/membership.html#membership-documents">Membership Documents</a> &middot; <a href="/contact.html#contact-form">Contact form</a></p></main></body></html>';
 export function createProductionHandler(options){
   const handler=sharedHandler({...options,production:true,onSubmission:async id=>{
@@ -42,11 +47,11 @@ export async function sendProductionOnce(store,id,env,transport=fetch,clock=Date
   if(!entry)throw new HTTPError(404,'Unknown submission reference.');
   if(entry.data.environment!=='production')throw new HTTPError(403,'Only production records can use production delivery.');
   if(entry.data.status!=='held'||entry.data.attempts!==0)throw new HTTPError(409,'This submission was already attempted. Reconcile provider status; no retry made.');
-  productionHeaders(entry.data.data);
+  const subject=productionSubject(entry.data.data);
   const record={...entry.data,status:'sending',attempts:1,firstAttempt:clock()};
   const claimed=await write(store,key,record,entry.etag);
   if(!claimed.modified)throw new HTTPError(409,'This submission is already being processed. No duplicate sent.');
-  const payload={...productionHeaders(record.data),subject:`Membership application ${id}`,html:record.message.html,text:record.message.text,
+  const payload={...productionHeaders(record.data),subject,html:record.message.html,text:record.message.text,
     attachments:[{filename:'membership-application.pdf',content:record.pdf}]};
   let status=null,result;
   try{

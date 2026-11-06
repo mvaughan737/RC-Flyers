@@ -8,7 +8,7 @@ import {tmpdir} from 'node:os';
 import {spawnSync} from 'node:child_process';
 import {build} from '../scripts/build-netlify.mjs';
 import productionFunction,{loadProductionAssets} from '../netlify/functions/membership-production.mjs';
-import {createProductionHandler,productionHeaders,sendProductionOnce,STORE_NAME} from '../netlify/production/service.mjs';
+import {createProductionHandler,productionHeaders,productionSubject,sendProductionOnce,STORE_NAME} from '../netlify/production/service.mjs';
 import {STORE_NAME as PILOT_STORE,read} from '../netlify/pilot/service.mjs';
 import {validate,notification,dues} from '../netlify/pilot/domain.mjs';
 import {completedPDF} from '../netlify/pilot/pdf.mjs';
@@ -163,11 +163,34 @@ test('mocked delivery uses fixed From/To/Bcc, applicant Reply-To, exact attachme
  await assert.rejects(()=>sendProductionOnce(f.store,saved.id,f.env,transport));assert.equal(calls,0);
  const results=await Promise.allSettled([sendProductionOnce(f.store,saved.id,{...f.env,CFE_PRODUCTION_EMAIL_ENABLED:'true'},transport),sendProductionOnce(f.store,saved.id,{...f.env,CFE_PRODUCTION_EMAIL_ENABLED:'true'},transport)]);
  assert.equal(calls,1);assert.equal(results.filter(r=>r.status==='fulfilled').length,1);
+ assert.equal(payload.subject,`Membership Application for ${app.name}`);
  assert.deepEqual({...payload,subject:undefined,html:undefined,text:undefined,attachments:undefined},{...productionHeaders(app),subject:undefined,html:undefined,text:undefined,attachments:undefined});
  assert.equal(payload.attachments[0].content,(await read(f.store,'submissions/'+saved.id)).data.pdf);assert.equal(payload.attachments[0].filename,'membership-application.pdf');
  assert.ok(payload.text.includes(comments));assert.match(payload.html,/Applicant Comments/);assert.match(headers['Idempotency-Key'],/^cfe-production-v1\//);
  assert.equal((await read(f.store,'submissions/'+saved.id)).data.status,'accepted');
  const automatic=fixture({enabled:true,transport});const auto=await automatic.save();assert.equal(auto.status,'accepted');assert.equal(calls,2);await automatic.post('submit');assert.equal(calls,2);
+});
+
+test('New and Renewal notification subjects use the full name; unsafe subject names never reach delivery',async()=>{
+ for(const kind of ['new','renewal']){
+  let payload;
+  const f=fixture({enabled:true,transport:async(url,options)=>{payload=JSON.parse(options.body);return new Response('{"id":"mock-name-subject"}');}});
+  const data={...app,kind,name:'Michael Vaughan',comments};
+  const saved=await f.save(data);
+  assert.equal(payload.subject,'Membership Application for Michael Vaughan');
+  const record=(await read(f.store,'submissions/'+saved.id)).data;
+  assert.equal(record.id,saved.id);assert.equal(record.attempts,1);assert.equal(record.status,'accepted');
+  assert.equal(payload.attachments[0].content,record.pdf);
+ }
+ assert.equal(productionSubject({...app,name:'Élodie O’Connor-Smith'}),'Membership Application for Élodie O’Connor-Smith');
+ for(const control of ['\r','\n','\t','\0','\x1f','\x7f','\x85','\u2028','\u2029']){
+  const f=fixture();const saved=await f.save();
+  const key='submissions/'+saved.id,entry=await read(f.store,key);
+  await f.store.setJSON(key,{...entry.data,data:{...entry.data.data,name:'Michael'+control+'Vaughan'}});
+  let calls=0;
+  await assert.rejects(()=>sendProductionOnce(f.store,saved.id,{...f.env,CFE_PRODUCTION_EMAIL_ENABLED:'true'},async()=>{calls++;throw new Error('Must not send');}),/valid applicant name/);
+  assert.equal(calls,0);assert.equal((await read(f.store,key)).data.attempts,0);assert.equal((await read(f.store,key)).data.status,'held');
+ }
 });
 test('delivery failures and uncertain sends retain comments privately for reconciliation; no automatic retries',async()=>{
  for(const mode of ['provider','network']){
