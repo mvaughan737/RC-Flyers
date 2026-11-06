@@ -2,7 +2,7 @@ import {readFile,writeFile,mkdir,readdir,copyFile} from 'node:fs/promises';
 import {resolve,join,dirname,extname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'..');
-export async function build(output=join(ROOT,'dist'),privateDir=join(ROOT,'netlify/pilot-private'),{productionPublic=false}={}){
+export async function build(output=join(ROOT,'dist'),privateDir=join(ROOT,'netlify/pilot-private'),{productionPublic=false,publicSubmissions=false}={}){
   output=resolve(output);privateDir=resolve(privateDir);
   if(output===ROOT||privateDir===ROOT||output===privateDir)throw new Error('Use separate publish and private asset directories.');
   const files=new Map();
@@ -41,7 +41,7 @@ export async function build(output=join(ROOT,'dist'),privateDir=join(ROOT,'netli
   await mkdir(productionDir,{recursive:true});
   await writeFile(join(productionDir,'production.html'),productionPage(member));
   const publicMember=(member.slice(0,start)+member.slice(end)).replace(/\s*<script src="js\/membership(?:-format)?\.js" defer><\/script>/g,'')
-    .replace('<div class="membership-intro-actions">','<p class="application-notice">Online applications are not yet open. Public application submission and membership email sending are disabled.</p>\n                <div class="membership-intro-actions">');
+    .replace('<div class="membership-intro-actions">',(publicSubmissions?'':'<p class="application-notice">Online applications are not yet open. Public application submission and membership email sending are disabled.</p>\n                ')+'<div class="membership-intro-actions">');
   await mkdir(privateDir,{recursive:true});
   for(const [name,data] of Object.entries({'pilot.html':page,'notification.html':await readFile(join(ROOT,'templates/membership-notification.html')),
     'application.pdf':await readFile(join(ROOT,'documents/Converse Flying Eagles Application (Nov 2026).pdf')),'Vera.ttf':await readFile(join(ROOT,'netlify/pilot-assets/Vera.ttf')),
@@ -50,7 +50,7 @@ export async function build(output=join(ROOT,'dist'),privateDir=join(ROOT,'netli
   for(const [name,source] of files){const target=join(output,name);await mkdir(dirname(target),{recursive:true});if(name==='membership.html')await writeFile(target,productionPublic?productionPage(member):publicMember);else await copyFile(source,target);}
   return {output,privateDir,publicFiles:files.size};
 }
-if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url))console.log(JSON.stringify(await build(undefined,undefined,{productionPublic:process.env.CFE_PRODUCTION_PUBLIC_FORM==='true'})));
+if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url))console.log(JSON.stringify(await build(undefined,undefined,{productionPublic:process.env.CFE_PRODUCTION_PUBLIC_FORM==='true',publicSubmissions:process.env.CFE_PRODUCTION_PUBLIC_SUBMISSIONS_ENABLED==='true'})));
 
 export function productionPage(member){
   return member.replace('<form id="membership-form"','<form data-api-base="/membership-production/api" id="membership-form"')

@@ -17,6 +17,15 @@ import {browserHarness} from './membership-browser-harness.mjs';
 const root=await mkdtemp(join(tmpdir(),'cfe-production-'));
 await build(join(root,'public'),join(root,'netlify/pilot-private'));
 const assets=await loadProductionAssets(root);
+test('landing page notice follows submission availability without publishing the inline form',async()=>{
+ const closed=await readFile(join(root,'public/membership.html'),'utf8');
+ assert.match(closed,/Online applications are not yet open/);
+ const active=await build(join(root,'active-public'),join(root,'active/netlify/pilot-private'),{publicSubmissions:true});
+ const html=await readFile(join(active.output,'membership.html'),'utf8');
+ assert.doesNotMatch(html,/Online applications are not yet open|id="membership-form"/);
+ assert.match(html,/href="\/membership-production"/);
+ assert.match(html,/href="#membership-documents"/);
+});
 const {fictional,...app}=sample;
 app.email='applicant@gmail.com';app.name='Alex "Sky" Applicant';
 const comments='COMMENTS-PRIVATE-ONLY <script>alert("x")</script> &\nSecond line: thanks!';
