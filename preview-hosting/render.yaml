@@ -1,0 +1,25 @@
+# Blueprint template only: do not apply until the owner approves hosting and preview scope.
+services:
+  - type: web
+    name: rc-flyers-george-preview
+    runtime: docker
+    plan: starter
+    numInstances: 1
+    autoDeployTrigger: "off"
+    healthCheckPath: /healthz
+    disk:
+      name: membership-private
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: RC_MEMBERSHIP_PREVIEW_ORIGIN
+        sync: false
+      - key: RC_MEMBERSHIP_PREVIEW_USER
+        value: george
+      - key: RC_MEMBERSHIP_PREVIEW_PASSWORD_HASH
+        sync: false
+      - key: RC_MEMBERSHIP_DATA_DIR
+        value: /var/data/membership
+      - key: MEMBERSHIP_EMAIL_ENABLED
+        value: "false"
+      # Add RC_MEMBERSHIP_RESEND_API_KEY privately only after email scope approval.

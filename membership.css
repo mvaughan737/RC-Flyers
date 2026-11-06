@@ -1,0 +1,24 @@
+.application-notice { border-left: 4px solid #a36b00; padding: 1rem; background: #fff3cf; color: #222; }
+#online-application { scroll-margin-top: 12rem; }
+.application-form fieldset { min-width: 0; border: 1px solid #777; padding: 1rem; margin: 1.5rem 0; }
+.application-form legend { font-weight: 700; padding: 0 .5rem; }
+.application-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; }
+.application-grid label { display: flex; flex-direction: column; gap: .4rem; }
+.application-wide { grid-column: 1 / -1; }
+.application-grid input, .application-grid select { width: 100%; min-height: 48px; box-sizing: border-box; font: inherit; padding: .65rem; border: 1px solid #666; background: white; color: #171717; border-radius: 4px; }
+.application-choices, .application-actions { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1rem 0; }
+.application-choices label, .application-check { display: flex; align-items: flex-start; gap: .6rem; padding: .6rem 0; }
+.application-check input, .application-choices input { flex: 0 0 22px; width: 22px; height: 22px; margin: .1rem 0; accent-color: #543e00; }
+#online-application button { min-height: 48px; white-space: normal; cursor: pointer; font: inherit; margin: .4rem 0; border: 2px solid #67500b; }
+#online-application button:disabled { opacity: .55; cursor: default; }
+#online-application :focus-visible { outline: 3px solid #075dc1; outline-offset: 4px; }
+#online-application [hidden] { display: none !important; }
+.application-trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+#application-summary { overflow-wrap: anywhere; }
+#application-summary div { display: grid; grid-template-columns: minmax(100px,1fr) minmax(0,2fr); gap: 1rem; padding: .5rem 0; border-bottom: 1px solid #aaa; }
+#application-summary dt { font-weight: 700; }
+#application-summary dd { margin: 0; }
+#application-error { border: 2px solid #a4161a; padding: 1rem; color: #8b1014; background: #fff4f4; }
+@media (max-width: 600px) { .application-grid { grid-template-columns: minmax(0,1fr); } .application-wide { grid-column: auto; } #application-summary div { grid-template-columns: 1fr; gap: .25rem; } .application-actions { flex-direction: column; } }
+
+.application-form textarea { display:block; width:100%; box-sizing:border-box; min-height:8rem; resize:vertical; font:inherit; padding:.65rem; border:1px solid #666; border-radius:4px; background:white; color:#171717; }

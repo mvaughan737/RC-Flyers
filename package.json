@@ -5,9 +5,18 @@
   "main": "index.html",
   "scripts": {
     "start": "python scripts/preview.py",
-    "test": "node --test tests/weather.test.js && python -B -m unittest discover -s tests -p test_preview.py"
+    "test": "node --test tests/weather.test.js tests/membership-format.test.js tests/membership-navigation.test.mjs tests/netlify-pilot.test.mjs tests/membership-production.test.mjs && python -B -m unittest discover -s tests -p test_*.py",
+    "build": "node scripts/build-netlify.mjs"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@netlify/blobs": "11.1.7",
+    "@pdf-lib/fontkit": "1.1.1",
+    "pdf-lib": "1.17.1"
+  },
+  "devDependencies": {
+    "netlify-cli": "27.16.2"
+  }
 }

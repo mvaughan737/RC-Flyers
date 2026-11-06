@@ -1,0 +1,15 @@
+.env*
+!.env.example
+__pycache__/
+node_modules/
+tmp/
+output/
+*.sqlite3*
+playwright-report/
+test-results/
+dist/
+.netlify/
+netlify/pilot-private/
+
+netlify/production-private/
+!.env.production.example

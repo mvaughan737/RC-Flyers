@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
         content="Membership information and club documents for prospective and current members of the Converse Flying Eagles RC Club in Converse, Indiana.">
+    <link rel="stylesheet" href="membership.css">
     <link rel="canonical" href="https://converse-flying-eagles.netlify.app/membership.html">
     <meta property="og:title" content="Membership | Converse Flying Eagles RC Club">
     <meta property="og:description"
@@ -105,7 +106,100 @@
                 <h1 class="section-title" id="membership-title">Membership</h1>
                 <p class="membership-lead">Welcome to the Converse Flying Eagles! Whether you are interested in joining
                     or are a current member, we are glad you are part of our RC flying community.</p>
-                <a class="btn btn-gold membership-action" href="#membership-documents">Membership Documents</a>
+                <div class="membership-intro-actions">
+                    <a class="btn btn-gold membership-action" href="/membership-production">Apply / Renew Online</a>
+                    <a class="btn membership-action membership-documents-action" href="#membership-documents">Membership Documents</a>
+                </div>
+                <p>Complete a new membership or renewal application online. When you submit, a printable PDF will be prepared and sent to the Membership Secretary. Payment is handled separately.</p>
+            </div>
+        </section>
+
+
+        <section class="membership-section" id="online-application" aria-labelledby="online-title">
+            <div class="membership-content">
+                <h2 id="online-title">Apply or renew online - Local test</h2>
+                <p class="application-notice">Fictional applicants only. This prototype saves privately on this computer.
+                    Email sending is disabled. Payment is separate, and saving does not approve membership.
+                    An officer verifies AMA membership, then the applicant signs the printed application at the meeting.</p>
+                <p>New members must attend a club meeting to join and pay by cash or check at the meeting; mailing payment is not an option for new members. Renewals may still be paid at a meeting or by mailed check.</p>
+                <p>Membership requires a Board vote followed by approval by a majority of members present at the next club meeting. Submission alone does not confer membership. Paid junior members have voting rights; this does not change junior dues.</p>
+                <p>The late-renewal fee is a flat $20 after March 31 for Regular, Spouse and Junior memberships, not 20%. New members have no renewal late fee.</p>
+                <p>Review the four <a href="#membership-documents">club documents</a> and their disclaimer before continuing.
+                    Answers are recovered within this tab's secure application session. Temporary browser session storage
+                    is used only for this prototype and is cleared when you end the session or it expires.</p>
+                <p id="application-status" role="status" aria-live="polite">Connecting to local prototype...</p>
+                <p id="application-error" role="alert" tabindex="-1" hidden></p>
+                <div class="application-actions">
+                    <button type="button" class="btn btn-gold" id="application-new" disabled>Start New Application</button>
+                    <button type="button" class="btn btn-gold" id="application-logout" disabled>End Session</button>
+                </div>
+                <p>End Session clears this tab's temporary answers. Close the private browser window and PDF tabs afterward to forget the cached pilot password.</p>
+                <form id="membership-form" class="application-form" hidden>
+                    <fieldset><legend>Application and membership</legend>
+                        <div class="application-choices">
+                            <label><input type="radio" name="kind" value="new" required checked> New Membership</label>
+                            <label><input type="radio" name="kind" value="renewal" required> Renewal</label>
+                        </div>
+                        <div class="application-grid">
+                            <label class="application-wide">Selected club meeting date<select name="meetingDate" aria-describedby="meeting-help">
+                                <option value="">Select a monthly meeting (required for new members)</option>
+                            </select></label>
+                            <label>Membership category<select name="category" required>
+                                <option value="regular">Regular</option><option value="spouse">Spouse</option><option value="junior">Junior</option>
+                            </select></label>
+                            <label>Expected payment receipt date<input type="date" name="paymentDate" min="2026-01-01" max="2030-12-31" required aria-describedby="receipt-help"></label>
+                        </div>
+                        <p id="meeting-help">Meetings are exclusively the first Tuesday of each month at 6:00 PM Eastern Time (EST or EDT as shown for each date). Select an upcoming date. New-member payment is made at the meeting; selected meeting and expected payment date remain separate. Renewals may still be mailed.</p>
+                        <p>October-December Regular membership is $100 covering the following year, with no added fee. The $25 option is eliminated; the unchanged downloadable application still shows the historical line pending replacement.</p>
+                        <p id="receipt-help">Dues are estimated using when the club receives payment. No payment is collected here.
+                            New Regular dues: January-June $100; July-September $75; October-December $100 for the following calendar year. Spouse base dues are $5; Junior base dues are free. Renewals after March 31 add $20; October-December Regular payments cover next year for $100 with no additional fee.</p>
+                    </fieldset>
+                    <fieldset><legend>Applicant details</legend>
+                        <p>All fields are required except date of birth (required for juniors) and either one of the two phone numbers.</p>
+                        <div class="application-grid">
+                            <label>Full name (print)<input name="name" maxlength="100" autocomplete="off" required></label>
+                            <label>AMA number<input name="ama" maxlength="24" autocomplete="off" required></label>
+                            <label class="application-wide">Street address<input name="address" maxlength="140" autocomplete="off" required></label>
+                            <label>City<input name="city" maxlength="70" autocomplete="off" required></label>
+                            <label>State (2 letters)<input name="state" maxlength="2" pattern="[A-Za-z]{2}" autocomplete="off" required></label>
+                            <label>ZIP code<input name="zip" maxlength="10" pattern="[0-9]{5}(-[0-9]{4})?" inputmode="numeric" autocomplete="off" required></label>
+                            <label>Date of birth (optional except juniors)<input type="date" name="dob" min="1900-01-01" aria-describedby="guardian-help"></label>
+                            <label>Phone (optional if cell provided)<input type="tel" name="phone" maxlength="80" autocomplete="off" aria-describedby="phone-help phone-error"><span id="phone-error" aria-live="polite"></span></label>
+                            <label>Cell phone (optional if phone provided)<input type="tel" name="cell" maxlength="80" autocomplete="off" aria-describedby="phone-help cell-error"><span id="cell-error" aria-live="polite"></span></label>
+                            <label class="application-wide">Fictional email<input type="email" name="email" maxlength="160" placeholder="pilot@example.com" autocomplete="off" required aria-describedby="email-help"></label>
+                        </div>
+                        <p id="phone-help">Enter exactly 10 digits for each provided phone number. Spaces and punctuation are welcome; numbers format as (333) 453-5923 when you leave the field.</p>
+                        <p id="email-help">Use example.com, example.org, example.net, or a .example domain. No applicant confirmation email is sent.</p>
+                        <p id="guardian-help">Junior members must be under 19 as of March 31. Applicants age 19 or younger need written parent/guardian permission.
+                            Bring the printed application to the monthly meeting. An officer verifies AMA membership before the applicant signs; provide required written parent/guardian permission.</p>
+                    </fieldset>
+                    <div class="application-trap" aria-hidden="true"><label>Leave website blank<input name="website" tabindex="-1" autocomplete="off"></label></div>
+                    <label class="application-check"><input type="checkbox" name="acknowledge" required> I reviewed the application disclaimer, bylaws, and field rules. This acknowledgment is not a signature.</label>
+                    <label class="application-check"><input type="checkbox" name="fictional" required> All applicant details entered here are fictional test data.</label>
+                    <button class="btn btn-gold" type="submit">Review application</button>
+                </form>
+                <section id="application-review" hidden aria-labelledby="review-title">
+                    <h3 id="review-title" tabindex="-1">Review your application</h3>
+                    <dl id="application-summary"></dl>
+                    <p id="application-dues"></p>
+                    <p class="application-notice">Current official PDFs remain authorized for use. Some printed provisions await revision; Board-approved rules displayed online apply. The printed $25 October-December option is obsolete: Regular membership is $100 covering the following calendar year, with no additional fee.</p>
+                    <p>The PDF opens in a new tab. Keep this form tab open and check the PDF before saving. Long answers appear in full on its attached review page.
+                        An officer verifies AMA membership, then the applicant signs the printed application at the meeting. Submission does not establish payment, approval, or active membership.</p>
+                    <p>New members must attend a club meeting and pay there by cash or check; no mailed new-member payment. Renewal meeting and mailed-check options remain available. Membership requires a Board vote followed by approval by a majority of members present at the next club meeting. Submission alone does not confer membership.</p>
+                    <p>Paid junior members have voting rights; junior dues are unchanged. The late-renewal fee is a flat $20 after March 31 for Regular, Spouse and Junior memberships, not 20%. New members have no renewal late fee.</p>
+                    <div class="application-actions">
+                        <button type="button" class="btn btn-gold" id="application-edit">Edit answers</button>
+                        <button type="button" class="btn btn-gold" id="application-download">Open PDF in a new tab</button>
+                    </div>
+                    <p id="application-pdf-links" hidden>
+                        <a id="application-pdf-open" target="_blank" rel="noopener noreferrer">Open the current PDF in a new tab</a>
+                        or <a id="application-pdf-copy" target="_blank" rel="noopener noreferrer" download="membership-application.pdf">download a copy</a>.
+                        If the new tab was blocked, use these links. Your answers remain in this tab.
+                    </p>
+                    <label class="application-check"><input type="checkbox" id="pdf-reviewed" disabled> I opened and checked the current PDF.</label>
+                    <button type="button" class="btn btn-gold" id="application-submit" disabled>Save local test submission</button>
+                </section>
+                <noscript><p>The local online prototype requires JavaScript. You can still view and print all four documents below.</p></noscript>
             </div>
         </section>
 
@@ -119,22 +213,20 @@
                     <div><dt>Spouse membership</dt><dd>$5</dd></div>
                     <div><dt>Junior membership <span>Under 19 as of March 31</span></dt><dd>No charge</dd></div>
                 </dl>
-                <p>Regular membership received after September 30 is good through the following year.</p>
+                <p>Existing regular members paying $100 after September 30 are covered through the following year. Regular renewals are $100 through March 31 and $120 including the $20 late fee from April 1 through September 30.</p>
+                <p>Late renewals after March 31 add a flat $20 for Regular, Spouse and Junior memberships, not 20%. New members have no renewal late fee. October-December Regular payments cover the following calendar year for $100 with no additional fee.</p>
                 <div class="membership-guidance">
                     <div>
                         <h3>Late-summer membership</h3>
-                        <p>These options are for prior-year non-members only:</p>
+                        <p>For new regular members (no late fee):</p>
                         <ul class="membership-steps">
                             <li><strong>$75:</strong> received July 1 through September 30; expires December 31.</li>
-                            <li><strong>$25:</strong> received October 1 through December 31; expires December 31.</li>
+                            <li><strong>$100:</strong> Regular membership received October 1 through December 31 covers the following year, with no added fee. The $25 option is eliminated.</li>
                         </ul>
                     </div>
                     <div>
-                        <h3>New-member fees and discounts</h3>
-                        <p>New members pay a one-time field improvement fee equal to their annual dues.
-                            New-member annual dues are prorated by joining date; the field improvement fee is not prorated.</p>
-                        <p>Annual dues are discounted for family members of adult members in the same household
-                            and for student members. Contact the club Secretary to confirm your category and total payment.</p>
+                        <h3>New-member dues</h3>
+                        <p>The field improvement fee has been eliminated. January-June new Regular membership is $100 for the current calendar year. Spouse base dues remain $5 and Junior base dues remain free.</p>
                     </div>
                 </div>
             </div>
@@ -145,8 +237,7 @@
                 <h2 id="renewal-title">Renewing your membership</h2>
                 <p>Renewals are due <strong>January 1</strong>. Memberships follow the calendar year and expire
                     December 31, subject to the regular-membership carryover described above.</p>
-                <p>A late fee applies to current members for dues received after March 31. March 31 is the late-fee
-                    date, not a membership extension or grace period. Contact the Secretary to confirm the late fee due.</p>
+                <p>Regular renewals received April 1 through September 30 total $120, including the $20 late fee. After September 30, the existing-member $100 payment covers the following year. Spouse renewals after March 31 total $25 ($5 base plus $20 late fee); Junior renewals total $20 ($0 base plus $20 late fee). New members do not incur renewal late fees.</p>
                 <p>No separate renewal form is required. Pay at a club meeting or mail a check to:</p>
                 <address class="membership-mailing-address">Converse Flying Eagles R/C Club<br>PO Box 214<br>Converse, IN 46919</address>
                 <p>Each member is responsible for checking their AMA membership status directly with the AMA.</p>
@@ -164,11 +255,12 @@
                     member or a full club member who takes responsibility for the junior member's actions.</p>
                 <p>If a member loses AMA eligibility, club flying privileges end until that eligibility is restored.</p>
                 <p>Print and complete the application, and read and agree to the bylaws and field rules.
-                    New members normally pay at their first club meeting. Bring cash or a check if paying in person,
-                    or mail the completed application with a check to the club address above.</p>
+                    New members must attend a club meeting to join and pay there by cash or check.
+                    Mailing payment is not an option for new members. Renewal payment options above remain available.</p>
                 <p>Your membership cannot become active until the club has your completed application and dues
-                    payment and has verified your AMA status. Contact the Secretary to arrange submission and the
-                    required approval steps.</p>
+                    payment and has verified your AMA status. Membership requires a Board vote followed by approval by a majority of members present at the next club meeting.
+                    Submission does not establish payment, approval, or active membership. An officer verifies AMA membership, then the applicant signs the printed application at the monthly meeting.</p>
+                <p>Paid junior members have voting rights. This decision does not change the current junior dues.</p>
                 <p>Lifetime membership is awarded by club vote and includes full privileges and voting rights.
                     AMA membership is required for flying.</p>
                 <div class="membership-guidance">
@@ -180,8 +272,7 @@
                     </div>
                     <div>
                         <h3>Membership and document questions</h3>
-                        <p>Contact the club Secretary at <a href="mailto:LESouthwick@outlook.com">LESouthwick@outlook.com</a>
-                            with questions about membership, the bylaws, or field rules.</p>
+                        <p>Have questions about membership, the bylaws, or field rules? Please use our <a href="contact.html#contact-form">contact form</a>.</p>
                     </div>
                 </div>
             </div>
@@ -192,6 +283,7 @@
                 <h2 id="membership-documents-title">Membership Documents</h2>
                 <p>View or print the November 2026 club documents below. Each PDF opens in a new tab.
                     Print the membership application and fill it in by hand.</p>
+                <p class="application-notice">Current official PDFs remain authorized for use. Some printed provisions await revision; Board-approved rules displayed online apply. The printed $25 October-December option is obsolete: Regular membership is $100 covering the following calendar year, with no additional fee.</p>
                 <div class="membership-document-list">
                     <article class="membership-document" aria-labelledby="application-title">
                         <h3 id="application-title">Membership Application</h3>
@@ -251,10 +343,11 @@
                             November and installed in December, with terms running January 1 through December 31.
                             General club business is decided by a majority of members present when at least three officers
                             are present. Bylaw amendments require a proposed motion at a general meeting and majority approval.</p>
-                        <p>The Safety Committee is the Board of Directors chaired by the Safety Officer. Serious or
-                            unresolved safety complaints use the grievance form included in the bylaws and require at
-                            least one witness signature. The written grievance procedure discloses complainants' names.
-                            Contact the Safety Officer at a meeting about safety protocols.</p>
+                        <p>The Safety Committee is the Board of Directors chaired by the Safety Officer. Required grievance
+                            steps apply only to disputes between members. For those disputes, use the grievance form in the
+                            bylaws, including at least one witness signature; the procedure discloses complainants' names.
+                            Contact the Safety Officer about safety protocols.</p>
+                        <p>Ordinary Executive Board expulsions require confirmation by a majority of members present at the next meeting. For safety violations or threats against another member, the Board may expel immediately without a subsequent membership confirmation vote.</p>
                     </div>
                 </div>
             </div>
@@ -268,6 +361,8 @@
             </div>
         </section>
     </main>
+    <script src="js/membership-format.js" defer></script>
+    <script src="js/membership.js" defer></script>
 
     <footer>
         <div class="footer-content">

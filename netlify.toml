@@ -1,12 +1,21 @@
-# netlify.toml — Minimal Netlify configuration
-# Site remains fully static. Functions run on Node 18 for native fetch support.
+# Public membership information plus isolated operator review and protected pilot.
 
 [build]
-  # No build command needed — static HTML/CSS/JS site.
-  publish = "."
+  # Allowlist public assets; package the pilot HTML/PDF/font privately in its function.
+  command = "npm run build"
+  publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "22"
 
 [functions]
   directory = "netlify/functions"
+
+[functions.membership-pilot]
+  node_bundler = "esbuild"
+  included_files = ["netlify/pilot-private/*"]
+
+# Public submission is gated separately; operator review requires its own credential.
+[functions.membership-production]
+  node_bundler = "esbuild"
+  included_files = ["netlify/pilot-private/*", "netlify/production-private/*"]

@@ -1,3 +1,9 @@
+# Historical document review
+
+**Superseded policy questions:** [MEMBERSHIP-BOARD-UPDATE.md](MEMBERSHIP-BOARD-UPDATE.md) records the confirmed flat fee, new-member meeting/payment rules, approval votes, paid junior voting, Executive Board expulsion confirmation and grievance scope. Earlier questions and mailing guidance below are historical evidence, not current guidance. PDFs remain unchanged pending club revisions.
+
+The notes below describe the prior document release. Owner-confirmed dues updates and the new local-only prototype supersede the historical fee/form conclusions; see [MEMBERSHIP-PROTOTYPE.md](MEMBERSHIP-PROTOTYPE.md). The supplied PDFs remain unchanged.
+
 # November 2026 membership information review
 
 Status: owner review PASS. The owner authorized committing and pushing this reviewed update to main through the existing automatic deployment workflow. Further policy decisions wait until after the meeting. The owner has made the November 2026 documents authoritative over older documents and website wording. Only contradictions inside the November set remain questions.

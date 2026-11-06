@@ -223,6 +223,35 @@ header :is(a, button):focus-visible {
     line-height: 1.5;
 }
 
+.membership-intro-actions {
+    display: flex;
+    align-items: stretch;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.membership-intro-actions .membership-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    box-sizing: border-box;
+    border: 2px solid var(--navy-blue);
+}
+
+.membership-documents-action {
+    background: var(--white);
+    color: var(--navy-blue);
+}
+
+.membership-documents-action:hover {
+    background: var(--light-grey);
+}
+
+@media (max-width: 600px) {
+    .membership-intro-actions { flex-direction: column; }
+}
+
 .membership-steps {
     padding-left: 1.5rem;
     margin: 1.5rem 0;

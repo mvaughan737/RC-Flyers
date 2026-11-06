@@ -46,26 +46,32 @@ The heart of our flying site information is the Live Weather page. It cross-refe
 - **Sunset Timing**: Essential for coordinating evening flights.
 
 ## Deployment
-Netlify serves the repository root (`publish = "."` in `netlify.toml`). There is no build command or build script. Run `npm test` for the weather and local preview regression checks (Node and Python 3, no added packages required). Approved changes pushed to the connected Git branch trigger deployment. Local review does not require a commit or deployment.
+The current live Netlify deploy still serves the previous static site. The prepared configuration builds an allowlisted `dist/` with `npm run build` and Node 22, keeping private membership assets inside a protected function. Run `npm test` for Weather and membership regressions (Node and Python 3; install `requirements-membership.txt`). Approved pushes to the connected `main` branch trigger production deployment, so do not push for pilot review. See [the Netlify pilot review plan](NETLIFY-MEMBERSHIP-PILOT.md) for a draft deployment on the existing project that preserves production.
 
 ## Membership page and document updates
 
-The public page is `/membership.html`. Membership appears between About and Events in every public header menu, including mobile. Sections use ordinary semantic HTML so a future joining or renewal form can be added without changing the document downloads. No form, payment, account, or personal information collection is implemented.
+The public page is `/membership.html`. Membership appears between About and Events in every public header menu, including mobile. Sections use ordinary semantic HTML so a future joining or renewal form can be added without changing the document downloads. A local-only online application/renewal prototype is available through the Python preview; see [MEMBERSHIP-PROTOTYPE.md](MEMBERSHIP-PROTOTYPE.md). Payment stays separate; an officer verifies AMA, then the applicant signs the printed application at the monthly meeting. Email sending is disabled.
 
-PDF documents are served directly from the existing lowercase `/documents/` folder, included in Netlify's root publish directory. Paths must match the actual capitalization on case-sensitive hosting:
+George's restricted pilot is prepared in [NETLIFY-MEMBERSHIP-PILOT.md](NETLIFY-MEMBERSHIP-PILOT.md), with native Netlify Functions, private persistent Blobs, server password protection, George-only mail, deployment/rollback steps and a 15–20 minute test script. The earlier Render package is superseded. No remote deployment or email is enabled by these files. Run `node scripts/pilot-local.mjs` for a loopback-only rehearsal of the hosted implementation; it uses fictional fixtures and cannot send email.
+
+PDF documents are served from the existing lowercase `/documents/` folder, copied unchanged into the prepared `dist/` publish directory. Paths must match the actual capitalization on case-sensitive hosting:
 
 - `documents/Converse Flying Eagles Application (Nov 2026).pdf`
 - `documents/Converse Flying Eagles Bylaws (Nov 2026).pdf`
 - `documents/Field Rules (Nov 2026).pdf`
 - `documents/Converse Flying Eagles Website (Nov 2026).pdf`
 
-Membership links use these actual filenames with URL-encoded spaces and parentheses. All four open in a new tab with `target="_blank" rel="noopener"` and no `download` attribute. The application is printed and completed by hand. The Website PDF is publicly linked as Membership Information and Dues.
+Membership links use these actual filenames with URL-encoded spaces and parentheses. All four open in a new tab with `target="_blank" rel="noopener"` and no `download` attribute. The blank application can still be printed and completed by hand; the local prototype also overlays answers onto an unchanged copy. The Website PDF is publicly linked as Membership Information and Dues.
 
-The owner has designated the November 2026 documents as the authority over older documents and website wording. Apply all clear November information; only contradictions within those November documents require clarification. Preserve each PDF unchanged. The change table and exact unresolved passages are recorded in MEMBERSHIP-REVIEW.md.
+The Board-confirmed decisions in [MEMBERSHIP-BOARD-UPDATE.md](MEMBERSHIP-BOARD-UPDATE.md) and owner-confirmed dues in MEMBERSHIP-PROTOTYPE.md supersede conflicting November PDF wording. Current official PDFs remain authorized for continued use while printed provisions await revision; all four downloads remain unchanged. Replacement PDFs are not a launch prerequisite. MEMBERSHIP-FINAL-REVIEW.md records the final before/after table and launch steps. MEMBERSHIP-REVIEW.md retains historical source passages.
+
+Run `node scripts/production-local.mjs` for the loopback-only review at `http://127.0.0.1:4182/membership-production`. Use fictional review data. This rehearsal loads no environment files or mail credentials and cannot send. Its isolated private store is outside the website; the normal public build remains downloads-only. This does not enable production or change George's protected pilot.
 
 The superseded Word copies were preserved unchanged in the sibling folder `../RC-Flyers-editable-originals/`, outside the published repository root. SHA-256 hashes were checked before removing the public copies. Original Word sources also remain in the external Club Updates folder. Keep editable originals outside this website.
 
 To replace a PDF:
+
+Public-contact exception: the Secretary email sentence was removed from the Membership Information and Dues PDF to prevent public exposure. Its exact original is archived outside the website under `../RC-Flyers-private/original-documents/`; the application, bylaws and field-rules PDFs remain unchanged. No membership policy provisions were altered by this correction.
 
 1. Export the approved editable source to PDF. Place the PDF in `documents/`, preserving the folder's actual lowercase spelling. Keep Word sources and private member records outside the public folder.
 2. If its name or version changes, update its URL-encoded `href`, accessible description, and visible version in `membership.html`, plus the list above. Keep the View / Print labels, `target="_blank"`, `rel="noopener"`, and no `download` attribute.
@@ -78,9 +84,9 @@ Keep the preview server running while reviewing. Run `npm start` from the reposi
 python "C:/Users/Admin/.gemini/antigravity/scratch/RC-Flyers/scripts/preview.py"
 ```
 
-Open `http://127.0.0.1:4173/membership.html` or `http://127.0.0.1:4173/weather_final.html`. The script always serves this repository, regardless of the terminal's current directory. Python 3 is required; there are no additional preview dependencies. Use `--port 4174` if 4173 is already in use. If the address reports connection refused, start the server before opening the page. Do not open the HTML as a file URL.
+Open `http://127.0.0.1:4173/membership.html` or `http://127.0.0.1:4173/weather_final.html`. The script always serves this repository, regardless of the terminal's current directory. Python 3 is required. Membership PDF generation also needs `python -m pip install -r requirements-membership.txt`. Use port 4174 for the current membership prototype. Use `--port 4174` if 4173 is already in use. If the address reports connection refused, start the server before opening the page. Do not open the HTML as a file URL.
 
-The preview handles the read-only `/.netlify/functions/metar-live` URL by retrieving the public deployed weather endpoint server-side. This requires internet access. It does not execute other Netlify Functions or publish content; other shared content uses static fallbacks. A plain static server cannot provide the weather endpoint and will return 404. The deployed site continues to use its existing Netlify weather function directly.
+The preview handles the read-only `/.netlify/functions/metar-live` URL by retrieving the public deployed weather endpoint server-side. This requires internet access. The local membership endpoints save only to a private sibling folder and never send email. The preview does not execute other Netlify Functions or publish content; other shared content uses static fallbacks. A plain static server cannot provide the weather endpoint and will return 404. The deployed site continues to use its existing Netlify weather function directly.
 
 See [MEMBERSHIP-REVIEW.md](MEMBERSHIP-REVIEW.md) for source comparisons, unresolved policy questions, and verification limitations.
 
@@ -92,3 +98,5 @@ See [MEMBERSHIP-REVIEW.md](MEMBERSHIP-REVIEW.md) for source comparisons, unresol
 
 ---
 *Dedicated to the hobby of radio-controlled flight in Converse, Indiana and surrounding areas.*
+
+Production launch preparation (disabled, local only): see [MEMBERSHIP-PRODUCTION-REVIEW.md](MEMBERSHIP-PRODUCTION-REVIEW.md) for routing, comments, mocked checks, pending Board decisions, final-launch steps and rollback. Production settings are documented in `.env.production.example`; the protected pilot configuration is separate.
